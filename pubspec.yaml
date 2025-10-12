@@ -1,0 +1,29 @@
+name: karaburun
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_symbols_icons: ^4.2874.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/backImage.jpg
+    - assets/images/cafe.jpg
+    - assets/images/m1.jpg
+    - assets/images/m2.jpg
+    - assets/images/m3.jpg
+    - assets/images/m4.jpg
+
