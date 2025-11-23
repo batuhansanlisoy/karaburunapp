@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../data/organization/model.dart';
-import '../../../data/organization/repository.dart';
+import '../../../data/place/model.dart';
+import '../../../data/place/repository.dart';
 
-class OrganizationPage extends StatefulWidget {
-  const OrganizationPage({super.key});
+class PlacePage extends StatefulWidget {
+  const PlacePage({super.key});
 
   @override
-  State<OrganizationPage> createState() => _OrganizationPageState();
+  State<PlacePage> createState() => _PlacePageState();
 }
 
-class _OrganizationPageState extends State<OrganizationPage> {
-  final repo = OrganizationRepository();
-  List<Organization> list = [];
+class _PlacePageState extends State<PlacePage> {
+  final repo = PlaceRepository();
+  List<Place> list = [];
   bool loading = true;
   String? error;
 
@@ -23,10 +23,10 @@ class _OrganizationPageState extends State<OrganizationPage> {
 
   void loadData() async {
     try {
-      list = await repo.fetchOrganizations();
+      list = await repo.fetchPlaces();
     } catch (e) {
-      error = "Organizasyonlar yüklenirken hata oluştu!";
-      debugPrint("Error fetching organizations: $e");
+      error = "Place yüklenirken hata oluştu!";
+      debugPrint("Error fetching Places: $e");
     } finally {
       setState(() {
         loading = false;
@@ -53,7 +53,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
     if (list.isEmpty) {
       return const Center(
         child: Text(
-          "Hiç organizasyon bulunamadı.",
+          "Hiç Place bulunamadı.",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       );
@@ -65,7 +65,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
         const Padding(
           padding: EdgeInsets.all(16),
           child: Text(
-            "Organization",
+            "Place",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -77,11 +77,16 @@ class _OrganizationPageState extends State<OrganizationPage> {
           child: ListView.builder(
             itemCount: list.length,
             itemBuilder: (_, i) {
-              final o = list[i];
+              final item = list[i];
               return ListTile(
-                title: Text(o.name),
-                subtitle: Text(o.categoryName),
-                trailing: Text(o.phone),
+                title: Text(item.name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Köy: ${item.villageName}"),
+                    Text("Adres: ${item.address}"),
+                  ],
+                ),
               );
             },
           ),

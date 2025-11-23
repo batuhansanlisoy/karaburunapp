@@ -4,6 +4,8 @@ import 'package:karaburun/presentation/pages/events/event_page.dart';
 import 'package:karaburun/presentation/pages/foods/food_page.dart';
 import 'package:karaburun/presentation/pages/home/home_page.dart';
 import 'package:karaburun/presentation/pages/organization_page.dart';
+import 'package:karaburun/presentation/pages/beach/beach_page.dart';
+import 'package:karaburun/presentation/pages/place/place_page.dart';
 import 'package:karaburun/presentation/widgets/main_bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
@@ -22,6 +24,9 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
     _pages = [
+      const OrganizationPage(),
+      // const PlacePage(),
+      const BeachPage(), // burda ilk hangisi varsa başlangıç ekranı o oluyor
       HomePage(onPageChange: (index) {
         setState(() {
           _currentIndex = index;
@@ -32,7 +37,6 @@ class _MainLayoutState extends State<MainLayout> {
           _currentIndex = index;
         });
       }),
-      const OrganizationPage(),
       const EventPage(),
       const FoodPage(),
     ];
