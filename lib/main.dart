@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/presentation/layouts/main_layout.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 🌟 önemli
+  try {
+    await dotenv.load(fileName: "assets/.env");
+    debugPrint("Env loaded: ${dotenv.env}");
+  } catch (e) {
+    debugPrint("Error loading .env: $e");
+  }
+
   runApp(const MyApp());
 }
 

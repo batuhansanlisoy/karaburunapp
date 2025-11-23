@@ -3,7 +3,7 @@ import 'package:karaburun/presentation/pages/category_page.dart';
 import 'package:karaburun/presentation/pages/events/event_page.dart';
 import 'package:karaburun/presentation/pages/foods/food_page.dart';
 import 'package:karaburun/presentation/pages/home/home_page.dart';
-import 'package:karaburun/presentation/pages/search_page.dart';
+import 'package:karaburun/presentation/pages/organization_page.dart';
 import 'package:karaburun/presentation/widgets/main_bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
@@ -22,13 +22,17 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
     _pages = [
-      const HomePage(),
+      HomePage(onPageChange: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      }),
       CategoryPage(onPageChange: (index) {
         setState(() {
           _currentIndex = index;
         });
       }),
-      const SearchPage(),
+      const OrganizationPage(),
       const EventPage(),
       const FoodPage(),
     ];

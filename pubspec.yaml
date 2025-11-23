@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   material_symbols_icons: ^4.2874.0
   http: ^1.1.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -21,10 +22,10 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/.env
     - assets/images/backImage.jpg
     - assets/images/cafe.jpg
     - assets/images/m1.jpg
     - assets/images/m2.jpg
     - assets/images/m3.jpg
     - assets/images/m4.jpg
-
