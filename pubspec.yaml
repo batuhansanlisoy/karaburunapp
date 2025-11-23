@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   material_symbols_icons: ^4.2874.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
