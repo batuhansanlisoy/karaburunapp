@@ -20,8 +20,8 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 24),
-            const Text("Kategoriler", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54)),
+            const SizedBox(height: 12),
+            // const Text("Kategoriler", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54)),
             const SizedBox(height: 12),
             SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -35,10 +35,16 @@ class HomePage extends StatelessWidget {
                           title: e['title'],
                           color: e['color'],
                           onTap: () {
-                            if (e['title'] == 'Etkinlik') {
-                              onPageChange(3);
-                            } else if (e['title'] == 'Yeme & İçme') {
-                              onPageChange(4);
+                            if (e['builder'] != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: e['builder']),
+                              );
+                            } else {
+                              // Geçici olarak uyarı gösterebilirsin
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Bu kategori henüz aktif değil.")),
+                              );
                             }
                           }));
                 }).toList())),

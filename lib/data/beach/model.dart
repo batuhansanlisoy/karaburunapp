@@ -2,9 +2,9 @@ class Beach {
     final int id;
     final int villageId;
     final String name;
-    final String? extra;
+    final Map<String, dynamic>? extra;
     final String? logoUrl;
-    final String? gallery;
+    final List<String>? gallery;
     final String address;
     final double? latitude;
     final double? longitude;
@@ -28,19 +28,28 @@ class Beach {
     });
 
     factory Beach.fromJson(Map<String, dynamic> json) {
+
+        final extraMap = json['extra'] != null
+            ? Map<String, dynamic>.from(json['extra'])
+            : null;
+
+        final galleryList = json['gallery'] != null
+            ? List<String>.from(json['gallery'])
+            : null;
+
         return Beach(
           id: json['id'],
           villageId: json['village_id'],
           name: json['name'],
-          extra: json['extra'],
+          extra: extraMap,
           logoUrl: json['logo_url'],
-          gallery: json['gallery'],
+          gallery: galleryList,
           address: json['address'],
           latitude: json['latitude'] == null ? null : double.tryParse(json['latitude'].toString()),
           longitude: json['longitude'] == null ? null : double.tryParse(json['longitude'].toString()),
           createdAt: DateTime.parse(json['created_at']),
           updatedAt: DateTime.parse(json['updated_at']),
-          villageName: json['name'],
+          villageName: json['village_name'],
         );
     }
 }

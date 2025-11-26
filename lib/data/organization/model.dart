@@ -1,13 +1,15 @@
+import 'dart:convert';
+
 class Organization {
   final int id;
   final int categoryId;
   final String name;
   final String email;
   final String phone;
-  final String? content;
+  final String? content; // backend string ya da null
   final String? website;
   final String? logoUrl;
-  final String? gallery;
+  final String? gallery; // backend string ya da null
   final String address;
   final double? latitude;
   final double? longitude;
@@ -34,22 +36,26 @@ class Organization {
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) {
+    // content ve gallery null ise null bırakıyoruz, değilse string olarak alıyoruz
+    final contentString = json['content'] != null ? json['content'].toString() : null;
+    final galleryString = json['gallery'] != null ? json['gallery'].toString() : null;
+
     return Organization(
       id: json['id'],
       categoryId: json['category_id'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
-      content: json['content'],
+      content: contentString,
       website: json['website'],
       logoUrl: json['logo_url'],
-      gallery: json['gallery'],
+      gallery: galleryString,
       address: json['address'],
-      latitude: json['latitude'] == null ? null : double.tryParse(json['latitude'].toString()),
-      longitude: json['longitude'] == null ? null : double.tryParse(json['longitude'].toString()),
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      categoryName: json['category_name'],
+      categoryName: json['category_name'] ?? '',
     );
   }
 }

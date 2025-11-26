@@ -4,9 +4,12 @@ import '../../core/api_routes.dart';
 import 'model.dart';
 
 class OrganizationService {
-  Future<List<Organization>> getOrganizations() async {
-    // Burada /list'i servis tarafında ekliyoruz
-    final url = Uri.parse("${ApiRoutes.organization}/list");
+  Future<List<Organization>> getOrganizations({int? categoryId}) async {
+    
+    final base = "${ApiRoutes.organization}/list";
+    final url = categoryId != null 
+        ? Uri.parse(base).replace(queryParameters: {"category_id": categoryId.toString()})
+        : Uri.parse(base);
 
     try {
       final response = await http.get(url);
