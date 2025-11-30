@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../data/organization/model.dart';
 import '../../../data/organization/repository.dart';
 
-class RestouranPage extends StatefulWidget {
-  const RestouranPage({super.key});
+class CafePage extends StatefulWidget {
+  const CafePage({super.key});
 
   @override
-  State<RestouranPage> createState() => _RestouranPageState();
+  State<CafePage> createState() => _CafePageState();
 }
 
-class _RestouranPageState extends State<RestouranPage> {
+class _CafePageState extends State<CafePage> {
   final repo = OrganizationRepository();
   List<Organization> list = [];
   bool loading = true;
@@ -25,10 +25,10 @@ class _RestouranPageState extends State<RestouranPage> {
 
   void loadData() async {
     try {
-      list = await repo.fetchRestaurants();
+      list = await repo.fetchCafes();
     } catch (e) {
-      error = "Restoran alınırken bir hata meydana geldi!";
-      debugPrint("Error fetching Restouran: $e");
+      error = "Cafe alınırken bir hata meydana geldi!";
+      debugPrint("Error fetching Cafe: $e");
     } finally {
       setState(() {
         loading = false;
@@ -40,7 +40,7 @@ class _RestouranPageState extends State<RestouranPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Restorantlar"),
+        title: const Text("Kahveciler"),
       ),
 
       body: Builder(

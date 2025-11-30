@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:karaburun/presentation/pages/category_page.dart';
-import 'package:karaburun/presentation/pages/events/event_page.dart';
 import 'package:karaburun/presentation/pages/home/home_page.dart';
 import 'package:karaburun/presentation/pages/organization_page.dart';
 import 'package:karaburun/presentation/pages/beach/beach_page.dart';
-import 'package:karaburun/presentation/pages/place/place_page.dart';
+import 'package:karaburun/presentation/pages/cafe/cafe_page.dart';
+import 'package:karaburun/presentation/pages/activity/activity_page.dart';
+import 'package:karaburun/presentation/pages/restouran/restouran_page.dart';
 import 'package:karaburun/presentation/pages/village/village_page.dart';
 import 'package:karaburun/presentation/widgets/main_bottom_nav.dart';
 
@@ -23,28 +23,24 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   void initState() {
     super.initState();
+
     _pages = [
+      HomePage(onPageChange: (index) {
+        setState(() => _currentIndex = index);
+      }),
+      const RestouranPage(),
+      const BeachPage(),
+      const CafePage(),
+      const ActivityPage(),
       const VillagePage(),
       const OrganizationPage(),
-      // const PlacePage(),
-      const BeachPage(), // burda ilk hangisi varsa başlangıç ekranı o oluyor
-      HomePage(onPageChange: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      }),
-      CategoryPage(onPageChange: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      }),
-      const EventPage(),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: Container(
@@ -59,33 +55,33 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ],
           ),
-          child:  SafeArea(
+          child: SafeArea(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 RichText(
-                text: const TextSpan(
+                  text: const TextSpan(
                     children: [
-                    TextSpan(
+                      TextSpan(
                         text: "Karaburun",
                         style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0,
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0,
                         ),
-                    ),
-                    TextSpan(
+                      ),
+                      TextSpan(
                         text: "GO",
                         style: TextStyle(
-                        color: Color.fromARGB(255, 216, 66, 66),
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1,
+                          color: Color.fromARGB(255, 216, 66, 66),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -1,
                         ),
-                    ),
+                      ),
                     ],
-                ),
+                  ),
                 ),
                 const CircleAvatar(
                   radius: 22,
@@ -101,7 +97,9 @@ class _MainLayoutState extends State<MainLayout> {
       body: _pages[_currentIndex],
       bottomNavigationBar: MainBottomNav(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) {
+          setState(() => _currentIndex = index);
+        },
       ),
     );
   }

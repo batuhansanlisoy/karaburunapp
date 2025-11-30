@@ -7,9 +7,16 @@ import 'package:karaburun/presentation/pages/restouran/restouran_page.dart';
 final List<Map<String, dynamic>> categories = [
   {
     "icon": Icons.restaurant_menu_outlined,
-    "title": "Yeme & İçme",
+    "title": "Restoran",
     "color":const Color(0xFFFF6F61),
     "builder": (context) => const RestouranPage(),
+    "pageIndex": 1
+  },
+  {
+    "icon": Icons.free_breakfast_outlined,
+    "title": "Cafe",
+    "color":const Color.fromARGB(255, 136, 92, 88),
+    "pageIndex": 3
   },
   {
     "icon": Icons.hotel_outlined,
@@ -27,13 +34,14 @@ final List<Map<String, dynamic>> categories = [
     "icon": Icons.celebration,
     "title": "Etkinlik",
     "color": const Color(0xFFBA68C8),
-    // "builder": (context) => const FoodPage(),
+    "pageIndex": 4
   },
   {
     "icon": Icons.beach_access,
     "title": "Koy & Plaj",
     "color": const  Color(0xFF4DB6AC),
     "builder": (context) => const BeachPage(),
+    "pageIndex": 2
   },
   {
     "icon": Icons.local_grocery_store,

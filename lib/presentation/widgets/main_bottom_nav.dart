@@ -14,7 +14,7 @@ class MainBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color.fromARGB(255, 26, 26, 26),
       elevation: 0,
       currentIndex: currentIndex > 2 ? 1 : currentIndex,
       onTap: onTap,
@@ -24,17 +24,7 @@ class MainBottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(
             Symbols.home,
-            color: Colors.black45,
-            weight: 800,
-            fill: 0,
-            opticalSize: 86,
-          ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Symbols.category,
-            color: Colors.black45,
+            color: Color.fromARGB(207, 241, 241, 241),
             weight: 800,
             fill: 0,
             opticalSize: 86,
@@ -44,7 +34,7 @@ class MainBottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(
             Symbols.search,
-            color: Colors.black45,
+            color: Color.fromARGB(207, 241, 241, 241),
             weight: 800,
             fill: 0,
             opticalSize: 86,
@@ -54,7 +44,7 @@ class MainBottomNav extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(
             Symbols.settings,
-            color: Colors.black45,
+            color: Color.fromARGB(207, 241, 241, 241),
             weight: 800,
             fill: 0,
             opticalSize: 86,

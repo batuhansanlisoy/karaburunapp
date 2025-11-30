@@ -23,4 +23,7 @@ class ApiRoutes {
 
     static String get village =>
         "$baseUrl/${dotenv.env['VILLAGE_PATH']}";
+      
+    static String get activity =>
+        "$baseUrl/${dotenv.env['ACTIVITY_PATH']}";
 }

@@ -20,15 +20,15 @@ class CategoryCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 80,
-        height: 130,
+        height: 110,
         margin: const EdgeInsets.only(right: 4),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
+              color: Colors.grey.withOpacity(0.3),
+              spreadRadius: 1.3,
               blurRadius: 3,
             ),
           ],
