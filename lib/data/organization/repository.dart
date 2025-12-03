@@ -8,7 +8,7 @@ class OrganizationRepository {
     return _service.getOrganizations();
   }
 
-  Future<List<Organization>> fetchRestaurants({int categoryId = 1}) {
+  Future<List<Organization>> fetchRestaurants({int categoryId = 16}) {
     return _service.getOrganizations(categoryId: categoryId);
   }
 

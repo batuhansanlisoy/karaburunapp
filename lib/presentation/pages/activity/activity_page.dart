@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/data/activity/category/model.dart';
 import 'package:karaburun/data/activity/category/repository.dart';
+import 'package:karaburun/presentation/pages/activity/activity_detail.dart';
 import '../../../data/activity/model.dart';
 import '../../../data/activity/repository.dart';
 
@@ -63,7 +64,8 @@ class _ActivityPageState extends State<ActivityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Etkinlikler",
+        title: const Text(
+          "Etkinlikler",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -71,7 +73,6 @@ class _ActivityPageState extends State<ActivityPage> {
         ),
         toolbarHeight: 30,
       ),
-
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -121,57 +122,72 @@ class _ActivityPageState extends State<ActivityPage> {
                     itemBuilder: (_, i) {
                       final item = list[i];
 
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 4,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Resim
-                            item.logoUrl != null
-                                ? Image.network(
-                                    "$baseUrl${item.logoUrl}",
-                                    width: double.infinity,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ActivityDetailPage(activity: item),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          elevation: 4,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Resim
+                              item.cover != null
+                                  ? Image.network(
+                                      "$baseUrl${item.cover!['url']}",
+                                      width: double.infinity,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        width: double.infinity,
+                                        height: 200,
+                                        color: Colors.grey[300],
+                                        child:
+                                            const Icon(Icons.image, size: 80),
+                                      ),
+                                    )
+                                  : Container(
                                       width: double.infinity,
                                       height: 200,
                                       color: Colors.grey[300],
-                                      child:
-                                          const Icon(Icons.image, size: 80),
+                                      child: const Icon(Icons.image, size: 80),
                                     ),
-                                  )
-                                : Container(
-                                    width: double.infinity,
-                                    height: 200,
-                                    color: Colors.grey[300],
-                                    child: const Icon(Icons.image, size: 80),
-                                  ),
-                            // Alt bilgi
-                            Container(
-                              width: double.infinity,
-                              color: Colors.white.withOpacity(0.95),
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(item.name,
+
+                              // Alt bilgi
+                              Container(
+                                width: double.infinity,
+                                color: Colors.white.withOpacity(0.95),
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.name,
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                      )),
-                                  const SizedBox(height: 4),
-                                  Text("Adres: ${item.address}",
-                                      style: const TextStyle(fontSize: 14)),
-                                ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "Adres: ${item.address}",
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     },

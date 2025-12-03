@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:karaburun/presentation/pages/beach/beach_page.dart';
 import 'package:karaburun/presentation/pages/village/village_page.dart';
 import 'package:karaburun/presentation/pages/place/place_page.dart';
-import 'package:karaburun/presentation/pages/restouran/restouran_page.dart';
+import 'package:karaburun/presentation/pages/food/food_page.dart';
 
 final List<Map<String, dynamic>> categories = [
   {
     "icon": Icons.restaurant_menu_outlined,
-    "title": "Restoran",
+    "title": "Yemek",
     "color":const Color(0xFFFF6F61),
-    "builder": (context) => const RestouranPage(),
+    "builder": (context) => const FoodPage(),
     "pageIndex": 1
-  },
-  {
-    "icon": Icons.free_breakfast_outlined,
-    "title": "Cafe",
-    "color":const Color.fromARGB(255, 136, 92, 88),
-    "pageIndex": 3
   },
   {
     "icon": Icons.hotel_outlined,

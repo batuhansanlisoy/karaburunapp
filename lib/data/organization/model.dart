@@ -8,7 +8,7 @@ class Organization {
   final String phone;
   final String? content; // backend string ya da null
   final String? website;
-  final String? logoUrl;
+  final Map<String, dynamic>? cover;
   final String? gallery; // backend string ya da null
   final String address;
   final double? latitude;
@@ -25,7 +25,7 @@ class Organization {
     required this.phone,
     required this.content,
     required this.website,
-    required this.logoUrl,
+    required this.cover,
     required this.gallery,
     required this.address,
     required this.latitude,
@@ -35,10 +35,23 @@ class Organization {
     required this.categoryName,
   });
 
+
   factory Organization.fromJson(Map<String, dynamic> json) {
     // content ve gallery null ise null bırakıyoruz, değilse string olarak alıyoruz
-    final contentString = json['content'] != null ? json['content'].toString() : null;
-    final galleryString = json['gallery'] != null ? json['gallery'].toString() : null;
+    final contentString = json['content'] !=null ? json['content'].toString() : null;
+    final galleryString = json['gallery'] !=null ? json['gallery'].toString() : null;
+
+    Map<String, dynamic>? coverMap;
+    if (json['cover'] != null) {
+      try {
+        final decoded = jsonDecode(json['cover']);
+        if (decoded is Map<String, dynamic>) {
+          coverMap = decoded;
+        }
+      } catch (e) {
+        coverMap = null;
+      }
+    }
 
     return Organization(
       id: json['id'],
@@ -48,7 +61,7 @@ class Organization {
       phone: json['phone'],
       content: contentString,
       website: json['website'],
-      logoUrl: json['logo_url'],
+      cover: coverMap,
       gallery: galleryString,
       address: json['address'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,

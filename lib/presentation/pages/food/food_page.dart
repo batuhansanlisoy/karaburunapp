@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../data/organization/model.dart';
 import '../../../data/organization/repository.dart';
 
-class RestouranPage extends StatefulWidget {
-  const RestouranPage({super.key});
+class FoodPage extends StatefulWidget {
+  const FoodPage({super.key});
 
   @override
-  State<RestouranPage> createState() => _RestouranPageState();
+  State<FoodPage> createState() => _FoodPageState();
 }
 
-class _RestouranPageState extends State<RestouranPage> {
+class _FoodPageState extends State<FoodPage> {
   final repo = OrganizationRepository();
   List<Organization> list = [];
   bool loading = true;
@@ -84,9 +84,9 @@ class _RestouranPageState extends State<RestouranPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Resim tam genişlik
-                    item.logoUrl != null
+                    item.cover != null
                         ? Image.network(
-                            "$baseUrl${item.logoUrl}",
+                            "$baseUrl${item.cover!['url']}",
                             width: double.infinity,
                             height: 200,
                             fit: BoxFit.cover,

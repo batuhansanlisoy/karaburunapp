@@ -84,9 +84,9 @@ class _CafePageState extends State<CafePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Resim tam genişlik
-                    item.logoUrl != null
+                    item.cover != null
                         ? Image.network(
-                            "$baseUrl${item.logoUrl}",
+                            "$baseUrl${item.cover}",
                             width: double.infinity,
                             height: 200,
                             fit: BoxFit.cover,

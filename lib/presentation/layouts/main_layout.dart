@@ -4,6 +4,7 @@ import 'package:karaburun/presentation/pages/organization_page.dart';
 import 'package:karaburun/presentation/pages/beach/beach_page.dart';
 import 'package:karaburun/presentation/pages/cafe/cafe_page.dart';
 import 'package:karaburun/presentation/pages/activity/activity_page.dart';
+import 'package:karaburun/presentation/pages/activity/activity_detail.dart';
 import 'package:karaburun/presentation/pages/restouran/restouran_page.dart';
 import 'package:karaburun/presentation/pages/village/village_page.dart';
 import 'package:karaburun/presentation/widgets/main_bottom_nav.dart';
