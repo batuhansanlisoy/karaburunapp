@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:karaburun/presentation/layouts/main_layout.dart';
+import 'package:karaburun/core/layout/main_layout.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 🌟 önemli
