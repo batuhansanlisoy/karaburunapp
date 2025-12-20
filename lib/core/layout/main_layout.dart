@@ -31,10 +31,10 @@ class _MainLayoutState extends State<MainLayout> {
           setState(() => _currentIndex = index);
         },
       ),
-      const PlacePage(),
       const FoodPage(),
-      const BeachPage(),
+      const PlacePage(),
       const ActivityPage(),
+      const BeachPage(),
       const VillagePage(),
       const OrganizationPage(),
     ];

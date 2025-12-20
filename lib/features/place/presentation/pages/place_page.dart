@@ -5,6 +5,7 @@ import 'package:karaburun/features/village/data/models/village_model.dart';
 import 'package:karaburun/features/village/data/repositories/village_repository.dart' as village_repo;
 import '../widgets/village_bar.dart' as widget_bar;
 import '../widgets/place_list.dart' as widget_list;
+import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
 
 class PlacePage extends StatefulWidget {
   const PlacePage({super.key});
@@ -18,6 +19,7 @@ class _PlacePageState extends State<PlacePage> {
   final villageRepo = village_repo.VillageRepository();
 
   List<Place> list = [];
+  List<Place> filteredList = [];
   List<Village> villages = [];
 
   bool loading = true;
@@ -41,7 +43,18 @@ class _PlacePageState extends State<PlacePage> {
       ? await repo.fetchPlaces()
       : await repo.fetchPlaces(villageId: selectedVillageId);
     
+    filteredList = List.from(list);
     setState(() => loading = false);
+  }
+
+  void onSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredList = List.from(list);
+      } else {
+        filteredList = list.where((p) => p.name.toLowerCase().contains(query.toLowerCase())).toList();
+      }
+    });
   }
 
   void onVillageSelect(int? id) {
@@ -52,7 +65,14 @@ class _PlacePageState extends State<PlacePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Gezilecek Yerler")),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: widget_search.SearchInput(
+          hintText: "Gezilecek yer ara...",
+          onChanged: onSearchChanged
+        ),
+      ),
       body: loading
         ? const Center(child: CircularProgressIndicator())
         : Column(
@@ -64,7 +84,7 @@ class _PlacePageState extends State<PlacePage> {
             ),
             Expanded(
               child: widget_list.PlaceList(
-                list: list,
+                list: filteredList,
                 baseUrl: baseUrl,
               )
             )

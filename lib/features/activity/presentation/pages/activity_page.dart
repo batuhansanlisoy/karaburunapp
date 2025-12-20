@@ -4,9 +4,9 @@ import '../../data/models/activity_model.dart';
 import '../../data/models/activity_category_model.dart';
 import '../../data/repositories/activity_repository.dart';
 import '../../data/repositories/activity_category_repository.dart';
-
 import '../widgets/activity_category_bar.dart' as widget_bar;
 import '../widgets/activity_list.dart' as widget_list;
+import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
 import 'activity_detail.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -22,6 +22,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
   List<Activity> list = [];
   List<ActivityCategory> categories = [];
+  List<Activity> filteredList = [];
 
   bool loading = true;
   int? selectedCategoryId;
@@ -42,7 +43,18 @@ class _ActivityPageState extends State<ActivityPage> {
         ? await repo.fetchActivity()
         : await repo.fetchActivity(categoryId: selectedCategoryId);
 
+    filteredList = List.from(list);
     setState(() => loading = false);
+  }
+
+  void onSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredList = List.from(list);
+      } else {
+        filteredList = list.where((p) => p.name.toLowerCase().contains(query.toLowerCase())).toList();
+      }
+    });
   }
 
   void onCategorySelect(int? id) {
@@ -53,7 +65,14 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Etkinlikler")),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: widget_search.SearchInput(
+          hintText: "Etlinlklerde ara...",
+          onChanged: onSearchChanged
+        ),
+      ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -65,7 +84,7 @@ class _ActivityPageState extends State<ActivityPage> {
                 ),
                 Expanded(
                   child: widget_list.ActivityList(
-                    list: list,
+                    list: filteredList,
                     baseUrl: baseUrl,
                     onTap: (item) {
                       Navigator.push(

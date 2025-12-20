@@ -23,7 +23,7 @@ class AppChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
             ? const Color.fromARGB(255, 216, 66, 66)
-            : const Color.fromARGB(255, 56, 101, 160),
+            : const Color.fromARGB(255, 27, 27, 27),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
