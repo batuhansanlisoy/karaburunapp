@@ -12,7 +12,10 @@ class ActivityDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final coverUrl =
-        activity.cover != null ? "$baseUrl${activity.cover!['url']}" : null;
+      activity.cover != null ? "$baseUrl${activity.cover!['url']}" : null;
+
+    final List<String> gallery =
+      activity.gallery?.cast<String>() ?? [];
 
     final timeline = activity.content?.timeline ?? [];
 
@@ -140,14 +143,7 @@ class ActivityDetailPage extends StatelessWidget {
                               }).toList(),
                             ),
 
-                            const Center(
-                              child: Text(
-                                "Galeri yakında 👀",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.textMuted),
-                              ),
-                            ),
+                            buildGalleryTab(gallery, scrollController),
                           ],
                         ),
                       ),
@@ -200,6 +196,64 @@ class ActivityDetailPage extends StatelessWidget {
       ),
     );
   }
+
+  static Widget buildGalleryTab(
+    List<String> gallery,
+    ScrollController controller,
+) {
+  if (gallery.isEmpty) {
+    return const Center(
+      child: Text(
+        "Galeri boş",
+        style: TextStyle(
+          fontSize: 16,
+          color: AppColors.textMuted,
+        ),
+      ),
+    );
+  }
+
+  return GridView.builder(
+    controller: controller,
+    padding: const EdgeInsets.all(16),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 3,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1,
+    ),
+    itemCount: gallery.length,
+    itemBuilder: (context, index) {
+      final imageUrl = "http://10.0.2.2:3000${gallery[index]}";
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: AppColors.cardBg,
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: AppColors.cardBg,
+              child: const Icon(
+                Icons.broken_image,
+                color: AppColors.textMuted,
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+}
 
   static Widget buildDayTab(
       List<Event> events, ScrollController controller) {
