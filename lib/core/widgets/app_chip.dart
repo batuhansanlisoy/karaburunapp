@@ -22,9 +22,15 @@ class AppChip extends StatelessWidget {
         margin: const EdgeInsets.only(right: 12, top: 10),
         decoration: BoxDecoration(
           color: isSelected
-            ? const Color.fromARGB(255, 216, 66, 66)
-            : const Color.fromARGB(255, 27, 27, 27),
+              ? Colors.deepOrange[600]
+              : Colors.blueGrey.shade900,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? Colors.deepOrange.shade400
+                : Colors.green.shade900,
+            width: 2,
+          ),
         ),
         child: Center(
           child: Text(title, style: const TextStyle(

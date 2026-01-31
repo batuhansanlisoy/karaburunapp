@@ -23,6 +23,7 @@ class _ActivityPageState extends State<ActivityPage> {
   List<Activity> list = [];
   List<ActivityCategory> categories = [];
   List<Activity> filteredList = [];
+  Map<int, ActivityCategory> categoryMap = {};
 
   bool loading = true;
   int? selectedCategoryId;
@@ -39,6 +40,11 @@ class _ActivityPageState extends State<ActivityPage> {
     setState(() => loading = true);
 
     categories = await categoryRepo.fetchCategories();
+
+    categoryMap = {
+      for (var category in categories) category.id: category,
+    };
+
     list = selectedCategoryId == null
         ? await repo.fetchActivity()
         : await repo.fetchActivity(categoryId: selectedCategoryId);
@@ -52,7 +58,11 @@ class _ActivityPageState extends State<ActivityPage> {
       if (query.isEmpty) {
         filteredList = List.from(list);
       } else {
-        filteredList = list.where((p) => p.name.toLowerCase().contains(query.toLowerCase())).toList();
+        filteredList = list
+            .where(
+              (p) => p.name.toLowerCase().contains(query.toLowerCase()),
+            )
+            .toList();
       }
     });
   }
@@ -65,40 +75,60 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: widget_search.SearchInput(
-          hintText: "Etlinlklerde ara...",
-          onChanged: onSearchChanged
-        ),
-      ),
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                widget_bar.ActivityCategoryBar(
-                  categories: categories,
-                  selectedCategoryId: selectedCategoryId,
-                  onSelect: onCategorySelect,
-                ),
-                Expanded(
-                  child: widget_list.ActivityList(
-                    list: filteredList,
-                    baseUrl: baseUrl,
-                    onTap: (item) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ActivityDetailPage(activity: item),
-                        ),
-                      );
-                    },
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverToBoxAdapter(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  color: Colors.grey[200],
+                  child: widget_bar.ActivityCategoryBar(
+                    categories: categories,
+                    selectedCategoryId: selectedCategoryId,
+                    onSelect: onCategorySelect,
                   ),
                 ),
-              ],
+              ),
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                elevation: 0,
+                floating: true,
+                snap: true,
+                toolbarHeight: 72,
+                titleSpacing: 0,
+                title: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: widget_search.SearchInput(
+                    hintText: "Etkinliklerde ara...",
+                    onChanged: onSearchChanged,
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: widget_list.ActivityList(
+              list: filteredList,
+              baseUrl: baseUrl,
+              categoryMap: categoryMap,
+              onTap: (item) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ActivityDetailPage(activity: item),
+                  ),
+                );
+              },
             ),
+          ),
+        ),
+      ),
     );
   }
 }

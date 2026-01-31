@@ -4,8 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:karaburun/core/navigation/api_routes.dart';
 
 class BeachService {
-  Future<List<Beach>> getBeach() async {
-    final url = Uri.parse("${ApiRoutes.beach}/list");
+  Future<List<Beach>> getBeach({ int? villageId }) async {
+
+    final Map<String, String> queryParams = {};
+
+    if (villageId != null) {
+      queryParams["village_id"] = villageId.toString();
+    }
+
+    final url = Uri.parse("${ApiRoutes.beach}/list")
+      .replace(queryParameters: queryParams);
 
     try {
       final response = await http.get(url);

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../data/models/beach_model.dart';
 import '../../data/repositories/beach_repository.dart';
 import '../widgets/beach_list.dart' as widget_list;
+import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
+import 'package:karaburun/features/village/data/models/village_model.dart';
+import 'package:karaburun/features/village/data/repositories/village_repository.dart' as village_repo;
+import '../widgets/village_bar.dart' as widget_bar;
 
 class BeachPage extends StatefulWidget {
   const BeachPage({super.key});
@@ -12,9 +17,15 @@ class BeachPage extends StatefulWidget {
 
 class _BeachPageState extends State<BeachPage> {
   final repo = BeachRepository();
+  final villageRepo = village_repo.VillageRepository();
+
   List<Beach> list = [];
+  List<Beach> filteredList = [];
+  List<Village> villages = [];
+  Map<int, Village> villageMap = {};
+
   bool loading = true;
-  String? error;
+  int? selectedVillageId;
 
   final String baseUrl = "http://10.0.2.2:3000";
 
@@ -24,53 +35,93 @@ class _BeachPageState extends State<BeachPage> {
     loadData();
   }
 
-  void loadData() async {
-    try {
-      list = await repo.fetchBeachs();
-    } catch (e) {
-      error = "Koy & Sahil verileri yüklenirken hata oluştu!";
-      debugPrint("Error fetching Beachs: $e");
-    } finally {
-      setState(() => loading = false);
-    }
+  Future<void> loadData() async {
+    setState(() => loading = true);
+
+    villages = await villageRepo.fetchVillages();
+
+    villageMap = {
+      for (var village in villages) village.id: village,
+    };
+
+    list = selectedVillageId == null
+        ? await repo.fetchBeachs()
+        : await repo.fetchBeachs(villageId: selectedVillageId);
+    
+    filteredList = List.from(list);
+
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void onSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredList = List.from(list);
+      } else {
+        filteredList = list
+            .where(
+              (p) => p.name.toLowerCase().contains(query.toLowerCase()),
+            )
+            .toList();
+      }
+    });
+  }
+
+  void onVillageSelect(int? id) {
+    selectedVillageId = id;
+    loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Plaj ve Koylar"),
-      ),
-      body: Builder(
-        builder: (_) {
-          if (loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (error != null) {
-            return Center(
-              child: Text(
-                error!,
-                style: const TextStyle(fontSize: 18, color: Colors.red),
-                textAlign: TextAlign.center,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverToBoxAdapter(
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  color: Colors.grey[200],
+                  child: widget_bar.VillageBar(
+                    villages: villages,
+                    selectedVillageId: selectedVillageId,
+                    onSelect: onVillageSelect,
+                  ),
+                ),
               ),
-            );
-          }
-
-          if (list.isEmpty) {
-            return const Center(
-              child: Text(
-                "Hiç Koy & Sahil bulunamadı.",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                scrolledUnderElevation: 0,
+                elevation: 0,
+                floating: true,
+                snap: true,
+                toolbarHeight: 72,
+                titleSpacing: 0,
+                title: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: widget_search.SearchInput(
+                    hintText: "Plaj & koylarda ara...",
+                    onChanged: onSearchChanged,
+                  ),
+                ),
               ),
-            );
-          }
-
-          return widget_list.BeachList(
-            list: list,
-            baseUrl: baseUrl,
-          );
-        },
+            ];
+          },
+          body: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: widget_list.BeachList(
+              list: filteredList,
+              baseUrl: baseUrl,
+              villageMap: villageMap,
+            ),
+          ),
+        ),
       ),
     );
   }

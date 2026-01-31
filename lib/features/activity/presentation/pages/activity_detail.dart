@@ -1,32 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:karaburun/core/helpers/date.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
+import 'package:karaburun/core/widgets/gallery_grid.dart';
+import 'package:karaburun/core/widgets/timeline_tab.dart';
 import '../../data/models/activity_model.dart';
+import '../../data/models/activity_beach_distance_model.dart';
+import '../../data/repositories/activity_beach_distance_repository.dart';
+import '../../data/models/activity_place_distance_model.dart';
+import '../../data/repositories/activity_place_distance_repository.dart';
 
-class ActivityDetailPage extends StatelessWidget {
+class ActivityDetailPage extends StatefulWidget {
   final Activity activity;
-  final String baseUrl = "http://10.0.2.2:3000";
-
   const ActivityDetailPage({super.key, required this.activity});
 
   @override
+  _ActivityDetailPageState createState() => _ActivityDetailPageState();
+}
+
+class _ActivityDetailPageState extends State<ActivityDetailPage> {
+  final ActivityBeachDistanceRepository _beachDistanceRepo = ActivityBeachDistanceRepository();
+  final ActivityPlaceDistanceRepository _placeRepository= ActivityPlaceDistanceRepository();
+
+  List<ActivityBeachDistanceModel> _nearBeaches = [];
+  List<ActivityPlaceDistanceModel> _nearPlaces = [];
+  bool _beachDistanceLoading = true;
+  bool _placeDistanceLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNearestBeaches();
+    _fetchNearestPlaces();
+  }
+
+  void _fetchNearestBeaches() async {
+    try {
+      final distances = await _beachDistanceRepo.fetchActivity(activityId: widget.activity.id);
+      setState(() {
+        _nearBeaches = distances;
+        _beachDistanceLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching beaches: $e");
+      setState(() {
+        _beachDistanceLoading = false;
+      });
+    }
+  }
+
+  void _fetchNearestPlaces() async {
+    try {
+        final distance = await _placeRepository.fetchNearestPlace(activityId: widget.activity.id);
+        setState(() {
+          _nearPlaces = distance;
+          _placeDistanceLoading = false;
+        });
+    } catch (e) {
+      setState(() {
+        _placeDistanceLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final coverUrl =
-      activity.cover != null ? "$baseUrl${activity.cover!['url']}" : null;
+    final coverUrl = widget.activity.cover != null
+        ? "http://10.0.2.2:3000${widget.activity.cover!['url']}"
+        : null;
 
-    final List<String> gallery =
-      activity.gallery?.cast<String>() ?? [];
-
-    final timeline = activity.content?.timeline ?? [];
-
-    final nearPlaces = [
-      {"name": "Mavi Kafe", "distance": "350m", "icon": Icons.local_cafe},
-      {"name": "Sahil Restoran", "distance": "500m", "icon": Icons.restaurant},
-      {"name": "Karaburun Camping", "distance": "900m", "icon": Icons.park},
-    ];
+    final List<String> gallery = widget.activity.gallery?.cast<String>() ?? [];
+    final timeline = widget.activity.content?.timeline ?? [];
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         backgroundColor: Colors.black,
         body: Stack(
@@ -37,19 +82,16 @@ class ActivityDetailPage extends StatelessWidget {
                 width: double.infinity,
                 child: Image.network(coverUrl, fit: BoxFit.cover),
               ),
-
             Container(
               height: MediaQuery.of(context).size.height * 0.35,
               color: AppColors.bgDark.withOpacity(0.45),
             ),
-
             SafeArea(
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-
             DraggableScrollableSheet(
               initialChildSize: 0.65,
               minChildSize: 0.65,
@@ -58,8 +100,7 @@ class ActivityDetailPage extends StatelessWidget {
                 return Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(28)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                   ),
                   child: Column(
                     children: [
@@ -72,11 +113,10 @@ class ActivityDetailPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          activity.name,
+                          widget.activity.name,
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -84,66 +124,27 @@ class ActivityDetailPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 12),
-
                       const TabBar(
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.center,
                         labelColor: AppColors.primary,
                         indicatorColor: AppColors.primary,
                         unselectedLabelColor: AppColors.textMuted,
                         tabs: [
                           Tab(text: "Etkinlik Takvimi"),
-                          Tab(text: "Mekanlar"),
+                          Tab(text: "Koylar"),
+                          Tab(text: "Turistik"),
                           Tab(text: "Galeri"),
                         ],
                       ),
-
                       Expanded(
                         child: TabBarView(
                           children: [
-                            buildTimelineTab(timeline, scrollController),
-
-                            ListView(
-                              controller: scrollController,
-                              padding: const EdgeInsets.all(16),
-                              children: nearPlaces.map((place) {
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.cardBg,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                        color: AppColors.divider),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(place["icon"] as IconData,
-                                          color: AppColors.primary),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Text(
-                                          place["name"].toString(),
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.textMain,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        place["distance"].toString(),
-                                        style: const TextStyle(
-                                            color: AppColors.textMuted),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-
-                            buildGalleryTab(gallery, scrollController),
+                            TimelineTab(timeline: timeline, controller: scrollController),
+                            buildBeachesTab(_nearBeaches, _beachDistanceLoading, scrollController),
+                            buildPlacesTab(_nearPlaces, _placeDistanceLoading, scrollController),
+                            GalleryGrid(images: gallery, controller: scrollController),
                           ],
                         ),
                       ),
@@ -157,151 +158,105 @@ class ActivityDetailPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  static Widget buildTimelineTab(
-      List timeline, ScrollController controller) {
-    return DefaultTabController(
-      length: timeline.length,
-      child: Column(
-        children: [
-          TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.center,
-            indicator: const BoxDecoration(),
-            dividerHeight: 0,
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.textMuted,
-            tabs: timeline
-                .map<Widget>(
-                  (day) => Tab(
-                    child: Text(
-                      DateHelper.formatToDayMonthYear(day.date),
-                      style:
-                          const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: timeline
-                  .map<Widget>(
-                    (day) => buildDayTab(day.events, controller),
-                  )
-                  .toList(),
-            ),
-          ),
-        ],
-      ),
-    );
+Widget buildBeachesTab(List<ActivityBeachDistanceModel> beaches, bool loading, ScrollController controller) {
+  if (loading) {
+    return const Center(child: CircularProgressIndicator());
   }
 
-  static Widget buildGalleryTab(
-    List<String> gallery,
-    ScrollController controller,
-) {
-  if (gallery.isEmpty) {
-    return const Center(
-      child: Text(
-        "Galeri boş",
-        style: TextStyle(
-          fontSize: 16,
-          color: AppColors.textMuted,
-        ),
-      ),
-    );
-  }
-
-  return GridView.builder(
+  return ListView.builder(
     controller: controller,
-    padding: const EdgeInsets.all(16),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1,
-    ),
-    itemCount: gallery.length,
+    itemCount: beaches.isEmpty ? 1 : beaches.length,
     itemBuilder: (context, index) {
-      final imageUrl = "http://10.0.2.2:3000${gallery[index]}";
+      if (beaches.isEmpty) {
+        // Boş listede tek bir placeholder
+        return Container(
+          height: 100, // scroll için biraz yükseklik veriyoruz
+          alignment: Alignment.center,
+          child: const Text("Mekan bulunamadı"),
+        );
+      }
 
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Container(
-              color: AppColors.cardBg,
-              child: const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
+      final beach = beaches[index];
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: AppColors.cardBg
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.beach_access, color: AppColors.iconGreen),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                "Beach ID: ${beach.beachId}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textMain,
+                ),
               ),
-            );
-          },
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: AppColors.cardBg,
-              child: const Icon(
-                Icons.broken_image,
-                color: AppColors.textMuted,
-              ),
-            );
-          },
+            ),
+            Text(
+              "${beach.distanceMeter.toStringAsFixed(0)} m",
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ],
         ),
       );
     },
   );
 }
 
-  static Widget buildDayTab(
-      List<Event> events, ScrollController controller) {
-    return ListView(
-      controller: controller,
-      padding: const EdgeInsets.all(16),
-      children: events.map((item) {
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.cardBg,
-            borderRadius: BorderRadius.circular(16)
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  item.time,
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textMain,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    );
+
+Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, ScrollController controller) {
+  if (loading) {
+    return const Center(child: CircularProgressIndicator());
   }
+
+  return ListView.builder(
+    controller: controller,
+    itemCount: places.isEmpty ? 1 : places.length, // boşsa tek bir placeholder
+    itemBuilder: (context, index) {
+      if (places.isEmpty) {
+        return Container(
+          height: 100, // scroll için yeterli yükseklik
+          alignment: Alignment.center,
+          child: const Text("Mekan bulunamadı"),
+        );
+      }
+
+      final place = places[index];
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: AppColors.cardBg,
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.travel_explore_rounded, color: AppColors.iconSoftOrange),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                "Place ID: ${place.placeId}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textMain,
+                ),
+              ),
+            ),
+            Text(
+              "${place.distanceMeter.toStringAsFixed(0)} m",
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
+
