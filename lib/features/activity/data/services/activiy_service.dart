@@ -9,11 +9,11 @@ class ActivityService {
         final Map<String, String> queryParams = {};
 
         if (villageId != null) {
-            queryParams["village_id"] = villageId.toString();
+          queryParams["village_id"] = villageId.toString();
         }
 
         if (categoryId != null) {
-            queryParams["category_id"] = categoryId.toString();
+          queryParams["category_id"] = categoryId.toString();
         }
 
         final url = Uri.parse("${ApiRoutes.activity}/list")

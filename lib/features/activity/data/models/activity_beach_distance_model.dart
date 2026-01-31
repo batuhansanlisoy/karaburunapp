@@ -1,4 +1,4 @@
-class ActivityBeachDistance {
+class ActivityBeachDistanceModel {
   final int id;
   final int activityId;
   final int beachId;
@@ -6,7 +6,7 @@ class ActivityBeachDistance {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  ActivityBeachDistance({
+  ActivityBeachDistanceModel({
     required this.id,
     required this.activityId,
     required this.beachId,
@@ -16,8 +16,8 @@ class ActivityBeachDistance {
   });
 
   // JSON'dan model nesnesi oluşturma
-  factory ActivityBeachDistance.fromJson(Map<String, dynamic> json) {
-    return ActivityBeachDistance(
+  factory ActivityBeachDistanceModel.fromJson(Map<String, dynamic> json) {
+    return ActivityBeachDistanceModel(
       id: json['id'] as int,
       activityId: json['activity_id'] as int,
       beachId: json['beach_id'] as int,

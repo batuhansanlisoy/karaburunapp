@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class Activity {
   final int id;
+  final int categoryId;
   final int villageId;
   final String name;
   final Content? content; // <-- Burayı Map yerine Content objesi yaptık
@@ -10,11 +11,14 @@ class Activity {
   final String address;
   final double? latitude;
   final double? longitude;
+  final DateTime begin;
+  final DateTime end;
   final DateTime createdAt;
   final DateTime updatedAt;
 
   Activity({
     required this.id,
+    required this.categoryId,
     required this.villageId,
     required this.name,
     required this.content,
@@ -23,6 +27,8 @@ class Activity {
     required this.address,
     required this.latitude,
     required this.longitude,
+    required this.begin,
+    required this.end,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -54,6 +60,7 @@ class Activity {
 
     return Activity(
       id: json['id'],
+      categoryId: json['category_id'],
       villageId: json['village_id'],
       name: json['name'],
       content: content,
@@ -66,6 +73,8 @@ class Activity {
       longitude: json['longitude'] == null
           ? null
           : double.tryParse(json['longitude'].toString()),
+      begin: DateTime.parse(json['begin']),
+      end: DateTime.parse(json['end']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

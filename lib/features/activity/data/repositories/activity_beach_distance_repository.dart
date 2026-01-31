@@ -4,7 +4,7 @@ import '../services/activity_beach_distance_service.dart';
 class ActivityBeachDistanceRepository {
     final ActivityBeachDistanceService _service = ActivityBeachDistanceService();
 
-    Future<List<ActivityBeachDistance>> fetchActivity({
+    Future<List<ActivityBeachDistanceModel>> fetchActivity({
       required int activityId,
     }) {
         return _service.getNearestBeaches(

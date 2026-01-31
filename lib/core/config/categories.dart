@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/food/presentation/pages/food_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
 
@@ -18,7 +19,7 @@ final List<Map<String, dynamic>> categories = [
     {
         "icon": Icons.landscape_outlined,
         "title": "Turistik",
-        "color": const Color(0xFFFFB74D),
+        "color": AppColors.iconSoftOrange,
         "pageIndex": 2
     },
     {
@@ -30,7 +31,7 @@ final List<Map<String, dynamic>> categories = [
     {
         "icon": Icons.beach_access,
         "title": "Koy & Plaj",
-        "color": const Color(0xFF4DB6AC),
+        "color": AppColors.iconGreen,
         "builder": (context) => const BeachPage(),
         "pageIndex": 4
     },

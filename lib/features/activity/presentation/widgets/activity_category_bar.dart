@@ -22,9 +22,8 @@ class ActivityCategoryBar extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        itemCount: categories.length + 1, // 🔥 Hepsi
+        itemCount: categories.length + 1,
         itemBuilder: (_, i) {
-          // 🔥 HEPSİ
           if (i == 0) {
             final isSelected = selectedCategoryId == null;
             return AppChip(

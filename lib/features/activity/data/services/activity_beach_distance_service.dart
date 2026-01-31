@@ -4,7 +4,7 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import '../models/activity_beach_distance_model.dart';
 
 class ActivityBeachDistanceService {
-  Future<List<ActivityBeachDistance>> getNearestBeaches({ required int activityId}) async {
+  Future<List<ActivityBeachDistanceModel>> getNearestBeaches({ required int activityId}) async {
     final url = Uri.parse("${ApiRoutes.activity}/$activityId/nearest-beaches");
 
     try {
@@ -15,7 +15,7 @@ class ActivityBeachDistanceService {
         final List distances = data['distances'] ?? [];
 
         return distances
-            .map((e) => ActivityBeachDistance.fromJson(e))
+            .map((e) => ActivityBeachDistanceModel.fromJson(e))
             .toList();
       } else {
         throw Exception("Server error: ${response.statusCode}");
