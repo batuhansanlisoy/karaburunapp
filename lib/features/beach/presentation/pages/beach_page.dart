@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/features/beach/presentation/pages/beach_detail.dart';
 
 import '../../data/models/beach_model.dart';
 import '../../data/repositories/beach_repository.dart';
@@ -45,8 +46,8 @@ class _BeachPageState extends State<BeachPage> {
     };
 
     list = selectedVillageId == null
-        ? await repo.fetchBeachs()
-        : await repo.fetchBeachs(villageId: selectedVillageId);
+      ? await repo.fetchBeachs()
+      : await repo.fetchBeachs(villageId: selectedVillageId);
     
     filteredList = List.from(list);
 
@@ -60,11 +61,7 @@ class _BeachPageState extends State<BeachPage> {
       if (query.isEmpty) {
         filteredList = List.from(list);
       } else {
-        filteredList = list
-            .where(
-              (p) => p.name.toLowerCase().contains(query.toLowerCase()),
-            )
-            .toList();
+        filteredList = list.where((p) => p.name.toLowerCase().contains(query.toLowerCase())).toList();
       }
     });
   }
@@ -119,6 +116,14 @@ class _BeachPageState extends State<BeachPage> {
               list: filteredList,
               baseUrl: baseUrl,
               villageMap: villageMap,
+              onTap: (item) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BeachDetail(beach: item),
+                  ),
+                );
+              },
             ),
           ),
         ),

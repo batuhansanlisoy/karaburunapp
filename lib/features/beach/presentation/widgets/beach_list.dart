@@ -7,12 +7,14 @@ class BeachList extends StatelessWidget {
   final List<Beach> list;
   final String baseUrl;
   final Map<int, Village> villageMap;
+  final Function(Beach) onTap;
 
   const BeachList({
     super.key,
     required this.list,
     required this.baseUrl,
-    required this.villageMap
+    required this.villageMap,
+    required this.onTap
   });
 
  @override
@@ -29,6 +31,7 @@ class BeachList extends StatelessWidget {
           address: item.address,
           imageUrl: item.cover != null ? "$baseUrl${item.cover!['url']}" : null,
           villageName: village?.name,
+          onTap: () => onTap(item)
         );
       },
     );

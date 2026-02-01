@@ -21,5 +21,6 @@ class AppColors {
   static const Color iconOrange = Colors.deepOrangeAccent;
   static const Color iconSoftOrange = Color.fromARGB(226, 243, 145, 79);
   static const Color iconGreen = Color(0xFF4DB6AC);
+  static const Color iconPurple =Color(0xFFBA68C8);
 
 }

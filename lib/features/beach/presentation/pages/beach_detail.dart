@@ -1,58 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
-import 'package:karaburun/core/widgets/timeline_tab.dart';
-import '../../data/models/activity_model.dart';
-import '../../data/models/activity_beach_distance_model.dart';
-import '../../data/repositories/activity_beach_distance_repository.dart';
-import '../../data/models/activity_place_distance_model.dart';
-import '../../data/repositories/activity_place_distance_repository.dart';
+import '../../data/models/beach_model.dart';
 
-class ActivityDetailPage extends StatefulWidget {
-  final Activity activity;
-  const ActivityDetailPage({super.key, required this.activity});
+import '../../data/models/beach_activity_distance_model.dart';
+import '../../data/repositories/beach_activity_distance_repository.dart';
+
+import '../../data/models/beach_place_distance_model.dart';
+import '../../data/repositories/beach_place_distance_repository.dart';
+
+class BeachDetail extends StatefulWidget {
+  final Beach beach;
+  const BeachDetail({super.key, required this.beach});
 
   @override
-  _ActivityDetailPageState createState() => _ActivityDetailPageState();
+  _BeachDetailState createState() => _BeachDetailState();
 }
 
-class _ActivityDetailPageState extends State<ActivityDetailPage> {
-  final ActivityBeachDistanceRepository _beachDistanceRepo = ActivityBeachDistanceRepository();
-  final ActivityPlaceDistanceRepository _placeRepository= ActivityPlaceDistanceRepository();
+class _BeachDetailState extends State<BeachDetail> {
+  final BeachActivityDistanceRepository _activityDistanceRepo = BeachActivityDistanceRepository();
+  final BeachPlaceDistanceRepository _placeDistanceRepo = BeachPlaceDistanceRepository();  
 
-  List<ActivityBeachDistanceModel> _nearBeaches = [];
-  List<ActivityPlaceDistanceModel> _nearPlaces = [];
-  bool _beachDistanceLoading = true;
+  List<BeachActivityDistanceModel> _nearActivities = [];
+  List<BeachPlaceDistanceModel> _nearPlaces = [];
+
+  bool _activityDistanceLoading = true;
   bool _placeDistanceLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchNearestBeaches();
+    _fetchNearestActivities();
     _fetchNearestPlaces();
   }
 
-  void _fetchNearestBeaches() async {
+  void _fetchNearestActivities() async {
     try {
-      final distances = await _beachDistanceRepo.fetchActivity(activityId: widget.activity.id);
+      final distances = await _activityDistanceRepo.fetchNearestActivities(beachId: widget.beach.id);
       setState(() {
-        _nearBeaches = distances;
-        _beachDistanceLoading = false;
+        _nearActivities = distances;
+        _activityDistanceLoading = false;
       });
     } catch (e) {
       setState(() {
-        _beachDistanceLoading = false;
+        _activityDistanceLoading = false;
       });
     }
   }
 
   void _fetchNearestPlaces() async {
     try {
-        final distance = await _placeRepository.fetchNearestPlace(activityId: widget.activity.id);
-        setState(() {
-          _nearPlaces = distance;
-          _placeDistanceLoading = false;
-        });
+      final distances = await _placeDistanceRepo.fetchNearestPlaces(beachId: widget.beach.id);
+      setState(() {
+        _nearPlaces = distances;
+        _placeDistanceLoading = false;
+      });
     } catch (e) {
       setState(() {
         _placeDistanceLoading = false;
@@ -62,15 +64,14 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final coverUrl = widget.activity.cover != null
-        ? "http://10.0.2.2:3000${widget.activity.cover!['url']}"
+    final coverUrl = widget.beach.cover != null
+        ? "http://10.0.2.2:3000${widget.beach.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.activity.gallery?.cast<String>() ?? [];
-    final timeline = widget.activity.content?.timeline ?? [];
+    final List<String> gallery = widget.beach.gallery?.cast<String>() ?? [];
 
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         backgroundColor: Colors.black,
         body: Stack(
@@ -115,7 +116,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.activity.name,
+                          widget.beach.name,
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -131,8 +132,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                         indicatorColor: AppColors.primary,
                         unselectedLabelColor: AppColors.textMuted,
                         tabs: [
-                          Tab(text: "Etkinlik Takvimi"),
-                          Tab(text: "Koylar"),
+                          Tab(text: "Etkinlik"),
                           Tab(text: "Turistik"),
                           Tab(text: "Galeri"),
                         ],
@@ -140,9 +140,8 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                       Expanded(
                         child: TabBarView(
                           children: [
-                            TimelineTab(timeline: timeline, controller: scrollController),
-                            buildBeachesTab(_nearBeaches, _beachDistanceLoading, scrollController),
-                            buildPlacesTab(_nearPlaces, _placeDistanceLoading, scrollController),
+                            buildActivityTab(_nearActivities, _activityDistanceLoading, scrollController),
+                            buildPlaceTab(_nearPlaces, _placeDistanceLoading, scrollController),
                             GalleryGrid(images: gallery, controller: scrollController),
                           ],
                         ),
@@ -159,75 +158,24 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
   }
 }
 
-Widget buildBeachesTab(List<ActivityBeachDistanceModel> beaches, bool loading, ScrollController controller) {
+Widget buildActivityTab(List<BeachActivityDistanceModel> activities, bool loading, ScrollController controller) {
   if (loading) {
     return const Center(child: CircularProgressIndicator());
   }
 
   return ListView.builder(
     controller: controller,
-    itemCount: beaches.isEmpty ? 1 : beaches.length,
+    itemCount: activities.isEmpty ? 1 : activities.length,
     itemBuilder: (context, index) {
-      if (beaches.isEmpty) {
-        // Boş listede tek bir placeholder
+      if (activities.isEmpty) {
         return Container(
-          height: 100, // scroll için biraz yükseklik veriyoruz
+          height: 100,
           alignment: Alignment.center,
           child: const Text("Mekan bulunamadı"),
         );
       }
 
-      final beach = beaches[index];
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: AppColors.cardBg
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.beach_access, color: AppColors.iconGreen),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                "Beach ID: ${beach.beachId}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textMain,
-                ),
-              ),
-            ),
-            Text(
-              "${beach.distanceMeter.toStringAsFixed(0)} m",
-              style: const TextStyle(color: AppColors.textMuted),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-
-Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, ScrollController controller) {
-  if (loading) {
-    return const Center(child: CircularProgressIndicator());
-  }
-
-  return ListView.builder(
-    controller: controller,
-    itemCount: places.isEmpty ? 1 : places.length, // boşsa tek bir placeholder
-    itemBuilder: (context, index) {
-      if (places.isEmpty) {
-        return Container(
-          height: 100, // scroll için yeterli yükseklik
-          alignment: Alignment.center,
-          child: const Text("Mekan bulunamadı"),
-        );
-      }
-
-      final place = places[index];
+      final item = activities[index]; // İsim çakışması düzeltildi
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
@@ -236,11 +184,11 @@ Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, Scr
         ),
         child: Row(
           children: [
-            const Icon(Icons.travel_explore_rounded, color: AppColors.iconSoftOrange),
+            const Icon(Icons.celebration, color: AppColors.iconPurple),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                "Place ID: ${place.placeId}",
+                "Activity ID: ${item.activityId}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -249,7 +197,7 @@ Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, Scr
               ),
             ),
             Text(
-              "${place.distanceMeter.toStringAsFixed(0)} m",
+              "${item.distanceMeter.toStringAsFixed(0)} m",
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ],
@@ -259,3 +207,51 @@ Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, Scr
   );
 }
 
+Widget buildPlaceTab(List<BeachPlaceDistanceModel> places, bool loading, ScrollController controller) {
+  if (loading) {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  return ListView.builder(
+    controller: controller,
+    itemCount: places.isEmpty ? 1 : places.length,
+    itemBuilder: (context, index) {
+      if (places.isEmpty) {
+        return Container(
+          height: 100,
+          alignment: Alignment.center,
+          child: const Text("Mekan bulunamadı"),
+        );
+      }
+
+      final item = places[index];
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: AppColors.cardBg,
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.celebration, color: AppColors.iconPurple),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                "Place ID: ${item.placeId}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textMain,
+                ),
+              ),
+            ),
+            Text(
+              "${item.distanceMeter.toStringAsFixed(0)} m",
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}

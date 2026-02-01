@@ -25,7 +25,7 @@ final List<Map<String, dynamic>> categories = [
     {
         "icon": Icons.celebration,
         "title": "Etkinlik",
-        "color": const Color(0xFFBA68C8),
+        "color": AppColors.iconPurple,
         "pageIndex": 3
     },
     {
