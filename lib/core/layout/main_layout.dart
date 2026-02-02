@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
-import 'package:karaburun/features/village/presentation/pages/village_page.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
-import 'package:karaburun/features/food/presentation/pages/food_page.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
@@ -18,46 +15,51 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  int? _selectedCategoryId; // Seçilen kategori ID'sini burada saklıyoruz
 
-  late final List<Widget> _pages;
+  // HomePage'den bir kategoriye tıklandığında çalışan fonksiyon
+  void _onPageChange(int index, {int? categoryId}) {
+    setState(() {
+      _currentIndex = index;
+      _selectedCategoryId = categoryId; // ID bilgisini kaydediyoruz
+    });
+  }
 
-  @override
-  void initState() {
-    super.initState();
-
-    _pages = [
-      HomePage(
-        onPageChange: (index) {
-          setState(() => _currentIndex = index);
-        },
-      ),
-      const FoodPage(),
-      const PlacePage(),
-      const ActivityPage(),
-      const BeachPage(),
-      const VillagePage(),
-      const OrganizationPage(),
-    ];
+  // Alt menüden tıklandığında çalışan fonksiyon
+  void _onTabChange(int index) {
+    setState(() {
+      _currentIndex = index;
+      // Eğer doğrudan "İşletmeler" tabına basılırsa filtreyi temizlemek isteyebilirsin:
+      if (index == 1) _selectedCategoryId = null; 
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Sayfaları her build anında güncel ID ile oluşturuyoruz
+    final List<Widget> pages = [
+      HomePage(onPageChange: _onPageChange),
+      OrganizationPage(categoryId: _selectedCategoryId), // ID buraya paslanıyor
+      const PlacePage(),
+      const ActivityPage(),
+      const BeachPage(),
+    ];
+
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
+      extendBody: true,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(100),
         child: _MainAppBar(),
       ),
-      body: _pages[_currentIndex],
+      body: IndexedStack( // currentIndex'e göre sayfayı gösterir
+        index: _currentIndex,
+        children: pages,
+      ),
       bottomNavigationBar: MainBottomNav(
         currentIndex: _currentIndex,
         onTap: _onTabChange,
       ),
     );
-  }
-
-  void _onTabChange(int index) {
-    setState(() => _currentIndex = index);
   }
 }
 
@@ -67,17 +69,21 @@ class _MainAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 56, 101, 160),
+        color: Theme.of(context).appBarTheme.backgroundColor,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24), // Sol alt yuvarlak
+          bottomRight: Radius.circular(24), // Sağ alt yuvarlak
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4), // Aşağı doğru hafif gölge
           ),
         ],
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: const SafeArea(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,24 +102,23 @@ class _Logo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final baseStyle = Theme.of(context).textTheme.titleLarge;
+
     return RichText(
-      text: const TextSpan(
+      text: TextSpan(
+        style: baseStyle?.copyWith(
+          fontSize: 22,
+          color: const Color.fromARGB(221, 255, 255, 255),
+          letterSpacing: -0.5), 
         children: [
-          TextSpan(
+          const TextSpan(
             text: "Karaburun",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
           ),
           TextSpan(
             text: "GO",
             style: TextStyle(
-              color: Color.fromARGB(255, 216, 66, 66),
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -1,
+              color: Theme.of(context).colorScheme.secondary, 
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],

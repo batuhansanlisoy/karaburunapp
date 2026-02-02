@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/core/layout/main_layout.dart';
+import 'package:karaburun/core/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 🌟 önemli
@@ -18,9 +19,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainLayout(),
+      theme: AppTheme.lightTheme,
+      home: const MainLayout(),
     );
   }
 }
