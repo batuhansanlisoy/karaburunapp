@@ -1,0 +1,12 @@
+proje genelinde material Symbol kullanıyorum iconla karıştırma 
+import 'package:material_symbols_icons/symbols.dart'; bunu import etmen lazım
+Icon(Symbols.home, color: color, size: 36, fill: 1.0, weight: 900), şeklinde kullanılıyor 
+
+
+icon için birde normal standart var o diret Icons.bilmem ne diyerek kulllanılıyor artık bunu kullanmayacaksın
+
+backendde extra kolonu için {"icon":"e53a","icon_color":"#528b8b"} şu şekilde eklenecek iconlar 
+https://fonts.google.com/icons?icon.set=Material+Symbols&icon.size=24&icon.color=%23e3e3e3
+burdan alınacak sağdaki menu de Code point diye bir yer var aşağılara doğru ordaki kodu alıp kaydetmek lazım
+
+*****
