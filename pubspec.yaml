@@ -12,6 +12,7 @@ dependencies:
   material_symbols_icons: ^4.2874.0
   http: ^1.1.0
   flutter_dotenv: ^5.1.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
