@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/services/ad_manager.dart'; // 🌟 Import eklendi
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
@@ -15,31 +16,44 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
-  int? _selectedCategoryId; // Seçilen kategori ID'sini burada saklıyoruz
+  int? _selectedCategoryId;
+  int _clickCount = 0; // 📊 Reklam sıklığını kontrol etmek için sayaç
+
+  // Reklamı belirli aralıklarla tetikleyen yardımcı fonksiyon
+  void _checkAndShowAd() {
+    _clickCount++;
+    // Her 3 tıklamada bir reklam gösterir (Sayıyı değiştirebilirsin)
+    if (_clickCount % 3 == 0) {
+      AdManager.instance.showAd();
+    }
+  }
 
   // HomePage'den bir kategoriye tıklandığında çalışan fonksiyon
   void _onPageChange(int index, {int? categoryId}) {
+    _checkAndShowAd(); // 🌟 Kategoriye tıklayınca reklam kontrolü
     setState(() {
       _currentIndex = index;
-      _selectedCategoryId = categoryId; // ID bilgisini kaydediyoruz
+      _selectedCategoryId = categoryId;
     });
   }
 
   // Alt menüden tıklandığında çalışan fonksiyon
   void _onTabChange(int index) {
+    if (_currentIndex != index) {
+      _checkAndShowAd(); // 🌟 Sekme değiştirince reklam kontrolü
+    }
+    
     setState(() {
       _currentIndex = index;
-      // Eğer doğrudan "İşletmeler" tabına basılırsa filtreyi temizlemek isteyebilirsin:
       if (index == 1) _selectedCategoryId = null; 
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Sayfaları her build anında güncel ID ile oluşturuyoruz
     final List<Widget> pages = [
       HomePage(onPageChange: _onPageChange),
-      OrganizationPage(categoryId: _selectedCategoryId), // ID buraya paslanıyor
+      OrganizationPage(categoryId: _selectedCategoryId),
       const PlacePage(),
       const ActivityPage(),
       const BeachPage(),
@@ -51,7 +65,7 @@ class _MainLayoutState extends State<MainLayout> {
         preferredSize: Size.fromHeight(100),
         child: _MainAppBar(),
       ),
-      body: IndexedStack( // currentIndex'e göre sayfayı gösterir
+      body: IndexedStack(
         index: _currentIndex,
         children: pages,
       ),
@@ -63,6 +77,8 @@ class _MainLayoutState extends State<MainLayout> {
   }
 }
 
+// --- Alt Bileşenler (Değişmedi ama yapı bozulmasın diye ekledim) ---
+
 class _MainAppBar extends StatelessWidget {
   const _MainAppBar();
 
@@ -72,14 +88,14 @@ class _MainAppBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24), // Sol alt yuvarlak
-          bottomRight: Radius.circular(24), // Sağ alt yuvarlak
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4), // Aşağı doğru hafif gölge
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -103,21 +119,18 @@ class _Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseStyle = Theme.of(context).textTheme.titleLarge;
-
     return RichText(
       text: TextSpan(
         style: baseStyle?.copyWith(
-          fontSize: 22,
-          color: const Color.fromARGB(221, 255, 255, 255),
-          letterSpacing: -0.5), 
+            fontSize: 22,
+            color: const Color.fromARGB(221, 255, 255, 255),
+            letterSpacing: -0.5),
         children: [
-          const TextSpan(
-            text: "Karaburun",
-          ),
+          const TextSpan(text: "Karaburun"),
           TextSpan(
             text: "GO",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary, 
+              color: Theme.of(context).colorScheme.secondary,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -134,9 +147,7 @@ class _ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return const CircleAvatar(
       radius: 22,
-      backgroundImage: NetworkImage(
-        "https://i.pravatar.cc/300",
-      ),
+      backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
     );
   }
 }
