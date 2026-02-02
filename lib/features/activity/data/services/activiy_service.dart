@@ -17,7 +17,7 @@ class ActivityService {
         }
 
         final url = Uri.parse("${ApiRoutes.activity}/list")
-        .replace(queryParameters: queryParams);
+          .replace(queryParameters: queryParams);
 
         try {
             final response = await http.get(url);

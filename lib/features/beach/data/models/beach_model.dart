@@ -46,8 +46,8 @@ class Beach {
         }
 
         final galleryList = json['gallery'] != null
-        ? List<String>.from(json['gallery'])
-        : null;
+          ? List<String>.from(json['gallery'])
+          : null;
 
         return Beach(
           id: json['id'],
