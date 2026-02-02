@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-class Organization {
+class OrganizationModel {
   final int id;
   final int categoryId;
   final String name;
   final String email;
   final String phone;
-  final String? content; // backend string ya da null
+  final Map<String, dynamic>? content;
   final String? website;
   final Map<String, dynamic>? cover;
-  final String? gallery; // backend string ya da null
+  final List<String> ? gallery;
   final String address;
   final double? latitude;
   final double? longitude;
@@ -17,7 +17,7 @@ class Organization {
   final DateTime updatedAt;
   final String categoryName;
 
-  Organization({
+  OrganizationModel({
     required this.id,
     required this.categoryId,
     required this.name,
@@ -35,11 +35,11 @@ class Organization {
     required this.categoryName,
   });
 
-
-  factory Organization.fromJson(Map<String, dynamic> json) {
-    // content ve gallery null ise null bırakıyoruz, değilse string olarak alıyoruz
-    final contentString = json['content'] !=null ? json['content'].toString() : null;
-    final galleryString = json['gallery'] !=null ? json['gallery'].toString() : null;
+  factory OrganizationModel.fromJson(Map<String, dynamic> json) {
+    
+    final contentMap = json['content'] != null
+      ? Map<String, dynamic>.from(json['content'])
+      : null;
 
     Map<String, dynamic>? coverMap;
     if (json['cover'] != null) {
@@ -53,16 +53,20 @@ class Organization {
       }
     }
 
-    return Organization(
+    final galleryList = json['gallery'] != null
+      ? List<String>.from(json['gallery'])
+      : null;
+
+    return OrganizationModel(
       id: json['id'],
       categoryId: json['category_id'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
-      content: contentString,
+      content: contentMap,
       website: json['website'],
       cover: coverMap,
-      gallery: galleryString,
+      gallery: galleryList,
       address: json['address'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,

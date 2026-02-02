@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../data/models/organization_model.dart';
 import '../../data/repositories/organization_repository.dart';
+import '../widgets/organization_list.dart' as widget_list;
+import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
 
 class OrganizationPage extends StatefulWidget {
-  const OrganizationPage({super.key});
+  final int? categoryId;
+
+  const OrganizationPage({super.key, this.categoryId});
 
   @override
   State<OrganizationPage> createState() => _OrganizationPageState();
@@ -11,9 +15,13 @@ class OrganizationPage extends StatefulWidget {
 
 class _OrganizationPageState extends State<OrganizationPage> {
   final repo = OrganizationRepository();
-  List<Organization> list = [];
+
+  List<OrganizationModel> list = [];
+  List<OrganizationModel> filteredList = [];
   bool loading = true;
-  String? error;
+
+  // Backend URL - Emulator için 10.0.2.2 kullanmaya devam
+  final String baseUrl = "http://10.0.2.2:3000";
 
   @override
   void initState() {
@@ -21,72 +29,81 @@ class _OrganizationPageState extends State<OrganizationPage> {
     loadData();
   }
 
-  void loadData() async {
+  Future<void> loadData() async {
+    if (!mounted) return;
+    setState(() => loading = true);
+
     try {
-      list = await repo.fetchOrganizations();
+      list = await repo.fetchOrganizations(categoryId: widget.categoryId);
+      filteredList = List.from(list);
     } catch (e) {
-      error = "Organizasyonlar yüklenirken hata oluştu!";
-      debugPrint("Error fetching organizations: $e");
+      debugPrint("Veri çekme hatası: $e");
     } finally {
-      setState(() {
-        loading = false;
-      });
+      if (mounted) {
+        setState(() => loading = false);
+      }
     }
   }
 
+  void onSearchChanged(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredList = List.from(list);
+      } else {
+        filteredList = list
+            .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant OrganizationPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Eğer MainLayout'tan gelen categoryId değişmişse, verileri tekrar çek
+    if (oldWidget.categoryId != widget.categoryId) {
+      loadData();
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (error != null) {
-      return Center(
-        child: Text(
-          error!,
-          style: const TextStyle(fontSize: 18, color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-
-    if (list.isEmpty) {
-      return const Center(
-        child: Text(
-          "Hiç organizasyon bulunamadı.",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            "Organization",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-
-        Expanded(
-          child: ListView.builder(
-            itemCount: list.length,
-            itemBuilder: (_, i) {
-              final o = list[i];
-              return ListTile(
-                title: Text(o.name),
-                subtitle: Text(o.categoryName),
-                trailing: Text(o.phone),
-              );
-            },
-          ),
-        ),
-      ],
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: loading
+            ? const Center(child: CircularProgressIndicator())
+            : NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      surfaceTintColor: Colors.transparent,
+                      scrolledUnderElevation: 0,
+                      elevation: 0,
+                      floating: true,
+                      snap: true,
+                      toolbarHeight: 72,
+                      titleSpacing: 0,
+                      title: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        child: widget_search.SearchInput(
+                          hintText: "İşletme Ara...",
+                          onChanged: onSearchChanged,
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: widget_list.OrganizationList(
+                    list: filteredList,
+                    baseUrl: baseUrl,
+                  ),
+                ),
+              ),
+      ),
     );
   }
 }
