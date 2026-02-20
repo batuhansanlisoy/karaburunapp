@@ -28,8 +28,6 @@ class _ActivityPageState extends State<ActivityPage> {
   bool loading = true;
   int? selectedCategoryId;
 
-  final String baseUrl = "http://10.0.2.2:3000";
-
   @override
   void initState() {
     super.initState();
@@ -115,7 +113,6 @@ class _ActivityPageState extends State<ActivityPage> {
             padding: const EdgeInsets.only(top: 12),
             child: widget_list.ActivityList(
               list: filteredList,
-              baseUrl: baseUrl,
               categoryMap: categoryMap,
               onTap: (item) {
                 Navigator.push(

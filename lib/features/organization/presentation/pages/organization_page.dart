@@ -20,9 +20,6 @@ class _OrganizationPageState extends State<OrganizationPage> {
   List<OrganizationModel> filteredList = [];
   bool loading = true;
 
-  // Backend URL - Emulator için 10.0.2.2 kullanmaya devam
-  final String baseUrl = "http://10.0.2.2:3000";
-
   @override
   void initState() {
     super.initState();
@@ -98,8 +95,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
                 body: Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: widget_list.OrganizationList(
-                    list: filteredList,
-                    baseUrl: baseUrl,
+                    list: filteredList
                   ),
                 ),
               ),

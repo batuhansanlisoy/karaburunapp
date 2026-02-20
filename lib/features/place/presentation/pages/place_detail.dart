@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import '../../data/models/place_model.dart';
@@ -62,11 +63,15 @@ class _PlaceDetailState extends State<PlaceDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final String baseUrl = ApiRoutes.baseUrl;
+
     final coverUrl = widget.place.cover != null
-        ? "http://10.0.2.2:3000${widget.place.cover!['url']}"
+        ? "$baseUrl${widget.place.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.place.gallery?.cast<String>() ?? [];
+    final List<String> gallery = widget.place.gallery?.map((path) {
+      return "$baseUrl$path";
+    }).toList() ?? [];
 
     return DefaultTabController(
       length: 3,

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/widgets/app_card.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import '../../data/models/organization_model.dart';
 
 class OrganizationList extends StatelessWidget {
   final List<OrganizationModel> list;
-  final String baseUrl;
   // final Function(OrganizationModel) onTap;
 
   const OrganizationList({
     super.key,
     required this.list,
-    required this.baseUrl,
     // required this.onTap
   });
 
@@ -25,7 +24,9 @@ class OrganizationList extends StatelessWidget {
         return AppCard(
           title: item.name,
           address: item.address,
-          imageUrl: item.cover != null ? "$baseUrl${item.cover!['url']}" : null,
+          imageUrl: item.cover?['url'] != null
+            ? "${ApiRoutes.baseUrl}${item.cover!['url']}"
+            : null,
           // onTap: () => onTap(item)
         );
       },

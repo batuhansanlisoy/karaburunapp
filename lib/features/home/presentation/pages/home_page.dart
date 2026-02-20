@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:karaburun/core/theme/app_colors.dart';
-import 'package:karaburun/features/home/presentation/widgets/featured_item_card.dart';
-import 'package:karaburun/features/home/presentation/widgets/beach_card.dart';
+// Modeller
+import 'package:karaburun/features/activity/data/models/activity_category_model.dart';
+import 'package:karaburun/features/activity/data/models/activity_model.dart';
+import 'package:karaburun/features/featured/data/models/featured_organization_model.dart';
+import 'package:karaburun/features/village/data/models/village_model.dart';
+// Repositories & Controllers
+import 'package:karaburun/features/activity/presentation/controllers/activity_controller.dart';
+import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
+import 'package:karaburun/features/featured/data/repositories/featured_organization_service.dart';
+import 'package:karaburun/features/village/data/repositories/village_repository.dart';
+// Widgets & Helpers
+import 'package:karaburun/features/featured/presentation/widgets/featured_organization_card.dart';
 import 'package:karaburun/features/home/presentation/widgets/category_card.dart';
-import 'package:karaburun/core/config/featureds.dart';
-import 'package:karaburun/core/config/beac.dart';
-import 'package:karaburun/core/config/app_category.dart'; // Yeni import
+import 'package:karaburun/features/home/presentation/widgets/upcoming_event.banner.dart';
 import 'package:karaburun/core/utils/icon_helper.dart';
 import 'package:karaburun/core/utils/color_helper.dart';
-import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
+import 'package:karaburun/core/config/app_category.dart';
 
 class HomePage extends StatefulWidget {
   final void Function(int index, {int? categoryId}) onPageChange;
@@ -20,22 +27,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final OrganizationCategoryRepository _organizationCategoryRepo = OrganizationCategoryRepository();
-  List<Map<String, dynamic>> categoriesList = [];
-  bool loading = true;
+  // Repositories
+  final OrganizationCategoryRepository _orgCategoryRepo = OrganizationCategoryRepository();
+  final FeaturedOrganizationRepository _featuredRepo = FeaturedOrganizationRepository();
+  final ActivityController _activityController = ActivityController();
+  final VillageRepository _villageRepo = VillageRepository();
+
+  // Data Lists
+  List<Map<String, dynamic>> _orgCategoriesList = [];
+  List<ActivityCategory> _activityCategories = [];
+  List<Village> _allVillages = [];
+  List<FeaturedOrganizationModel> _activeFeaturedList = [];
+  Activity? _upcomingEvent;
+
+  // Banner State
+  String _eventCategoryName = "";
+  String _eventVillageName = "";
+
+  // Loading States
+  bool _isInitialDataLoading = true;
+  bool _eventLoading = true;
+  bool _featuredLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadCategories();
+    _loadInitialData();
   }
 
-  Future<void> loadCategories() async {
+  /// 1. ADIM: Altyapı Verilerini Yükle (Kategoriler, Köyler)
+  Future<void> _loadInitialData() async {
     try {
-      final dynamicCategories = await _organizationCategoryRepo.fetchOrganizationCategory();
+      await Future.wait([
+        loadOrgCategories(),
+        loadVillages(),
+        loadActivityCategories(),
+      ]);
+      
+      if (mounted) {
+        setState(() => _isInitialDataLoading = false);
+      }
 
-      final List<Map<String, dynamic>> dynamicMaps = dynamicCategories.map((cat) {
-        final Map<String, dynamic> extra = cat.extra;
+      // Altyapı hazır, şimdi içerikleri çekebiliriz
+      _loadContentData();
+    } catch (e) {
+      debugPrint("Kritik veri yükleme hatası: $e");
+    }
+  }
+
+  /// 2. ADIM: İçerik Verilerini Yükle (Etkinlik, Öne Çıkanlar)
+  Future<void> _loadContentData() async {
+    await Future.wait([
+      loadUpcomingEvent(),
+      loadFeaturedOrgs(),
+    ]);
+  }
+
+  Future<void> loadOrgCategories() async {
+    try {
+      final data = await _orgCategoryRepo.fetchOrganizationCategory();
+      final maps = data.map((cat) {
+        final extra = cat.extra;
         return {
           "id": cat.id,
           "icon": IconHelper.getIcon(extra['icon']),
@@ -44,109 +96,145 @@ class _HomePageState extends State<HomePage> {
           "pageIndex": 1,
         };
       }).toList();
+      _orgCategoriesList = [...AppCategory.staticCategories, ...maps];
+    } catch (e) {
+      _orgCategoriesList = AppCategory.staticCategories;
+    }
+  }
 
-      if (mounted) {
+  Future<void> loadVillages() async {
+    try {
+      _allVillages = await _villageRepo.fetchVillages();
+    } catch (e) {
+      debugPrint("Köy yükleme hatası: $e");
+    }
+  }
+
+  Future<void> loadActivityCategories() async {
+    try {
+      _activityCategories = await _activityController.getActivityCategories();
+    } catch (e) {
+      debugPrint("Etkinlik kategorisi yükleme hatası: $e");
+    }
+  }
+
+  Future<void> loadUpcomingEvent() async {
+    try {
+      final result = await _activityController.getUpcomingEvent();
+      if (mounted && result != null) {
+        // Eşleştirme İşlemleri
+        String catName = "Etkinlik";
+        if (_activityCategories.isNotEmpty) {
+          final match = _activityCategories.where((c) => c.id == result.categoryId);
+          if (match.isNotEmpty) catName = match.first.name;
+        }
+
+        String vName = "Karaburun Merkez";
+        if (_allVillages.isNotEmpty) {
+          final match = _allVillages.where((v) => v.id == result.villageId);
+          if (match.isNotEmpty) vName = match.first.name;
+        }
+
         setState(() {
-          // Sabitler + Dinamikler birleşiyor
-          categoriesList = [...AppCategory.staticCategories, ...dynamicMaps];
-          loading = false;
+          _upcomingEvent = result;
+          _eventCategoryName = catName;
+          _eventVillageName = vName;
+          _eventLoading = false;
         });
       }
     } catch (e) {
-      debugPrint('Kategori yükleme hatası: $e');
+      if (mounted) setState(() => _eventLoading = false);
+    }
+  }
+
+  Future<void> loadFeaturedOrgs() async {
+    try {
+      final data = await _featuredRepo.fetchFeaturedOrgs(orgInfo: true);
       if (mounted) {
         setState(() {
-          categoriesList = AppCategory.staticCategories;
-          loading = false;
+          _activeFeaturedList = data.where((item) => item.active == true).toList();
+          _featuredLoading = false;
         });
       }
+    } catch (e) {
+      if (mounted) setState(() => _featuredLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Center(child: CircularProgressIndicator());
+    if (_isInitialDataLoading) {
+      return const Center(child: CircularProgressIndicator(color: Colors.orange));
     }
 
     return Container(
-      color: Colors.white, // KATEGORİLERİN ARKASI BEMBEYAZ
+      color: Colors.white,
       child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             const SizedBox(height: 12),
             
-            /// --- 1. KATEGORİLER (Beyaz Zemin Üstünde) ---
+            // 1. İşletme Kategorileri
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: _buildCategoryList(),
+              child: _buildOrgCategoryList(),
+            ),
+
+            // 2. Etkinlik Banner
+            UpcomingEventBanner(
+              event: _upcomingEvent,
+              isLoading: _eventLoading,
+              onTap: () => widget.onPageChange(2),
+              categoryName: _eventCategoryName,
+              villageName: _eventVillageName, 
             ),
 
             const SizedBox(height: 20),
 
-            /// --- 2. İÇERİK PANELİ (Hafif Koyu/Gri ve Yuvarlak) ---
-            Container(
-              width: double.infinity,
-              constraints: BoxConstraints(
-                // Panel kısa kalırsa ekranın altına kadar uzansın
-                minHeight: MediaQuery.of(context).size.height, 
-              ),
-              decoration: BoxDecoration(
-                // BURASI: Panelin rengini hafif koyu yapıyoruz
-                color: const Color(0xFFF8FAFC), // Çok hafif, modern bir gri
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(35),
-                  topRight: Radius.circular(35),
-                ),
-                border: Border.all(
-                  color: Colors.black.withOpacity(0.03), // Çok ince bir hat
-                  width: 1,
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// --- ÖNE ÇIKANLAR ---
-                  _buildSectionTitle("Öne Çıkanlar"),
-                  const SizedBox(height: 6),
-                  _buildFeaturedList(),
-
-                  const SizedBox(height: 24),
-
-                  /// --- KOY & SAHİL ---
-                  _buildSectionTitle("Koy & Sahil"),
-                  const SizedBox(height: 6),
-                  _buildBeachList(),
-                  
-                  const SizedBox(height: 100), // Navbar payı
-                ],
-              ),
-            ),
+            // 3. Alt İçerik Paneli
+            _buildContentPanel(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      // Buradaki 20 değeri, yazıyı soldan ne kadar iteceğini belirler
-      padding: const EdgeInsets.symmetric(horizontal: 10), 
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontSize: 15,
+  Widget _buildContentPanel() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(35),
+          topRight: Radius.circular(35),
         ),
+        border: Border.all(color: Colors.black.withOpacity(0.03), width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!_featuredLoading && _activeFeaturedList.isNotEmpty) ...[
+            _buildSectionTitle(
+              "Öne Çıkan İşletmeler",
+              onSeeAllTap: () => widget.onPageChange(1),
+            ),
+            const SizedBox(height: 6),
+            _buildFeaturedList(), 
+          ],
+          const SizedBox(height: 100),
+        ],
       ),
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildOrgCategoryList() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
-        children: categoriesList.map((e) {
+        children: _orgCategoriesList.map((e) {
           return Padding(
             padding: const EdgeInsets.all(6),
             child: CategoryCard(
@@ -155,12 +243,7 @@ class _HomePageState extends State<HomePage> {
               color: e['color'],
               onTap: () {
                 if (e['pageIndex'] != null) {
-                  // e['id'] bilgisini MainLayout'a paslıyoruz
                   widget.onPageChange(e['pageIndex'], categoryId: e['id']);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Bu kategori henüz aktif değil.")),
-                  );
                 }
               },
             ),
@@ -173,32 +256,32 @@ class _HomePageState extends State<HomePage> {
   Widget _buildFeaturedList() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
-        children: featuredItems.map((item) {
-          return FeaturedItemCard(
-            title: item['title'] ?? '',
-            subtitle: item['subtitle'] ?? '',
-            image: item['image'] ?? '',
-            onTap: () {},
+        children: _activeFeaturedList.map((item) {
+          return FeaturedOrganizationCard(
+            item: item,
+            onTap: () => widget.onPageChange(1),
           );
         }).toList(),
       ),
     );
   }
 
-  Widget _buildBeachList() {
-    return Column(
-      children: beachItems.map((item) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: BeachCard(
-            title: item['title'] ?? '',
-            adress: item['adress'] ?? '',
-            image: item['image'] ?? '',
-            onTap: () {},
-          ),
-        );
-      }).toList(),
+  Widget _buildSectionTitle(String title, {VoidCallback? onSeeAllTap}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+          if (onSeeAllTap != null)
+            GestureDetector(
+              onTap: onSeeAllTap,
+              child: const Text("Tümünü Gör", style: TextStyle(fontSize: 14, color: Colors.black54, decoration: TextDecoration.underline)),
+            ),
+        ],
+      ),
     );
   }
 }

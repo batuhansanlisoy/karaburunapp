@@ -27,8 +27,6 @@ class _PlacePageState extends State<PlacePage> {
   bool loading = true;
   int? selectedVillageId;
 
-  final String baseUrl = "http://10.0.2.2:3000";
-
   @override
   void initState() {
     super.initState();
@@ -111,7 +109,6 @@ class _PlacePageState extends State<PlacePage> {
             padding: const EdgeInsets.only(top: 12),
             child: widget_list.PlaceList(
               list: filteredList,
-              baseUrl: baseUrl,
               villageMap: villageMap,
               onTap: (item) {
                 Navigator.push(

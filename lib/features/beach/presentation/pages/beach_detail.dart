@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import '../../data/models/beach_model.dart';
@@ -64,11 +65,15 @@ class _BeachDetailState extends State<BeachDetail> {
 
   @override
   Widget build(BuildContext context) {
+    final String baseUrl = ApiRoutes.baseUrl;
+
     final coverUrl = widget.beach.cover != null
-        ? "http://10.0.2.2:3000${widget.beach.cover!['url']}"
+        ? "$baseUrl${widget.beach.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.beach.gallery?.cast<String>() ?? [];
+    final List<String> gallery = widget.beach.gallery?.map((path) {
+      return "$baseUrl$path";
+    }).toList() ?? [];
 
     return DefaultTabController(
       length: 3,

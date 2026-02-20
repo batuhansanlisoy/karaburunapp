@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import 'package:karaburun/core/widgets/timeline_tab.dart';
@@ -62,11 +63,18 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String baseUrl = ApiRoutes.baseUrl;
+
     final coverUrl = widget.activity.cover != null
-        ? "http://10.0.2.2:3000${widget.activity.cover!['url']}"
+        ? "$baseUrl${widget.activity.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.activity.gallery?.cast<String>() ?? [];
+    // final List<String> gallery = widget.activity.gallery?.cast<String>() ?? [];
+
+    final List<String> gallery = widget.activity.gallery?.map((path) {
+      return "$baseUrl$path";
+    }).toList() ?? [];
+
     final timeline = widget.activity.content?.timeline ?? [];
 
     return DefaultTabController(

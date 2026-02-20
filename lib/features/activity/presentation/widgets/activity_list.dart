@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/features/activity/data/models/activity_category_model.dart';
-import '../../data/models/activity_model.dart';
 import 'package:karaburun/core/widgets/app_card.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
+import '../../data/models/activity_model.dart';
 
 class ActivityList extends StatelessWidget {
   final List<Activity> list;
-  final String baseUrl;
   final Map<int, ActivityCategory> categoryMap;
   final Function(Activity) onTap;
 
   const ActivityList({
     super.key,
     required this.list,
-    required this.baseUrl,
     required this.categoryMap,
     required this.onTap,
   });
@@ -28,7 +27,9 @@ class ActivityList extends StatelessWidget {
         return AppCard(
           title: item.name,
           address: item.address,
-          imageUrl: item.cover != null ? "$baseUrl${item.cover!['url']}" : null,
+          imageUrl: item.cover?['url'] != null
+            ? "${ApiRoutes.baseUrl}${item.cover!['url']}"
+            : null,
           categoryName: category?.name,
           // villageId: item.villageId,
           begin: item.begin,

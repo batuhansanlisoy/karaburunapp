@@ -28,8 +28,6 @@ class _BeachPageState extends State<BeachPage> {
   bool loading = true;
   int? selectedVillageId;
 
-  final String baseUrl = "http://10.0.2.2:3000";
-
   @override
   void initState() {
     super.initState();
@@ -114,7 +112,6 @@ class _BeachPageState extends State<BeachPage> {
             padding: const EdgeInsets.only(top: 12),
             child: widget_list.BeachList(
               list: filteredList,
-              baseUrl: baseUrl,
               villageMap: villageMap,
               onTap: (item) {
                 Navigator.push(

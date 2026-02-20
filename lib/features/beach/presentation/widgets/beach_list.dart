@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/widgets/app_card.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import '../../data/models/beach_model.dart';
 
 class BeachList extends StatelessWidget {
   final List<Beach> list;
-  final String baseUrl;
   final Map<int, Village> villageMap;
   final Function(Beach) onTap;
 
   const BeachList({
     super.key,
     required this.list,
-    required this.baseUrl,
     required this.villageMap,
     required this.onTap
   });
@@ -29,7 +28,9 @@ class BeachList extends StatelessWidget {
         return AppCard(
           title: item.name,
           address: item.address,
-          imageUrl: item.cover != null ? "$baseUrl${item.cover!['url']}" : null,
+          imageUrl: item.cover?['url'] != null
+            ? "${ApiRoutes.baseUrl}${item.cover!['url']}"
+            : null,
           villageName: village?.name,
           onTap: () => onTap(item)
         );
