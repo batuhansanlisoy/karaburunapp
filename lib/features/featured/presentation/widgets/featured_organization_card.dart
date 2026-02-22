@@ -3,6 +3,7 @@ import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/helpers/string_helpers.dart';
 import '../../data/models/featured_organization_model.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 
 class FeaturedOrganizationCard extends StatelessWidget {
   final FeaturedOrganizationModel item;
@@ -17,8 +18,7 @@ class FeaturedOrganizationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final org = item.organization;
-    final imageUrl = org?.cover?['url'] ?? "";
-    const String baseUrl = "http://192.168.8.100:3000";
+    final imageUrl = org.cover?['url'] ?? "";
 
     return GestureDetector(
       onTap: onTap,
@@ -29,7 +29,7 @@ class FeaturedOrganizationCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
-            image: NetworkImage("$baseUrl$imageUrl"),
+            image: NetworkImage("${ApiRoutes.baseUrl}$imageUrl"),
             fit: BoxFit.cover,
             onError: (exception, stackTrace) => const Icon(Icons.broken_image),
           ),

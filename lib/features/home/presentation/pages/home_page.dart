@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/activity/data/models/activity_category_model.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
@@ -18,8 +20,7 @@ import 'package:karaburun/core/utils/color_helper.dart';
 import 'package:karaburun/core/config/app_category.dart';
 
 class HomePage extends StatefulWidget {
-  final void Function(int index, {int? categoryId}) onPageChange;
-  const HomePage({super.key, required this.onPageChange});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -78,7 +79,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> loadBeaches() async {
     try {
       final data = await _beachRepo.fetchBeachs(highlight: true); 
-      
       if (mounted) {
         setState(() { 
           _beachList = data; 
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
           "icon": IconHelper.getIcon(extra['icon']),
           "title": cat.name,
           "color": ColorHelper.getColor(extra['icon_color']),
-          "pageIndex": 1,
+          "path": "/organization",
         };
       }).toList();
       _orgCategoriesList = [...AppCategory.staticCategories, ...maps];
@@ -171,11 +171,11 @@ class _HomePageState extends State<HomePage> {
             UpcomingEventBanner(
               event: _upcomingEvent,
               isLoading: _eventLoading,
-              onTap: () => widget.onPageChange(2),
+              onTap: () => context.go('/activity'),
               categoryName: _eventCategoryName,
               villageName: _eventVillageName,
             ),
-            const SizedBox(height: 10), // Boşluğu azalttık
+            const SizedBox(height: 10),
             _buildContentPanel(),
           ],
         ),
@@ -184,50 +184,75 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildContentPanel() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(35), topRight: Radius.circular(35)),
-        border: Border.all(color: Colors.black.withOpacity(0.03), width: 1),
+  return Container(
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: const Color(0xFFF8FAFC),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(35), 
+        topRight: Radius.circular(35)
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 25),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!_featuredLoading && _activeFeaturedList.isNotEmpty) ...[
-            _buildSectionTitle("Öne Çıkan İşletmeler", onSeeAllTap: () => widget.onPageChange(1)),
-            const SizedBox(height: 12),
-            _buildFeaturedList(),
-            const SizedBox(height: 30), // Beach Grid ile Featured arasını açtık
-          ],
-          BeachGrid(
-            beaches: _beachList,
-            villages: _allVillages,
-            isLoading: _beachesLoading,
-            onSeeAllTap: () => widget.onPageChange(3),
+      border: Border.all(color: Colors.black.withOpacity(0.03), width: 1),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 25),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 1. ÖNE ÇIKANLAR
+        if (!_featuredLoading && _activeFeaturedList.isNotEmpty) ...[
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildSectionTitle("Öne Çıkan İşletmeler", onSeeAllTap: () => context.go('/organization')),
           ),
+          const SizedBox(height: 8),
+          _buildFeaturedList(),
+          const SizedBox(height: 30),
         ],
-      ),
-    );
-  }
-  // --- Yardımcı Widget'lar ---
+        
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: _buildSectionTitle("Popüler Koylar", onSeeAllTap: () => context.go('/beach')),
+        ),
+        const SizedBox(height: 8),
+        BeachGrid(
+          beaches: _beachList,
+          villages: _allVillages,
+          isLoading: _beachesLoading,
+        ),
+      ],
+    ),
+  );
+}
+
   Widget _buildSectionTitle(String title, {VoidCallback? onSeeAllTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+        Text(
+          title, 
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textMain
+          ),
+        ),
         if (onSeeAllTap != null)
           GestureDetector(
             onTap: onSeeAllTap,
-            child: const Text(
-              "Tümünü Gör",
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.black54,
-                decoration: TextDecoration.underline
-              )
-            )
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.bgSoftOrange,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "Tümünü Gör",
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.textOrange,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
       ],
     );
@@ -241,9 +266,24 @@ class _HomePageState extends State<HomePage> {
         children: _orgCategoriesList.map((e) {
           return Padding(
             padding: const EdgeInsets.all(6),
-            child: CategoryCard(icon: e['icon'],
-            title: e['title'], color: e['color'],
-            onTap: () { if (e['pageIndex'] != null) widget.onPageChange(e['pageIndex'], categoryId: e['id']); }));
+            child: CategoryCard(
+              icon: e['icon'],
+              title: e['title'], 
+              color: e['color'],
+              onTap: () {
+                final String? path = e['path'];
+                final int? catId = e['id'];
+
+                if (path != null) {
+                  if (catId != null) {
+                    context.go('$path?catId=$catId');
+                  } else {
+                    context.go(path);
+                  }
+                }
+              },
+            ),
+          );
         }).toList(),
       ),
     );
@@ -255,6 +295,9 @@ class _HomePageState extends State<HomePage> {
       physics: const BouncingScrollPhysics(),
       child: Row(
         children: _activeFeaturedList.map((item) {
-           return FeaturedOrganizationCard(item: item, onTap: () => widget.onPageChange(1)); }).toList()));
+          return FeaturedOrganizationCard(
+            item: item,
+            onTap: () => context.go('/organization?catId=${item.organization.categoryId}')); 
+        }).toList()));
   }
 }

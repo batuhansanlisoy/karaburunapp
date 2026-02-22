@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/widgets/custom_ad_dialog.dart';
-import 'package:karaburun/features/home/presentation/pages/home_page.dart';
-import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
-import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
-import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
-import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+  final Widget child; // GoRouter o anki sayfayı buraya enjekte eder
+
+  const MainLayout({super.key, required this.child});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _currentIndex = 0;
-  int? _selectedCategoryId;
-
-  // Sayfaları saklayacağımız liste. Başta hepsi null.
-  final List<Widget?> _pages = List.filled(6, null);
-
   @override
   void initState() {
     super.initState();
-    // Reklamı 1 saniye geciktirerek uygulamanın açılış yükünü hafifletiyoruz
+    // Reklam geciktirme mantığın aynen duruyor
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) _showCustomAd(context);
     });
@@ -41,48 +33,36 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // Sayfa oluşturucu: Sadece tıklandığında sayfayı ayağa kaldırır
-  Widget _getLazyPage(int index) {
-    if (_pages[index] == null || (index == 1 && _selectedCategoryId != null)) {
-      switch (index) {
-        case 0:
-          _pages[index] = HomePage(onPageChange: _onPageChange);
-          break;
-        case 1:
-          // Kategori seçilince sayfayı her seferinde yeni ID ile oluşturur
-          _pages[index] = OrganizationPage(categoryId: _selectedCategoryId);
-          break;
-        case 2:
-          _pages[index] = const PlacePage();
-          break;
-        case 3:
-          _pages[index] = const ActivityPage();
-          break;
-        case 4:
-          _pages[index] = const BeachPage();
-          break;
-      }
+  // URL'den hangi BottomNav ikonunun seçili olduğunu hesaplayan mantık
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.toString();
+    if (location.startsWith('/home')) return 0;
+    if (location.startsWith('/organization')) return 1;
+    if (location.startsWith('/place')) return 2;
+    if (location.startsWith('/activity')) return 3;
+    if (location.startsWith('/beach')) return 4;
+    return 0;
+  }
+
+  // Navbardaki ikonlara basınca sayfayı değiştiren fonksiyon
+  void _onTabChange(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        context.go('/home');
+        break;
+      case 1:
+        context.go('/organization');
+        break;
+      case 2:
+        context.go('/place');
+        break;
+      case 3:
+        context.go('/activity');
+        break;
+      case 4:
+        context.go('/beach');
+        break;
     }
-    return _pages[index]!;
-  }
-
-  void _onPageChange(int index, {int? categoryId}) {
-    setState(() {
-      _currentIndex = index;
-      _selectedCategoryId = categoryId;
-      // OrganizationPage index 1 olduğu için kategori değişince orayı sıfırlıyoruz ki yeniden oluşsun
-      _pages[1] = null; 
-    });
-  }
-
-  void _onTabChange(int index) {
-    setState(() {
-      _currentIndex = index;
-      if (index == 1) {
-        _selectedCategoryId = null;
-        _pages[1] = null; // Filtresiz temiz sayfa için sıfırla
-      }
-    });
   }
 
   @override
@@ -93,17 +73,17 @@ class _MainLayoutState extends State<MainLayout> {
         preferredSize: Size.fromHeight(100),
         child: _MainAppBar(),
       ),
-      // IndexedStack yerine tek sayfa render etmek (Lazy loading) cihazı çok rahatlatır
-      body: _getLazyPage(_currentIndex),
+      // GoRouter'ın yönettiği aktif sayfa buraya gelir
+      body: widget.child,
       bottomNavigationBar: MainBottomNav(
-        currentIndex: _currentIndex,
-        onTap: _onTabChange,
+        currentIndex: _calculateSelectedIndex(context),
+        onTap: (index) => _onTabChange(index, context),
       ),
     );
   }
 }
 
-// --- TASARIM WIDGETLARI (HİÇ DOKUNULMADI) ---
+// --- TASARIM WIDGETLARI (DEĞİŞMEDİ) ---
 
 class _MainAppBar extends StatelessWidget {
   const _MainAppBar();
@@ -151,13 +131,14 @@ class _Logo extends StatelessWidget {
         style: baseStyle?.copyWith(
           fontSize: 22,
           color: const Color.fromARGB(221, 255, 255, 255),
-          letterSpacing: -0.5), 
+          letterSpacing: -0.5,
+        ),
         children: [
           const TextSpan(text: "Karaburun"),
           TextSpan(
             text: "GO",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary, 
+              color: Theme.of(context).colorScheme.secondary,
               fontWeight: FontWeight.w900,
             ),
           ),

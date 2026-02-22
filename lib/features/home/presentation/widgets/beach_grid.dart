@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
-import 'package:karaburun/utils/string_helpers.dart';
 
 class BeachGrid extends StatelessWidget {
   final List<Beach> beaches;
   final List<Village> villages;
   final bool isLoading;
-  final VoidCallback onSeeAllTap;
 
   const BeachGrid({
     super.key,
     required this.beaches,
     required this.villages,
     required this.isLoading,
-    required this.onSeeAllTap,
   });
 
   @override
@@ -33,83 +30,39 @@ class BeachGrid extends StatelessWidget {
 
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Başlık - Bunu 20 birim içerden başlatıyoruz ki metinler hizalı olsun
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildSectionTitle("Popüler Koylar", onSeeAllTap: onSeeAllTap),
+    return SizedBox(
+      height: 380, 
+      child: GridView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        // 🌟 Paneldeki 1px padding'e güveniyoruz, burayı sıfırladık
+        padding: EdgeInsets.zero, 
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: (380 / 2) / (screenWidth * 0.9), 
         ),
-        const SizedBox(height: 16),
-        
-        SizedBox(
-          height: 380, 
-          child: GridView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            // SOL PADDING'I 4 YAPTIK: Ekranın en solundan başlar
-            padding: const EdgeInsets.only(left: 4, right: 20), 
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              // ORAN GÜNCELLENDİ: Kartın ekranı kaplaması için genişliği artırdık
-              childAspectRatio: (380 / 2) / (screenWidth * 0.9), 
-            ),
-            itemCount: beaches.length,
-            itemBuilder: (context, index) {
-              final beach = beaches[index];
-              
-              final String? coverPath = beach.cover != null ? beach.cover!['url'] : null;
-              final String imageUrl = coverPath != null ? "${ApiRoutes.baseUrl}$coverPath" : "";
+        itemCount: beaches.length,
+        itemBuilder: (context, index) {
+          final beach = beaches[index];
+          
+          final String? coverPath = beach.cover != null ? beach.cover!['url'] : null;
+          final String imageUrl = coverPath != null ? "${ApiRoutes.baseUrl}$coverPath" : "";
 
-              String vName = "Karaburun";
-              if (villages.isNotEmpty) {
-                final match = villages.where((v) => v.id == beach.villageId);
-                if (match.isNotEmpty) vName = match.first.name;
-              }
+          String vName = "Karaburun";
+          if (villages.isNotEmpty) {
+            final match = villages.where((v) => v.id == beach.villageId);
+            if (match.isNotEmpty) vName = match.first.name;
+          }
 
-              return _BeachCard(
-                imageUrl: imageUrl, 
-                beachName: beach.name, 
-                villageName: vName
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSectionTitle(String title, {VoidCallback? onSeeAllTap}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title, 
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)
-        ),
-        if (onSeeAllTap != null)
-          GestureDetector(
-            onTap: onSeeAllTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                "Tümünü Gör",
-                style: TextStyle(
-                  fontSize: 12, 
-                  color: Colors.orange, 
-                  fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-          ),
-      ],
+          return _BeachCard(
+            imageUrl: imageUrl, 
+            beachName: beach.name, 
+            villageName: vName
+          );
+        },
+      ),
     );
   }
 }

@@ -124,36 +124,4 @@ class _PlacePageState extends State<PlacePage> {
       ),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     backgroundColor: Colors.white,
-      
-  //     appBar: AppBar(
-  //       backgroundColor: Colors.transparent,
-  //       elevation: 0,
-  //       title: widget_search.SearchInput(
-  //         hintText: "Gezilecek yer ara...",
-  //         onChanged: onSearchChanged
-  //       ),
-  //     ),
-  //     body: loading
-  //       ? const Center(child: CircularProgressIndicator())
-  //       : Column(
-  //         children: [
-  //           widget_bar.VillageBar(
-  //             villages: villages,
-  //             selectedVillageId: selectedVillageId,
-  //             onSelect: onVillageSelect
-  //           ),
-  //           Expanded(
-  //             child: widget_list.PlaceList(
-  //               list: filteredList,
-  //               baseUrl: baseUrl,
-  //             )
-  //           )
-  //         ]) 
-  //   );
-  // }
 }

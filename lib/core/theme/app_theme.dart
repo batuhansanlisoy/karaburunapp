@@ -5,16 +5,12 @@ import 'app_colors.dart'; // Dosya ismine göre import et kanka
 class AppTheme {
   static ThemeData get lightTheme {
     final textTheme = GoogleFonts.urbanistTextTheme().copyWith(
-      titleLarge: GoogleFonts.urbanist(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textMain,
-      ),
-      bodyMedium: GoogleFonts.urbanist(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textLight,
-      ),
+      titleLarge: GoogleFonts.urbanist(fontSize: 20, fontWeight: FontWeight.bold),
+      titleMedium: GoogleFonts.urbanist(fontSize: 18, fontWeight: FontWeight.w700),
+      titleSmall: GoogleFonts.urbanist(fontSize: 16, fontWeight: FontWeight.w600),
+      bodyLarge: GoogleFonts.urbanist(fontSize: 14),
+      bodyMedium: GoogleFonts.urbanist(fontSize: 13),
+      labelSmall: GoogleFonts.urbanist(fontSize: 11),
     );
 
     return ThemeData(
@@ -32,7 +28,6 @@ class AppTheme {
       ),
 
       appBarTheme: const AppBarTheme(
-        // Kırmızı yapmak istersen AppColors'a 'static const Color appBarRed = ...' ekleyip buraya yazabilirsin
         backgroundColor: Color(0xFF1E293B), 
         foregroundColor: Colors.white,
         elevation: 0,

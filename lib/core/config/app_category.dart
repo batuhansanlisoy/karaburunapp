@@ -7,19 +7,19 @@ class AppCategory {
       "icon": Symbols.add_a_photo,
       "title": "Turistik",
       "color": AppColors.iconOrange,
-      "pageIndex": 2,
+      "path": "/place", // Adresimiz belli
     },
     {
       "icon": Symbols.celebration,
       "title": "Etkinlik",
       "color": AppColors.iconPurple,
-      "pageIndex": 3,
+      "path": "/activity",
     },
     {
       "icon": Symbols.beach_access,
       "title": "Koylar",
       "color": AppColors.iconGreen,
-      "pageIndex": 4,
+      "path": "/beach",
     }
   ];
 }
