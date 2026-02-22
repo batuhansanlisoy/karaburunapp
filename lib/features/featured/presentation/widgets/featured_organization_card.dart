@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:karaburun/core/helpers/string_helpers.dart';
 import '../../data/models/featured_organization_model.dart';
 
 class FeaturedOrganizationCard extends StatelessWidget {
@@ -74,11 +77,17 @@ class FeaturedOrganizationCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.location_on, color: Colors.white70, size: 13),
+                      const Icon(
+                          Symbols.distance,
+                          color: AppColors.iconOrange,
+                          size: 15,
+                          weight: 600,
+                          fill: 1,
+                        ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          org?.address ?? 'Adres bilgisi yok',
+                          org?.address.capitalize() ?? "",
                           style: const TextStyle(color: Colors.white, fontSize: 11),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -90,10 +99,16 @@ class FeaturedOrganizationCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        const Icon(Icons.phone, color: Colors.greenAccent, size: 13),
+                        const Icon(
+                          Symbols.call,
+                          color: AppColors.iconGreen,
+                          size: 15,
+                          weight: 800,
+                          fill: 1,
+                        ),
                         const SizedBox(width: 4),
                         Text(
-                          org.phone,
+                          org.phone.formatPhoneNumber(),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,

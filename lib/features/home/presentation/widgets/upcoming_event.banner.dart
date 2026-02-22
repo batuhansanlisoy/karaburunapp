@@ -36,7 +36,7 @@ class UpcomingEventBanner extends StatelessWidget {
     final String formattedDate = "${event!.begin.day} ${_monthName(event!.begin.month)} ${event!.begin.year}";
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 20),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
@@ -45,7 +45,7 @@ class UpcomingEventBanner extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF2D3436),
+                const Color.fromARGB(255, 92, 100, 102),
                 const Color(0xFF000000).withOpacity(0.85),
               ],
               begin: Alignment.topLeft,

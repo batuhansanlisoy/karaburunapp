@@ -7,6 +7,7 @@ class Beach {
     final Map<String, dynamic>? extra;
     final Map<String, dynamic>? cover;
     final List<String>? gallery;
+    final bool highlight;
     final String address;
     final double? latitude;
     final double? longitude;
@@ -20,6 +21,7 @@ class Beach {
         required this.extra,
         required this.cover,
         required this.gallery,
+        required this.highlight,
         required this.address,
         required this.latitude,
         required this.longitude,
@@ -56,6 +58,7 @@ class Beach {
           extra: extraMap,
           cover: coverMap,
           gallery: galleryList,
+          highlight: json['highlight'] == true || json['highlight'] == 1,
           address: json['address'],
           latitude: json['latitude'] == null ? null : double.tryParse(json['latitude'].toString()),
           longitude: json['longitude'] == null ? null : double.tryParse(json['longitude'].toString()),
