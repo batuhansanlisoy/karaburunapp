@@ -17,15 +17,9 @@ class AppCategory {
     },
     {
       "icon": Symbols.beach_access,
-      "title": "Koy & Plaj",
+      "title": "Koylar",
       "color": AppColors.iconGreen,
       "pageIndex": 4,
-    },
-    {
-      "icon": Symbols.beach_access,
-      "title": "Öner Çıkan İşletmeler",
-      "color": AppColors.iconGreen,
-      "pageIndex": 5,
-    },
+    }
   ];
 }

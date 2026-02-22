@@ -56,7 +56,7 @@ class TimelineTab extends StatelessWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(2),
       itemCount: isEmpty ? 1 : events.length,
       itemBuilder: (context, index) {
         if (isEmpty) {

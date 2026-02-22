@@ -3,6 +3,11 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import 'package:karaburun/core/widgets/timeline_tab.dart';
+import 'package:karaburun/core/widgets/distance_card_list.dart';
+import 'package:karaburun/features/beach/data/models/beach_model.dart';
+import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
+import 'package:karaburun/features/place/data/models/place_model.dart';
+import 'package:karaburun/features/place/data/repositories/place_repository.dart';
 import '../../data/models/activity_model.dart';
 import '../../data/models/activity_beach_distance_model.dart';
 import '../../data/repositories/activity_beach_distance_repository.dart';
@@ -18,47 +23,57 @@ class ActivityDetailPage extends StatefulWidget {
 }
 
 class _ActivityDetailPageState extends State<ActivityDetailPage> {
+  
   final ActivityBeachDistanceRepository _beachDistanceRepo = ActivityBeachDistanceRepository();
   final ActivityPlaceDistanceRepository _placeRepository= ActivityPlaceDistanceRepository();
+  final BeachRepository _beachRepo = BeachRepository();
+  final PlaceRepository _placeRepo = PlaceRepository();
 
   List<ActivityBeachDistanceModel> _nearBeaches = [];
   List<ActivityPlaceDistanceModel> _nearPlaces = [];
-  bool _beachDistanceLoading = true;
-  bool _placeDistanceLoading = true;
+  List<Beach> _beachList = [];
+  List<Place> _placeList = [];
+
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchNearestBeaches();
-    _fetchNearestPlaces();
+    _loadAllData();
   }
 
-  void _fetchNearestBeaches() async {
-    try {
-      final distances = await _beachDistanceRepo.fetchActivity(activityId: widget.activity.id);
-      setState(() {
-        _nearBeaches = distances;
-        _beachDistanceLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _beachDistanceLoading = false;
-      });
-    }
+  void _loadAllData() async {
+    final results = await Future.wait([
+      _fetchNearestBeaches(),
+      _fetchNearestPlaces(),
+      _fetchBeaches(),
+      _fetchPlaces()
+    ]);
+
+    setState(() {
+      _nearBeaches = results[0] as List<ActivityBeachDistanceModel>;
+      _nearPlaces  = results[1] as List<ActivityPlaceDistanceModel>;
+      _beachList   = results[2] as List<Beach>;
+      _placeList   = results[3] as List<Place>;
+      //loading 
+      _isLoading = false;
+    });
   }
 
-  void _fetchNearestPlaces() async {
-    try {
-        final distance = await _placeRepository.fetchNearestPlace(activityId: widget.activity.id);
-        setState(() {
-          _nearPlaces = distance;
-          _placeDistanceLoading = false;
-        });
-    } catch (e) {
-      setState(() {
-        _placeDistanceLoading = false;
-      });
-    }
+  Future<List<ActivityBeachDistanceModel>> _fetchNearestBeaches() async {
+      return await _beachDistanceRepo.fetchActivity(activityId: widget.activity.id);
+  }
+
+  Future<List<ActivityPlaceDistanceModel>> _fetchNearestPlaces() async {
+    return await _placeRepository.fetchNearestPlace(activityId: widget.activity.id);
+  }
+
+  Future<List<Beach>> _fetchBeaches() async {
+    return await _beachRepo.fetchBeachs();
+  }
+
+  Future<List<Place>> _fetchPlaces() async {
+    return await _placeRepo.fetchPlaces();
   }
 
   @override
@@ -68,8 +83,6 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
     final coverUrl = widget.activity.cover != null
         ? "$baseUrl${widget.activity.cover!['url']}"
         : null;
-
-    // final List<String> gallery = widget.activity.gallery?.cast<String>() ?? [];
 
     final List<String> gallery = widget.activity.gallery?.map((path) {
       return "$baseUrl$path";
@@ -146,11 +159,33 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                         ],
                       ),
                       Expanded(
-                        child: TabBarView(
+                        child: _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : TabBarView(
                           children: [
                             TimelineTab(timeline: timeline, controller: scrollController),
-                            buildBeachesTab(_nearBeaches, _beachDistanceLoading, scrollController),
-                            buildPlacesTab(_nearPlaces, _placeDistanceLoading, scrollController),
+
+                            DistanceCardList(
+                              items: _nearBeaches,
+                              controller: scrollController,
+                              icon: Icons.beach_access_rounded,
+                              iconColor: AppColors.iconGreen,
+                              emptyMessage: "Yakınlarda koy bulunamadı",
+                              getName: (item) => _beachList.firstWhere((b) => b.id == item.beachId).name,
+                              getDistance: (item) => item.distanceMeter,
+                            ),
+
+                            // TURİSTİK YERLER SEKİMESİ
+                            DistanceCardList(
+                              items: _nearPlaces,
+                              controller: scrollController,
+                              icon: Icons.explore_rounded,
+                              iconColor: AppColors.iconSoftOrange,
+                              emptyMessage: "Yakınlarda turistik yer bulunamadı",
+                              getName: (item) => _placeList.firstWhere((p) => p.id == item.placeId).name,
+                              getDistance: (item) => item.distanceMeter,
+                            ),
+
                             GalleryGrid(images: gallery, controller: scrollController),
                           ],
                         ),
@@ -165,105 +200,5 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       ),
     );
   }
-}
-
-Widget buildBeachesTab(List<ActivityBeachDistanceModel> beaches, bool loading, ScrollController controller) {
-  if (loading) {
-    return const Center(child: CircularProgressIndicator());
-  }
-
-  return ListView.builder(
-    controller: controller,
-    itemCount: beaches.isEmpty ? 1 : beaches.length,
-    itemBuilder: (context, index) {
-      if (beaches.isEmpty) {
-        // Boş listede tek bir placeholder
-        return Container(
-          height: 100, // scroll için biraz yükseklik veriyoruz
-          alignment: Alignment.center,
-          child: const Text("Mekan bulunamadı"),
-        );
-      }
-
-      final beach = beaches[index];
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: AppColors.cardBg
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.beach_access, color: AppColors.iconGreen),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                "Beach ID: ${beach.beachId}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textMain,
-                ),
-              ),
-            ),
-            Text(
-              "${beach.distanceMeter.toStringAsFixed(0)} m",
-              style: const TextStyle(color: AppColors.textMuted),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-
-Widget buildPlacesTab(List<ActivityPlaceDistanceModel> places, bool loading, ScrollController controller) {
-  if (loading) {
-    return const Center(child: CircularProgressIndicator());
-  }
-
-  return ListView.builder(
-    controller: controller,
-    itemCount: places.isEmpty ? 1 : places.length, // boşsa tek bir placeholder
-    itemBuilder: (context, index) {
-      if (places.isEmpty) {
-        return Container(
-          height: 100, // scroll için yeterli yükseklik
-          alignment: Alignment.center,
-          child: const Text("Mekan bulunamadı"),
-        );
-      }
-
-      final place = places[index];
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: AppColors.cardBg,
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.travel_explore_rounded, color: AppColors.iconSoftOrange),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                "Place ID: ${place.placeId}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textMain,
-                ),
-              ),
-            ),
-            Text(
-              "${place.distanceMeter.toStringAsFixed(0)} m",
-              style: const TextStyle(color: AppColors.textMuted),
-            ),
-          ],
-        ),
-      );
-    },
-  );
 }
 

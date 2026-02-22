@@ -14,7 +14,7 @@ class CustomAdDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent, // Arka planın şeffaf olması şart
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      insetPadding: EdgeInsets.zero,
       child: Stack(
         alignment: Alignment.center,
         clipBehavior: Clip.none, // Butonun dışarı taşmasına izin verir
@@ -23,9 +23,9 @@ class CustomAdDialog extends StatelessWidget {
           GestureDetector(
             onTap: onTap, // Reklama tıklayınca bir yere gitsin
             child: Container(
-              width: double.infinity,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
                 image: DecorationImage(
                   image: NetworkImage(imageUrl),
                   fit: BoxFit.cover,
@@ -36,19 +36,21 @@ class CustomAdDialog extends StatelessWidget {
 
           // 2. Kapatma Butonu (IconButton)
           Positioned(
-            top: -10,
-            right: -10,
+            top: 50,    // Durum çubuğunun (saat, şarj vs.) altına denk gelmesi için
+            right: 20,
             child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(), // Dialog'u kapatır
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.of(context, rootNavigator: true).pop(),
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7), // Biraz şeffaflık şık durur
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.cancel,
-                  color: Color.fromARGB(255, 73, 73, 73),
-                  size: 35,
+                  Icons.close, // 'cancel' yerine daha standart 'close'
+                  color: Colors.black,
+                  size: 30,
                 ),
               ),
             ),

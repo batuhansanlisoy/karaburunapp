@@ -3,7 +3,6 @@ import 'package:karaburun/core/widgets/custom_ad_dialog.dart';
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
-import 'package:karaburun/features/featured/presentation/pages/featured_organization_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
@@ -61,9 +60,6 @@ class _MainLayoutState extends State<MainLayout> {
           break;
         case 4:
           _pages[index] = const BeachPage();
-          break;
-        case 5:
-          _pages[index] = const FeaturedListPage();
           break;
       }
     }
