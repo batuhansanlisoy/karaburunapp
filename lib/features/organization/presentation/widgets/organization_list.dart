@@ -25,7 +25,7 @@ class OrganizationList extends StatelessWidget {
           title: item.name,
           address: item.address,
           imageUrl: item.cover?['url'] != null
-            ? "${ApiRoutes.baseUrl}${item.cover!['url']}"
+            ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
             : null,
           // onTap: () => onTap(item)
         );

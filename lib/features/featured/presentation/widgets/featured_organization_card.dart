@@ -29,7 +29,7 @@ class FeaturedOrganizationCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
-            image: NetworkImage("${ApiRoutes.baseUrl}$imageUrl"),
+            image: NetworkImage("${ApiRoutes.fileUrl}$imageUrl"),
             fit: BoxFit.cover,
             onError: (exception, stackTrace) => const Icon(Icons.broken_image),
           ),

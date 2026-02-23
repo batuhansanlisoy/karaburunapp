@@ -48,7 +48,7 @@ class BeachGrid extends StatelessWidget {
           final beach = beaches[index];
           
           final String? coverPath = beach.cover != null ? beach.cover!['url'] : null;
-          final String imageUrl = coverPath != null ? "${ApiRoutes.baseUrl}$coverPath" : "";
+          final String imageUrl = coverPath != null ? "${ApiRoutes.fileUrl}$coverPath" : "";
 
           String vName = "Karaburun";
           if (villages.isNotEmpty) {

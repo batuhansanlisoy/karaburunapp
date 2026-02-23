@@ -77,14 +77,14 @@ class _PlaceDetailState extends State<PlaceDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final String baseUrl = ApiRoutes.baseUrl;
+    final String fileUrl = ApiRoutes.fileUrl;
 
     final coverUrl = widget.place.cover != null
-        ? "$baseUrl${widget.place.cover!['url']}"
+        ? "$fileUrl${widget.place.cover!['url']}"
         : null;
 
     final List<String> gallery = widget.place.gallery?.map((path) {
-      return "$baseUrl$path";
+      return "$fileUrl$path";
     }).toList() ?? [];
 
     return DefaultTabController(

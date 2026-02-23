@@ -79,14 +79,14 @@ class _BeachDetailState extends State<BeachDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final String baseUrl = ApiRoutes.baseUrl;
+    final String fileUrl = ApiRoutes.fileUrl;
 
     final coverUrl = widget.beach.cover != null
-        ? "$baseUrl${widget.beach.cover!['url']}"
+        ? "$fileUrl${widget.beach.cover!['url']}"
         : null;
 
     final List<String> gallery = widget.beach.gallery?.map((path) {
-      return "$baseUrl$path";
+      return "$fileUrl$path";
     }).toList() ?? [];
 
     return DefaultTabController(

@@ -78,14 +78,14 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String baseUrl = ApiRoutes.baseUrl;
+    final String fileUrl = ApiRoutes.fileUrl;
 
     final coverUrl = widget.activity.cover != null
-        ? "$baseUrl${widget.activity.cover!['url']}"
+        ? "$fileUrl${widget.activity.cover!['url']}"
         : null;
 
     final List<String> gallery = widget.activity.gallery?.map((path) {
-      return "$baseUrl$path";
+      return "$fileUrl$path";
     }).toList() ?? [];
 
     final timeline = widget.activity.content?.timeline ?? [];

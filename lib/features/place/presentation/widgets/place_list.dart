@@ -29,7 +29,7 @@ class PlaceList extends StatelessWidget {
           title: item.name.capitalizeAll(),
           address: item.address.capitalize(),
           imageUrl: item.cover?['url'] != null
-            ? "${ApiRoutes.baseUrl}${item.cover!['url']}"
+            ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
             : null,
           villageName: village?.name,
           onTap: () => onTap(item),

@@ -4,12 +4,14 @@ class ApiRoutes {
 
   static String get scheme => dotenv.env['SCHEME'] ?? 'http';
   static String get host => dotenv.env['HOST'] ?? 'localhost';
+  static String get prefix => dotenv.env['API_PREFIX'] ?? 'api';
   static int get port => int.tryParse(dotenv.env['PORT'] ?? '3000') ?? 3000;
 
-  static String get baseUrl => "$scheme://$host:$port";
+  static String get baseUrl => "$scheme://$host:$port/$prefix";
+  static String get fileUrl => "$scheme://$host:$port";
 
   static String get upload =>
-      "$baseUrl/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
+      "$scheme://$host:$port/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
 
   static String get organization =>
       "$baseUrl/${dotenv.env['ORGANIZATION_PATH'] ?? 'organization'}";
