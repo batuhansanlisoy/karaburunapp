@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/distance_card_list.dart';
@@ -167,6 +168,10 @@ class _PlaceDetailState extends State<PlaceDetail> {
                               emptyMessage: "Yakınlarda etkinlik bulunamadı",
                               getName: (item) => _activityList.firstWhere((b) => b.id == item.activityId).name,
                               getDistance: (item) => item.distanceMeter,
+                              onRouteTap: (item) {
+                                final target = _activityList.firstWhere((b) => b.id == item.activityId);
+                                MapLauncher.openMap(target.latitude ?? 0.0, target.longitude ?? 0.0);
+                              },
                             ),
                             DistanceCardList(
                               items: _nearBeaches,
@@ -176,8 +181,11 @@ class _PlaceDetailState extends State<PlaceDetail> {
                               emptyMessage: "Yakınlarda koy bulunamadı",
                               getName: (item) => _beachList.firstWhere((b) => b.id == item.beachId).name,
                               getDistance: (item) => item.distanceMeter,
+                              onRouteTap: (item) {
+                                final target = _beachList.firstWhere((b) => b.id == item.beachId);
+                                MapLauncher.openMap(target.latitude ?? 0.0, target.longitude ?? 0.0);
+                              },
                             ),
-                           
                             GalleryGrid(images: gallery, controller: scrollController),
                           ],
                         ),
