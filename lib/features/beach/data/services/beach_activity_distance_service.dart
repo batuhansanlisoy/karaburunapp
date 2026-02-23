@@ -1,22 +1,29 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
-import '../models/beach_activity_distance_model.dart';
+import 'package:karaburun/features/beach/data/models/beach_activity_distance_model.dart';
 
 class BeachActivityDistanceService {
   Future<List<BeachActivityDistanceModel>> getNearestActivities({ required int beachId}) async {
     final url = Uri.parse("${ApiRoutes.beach}/$beachId/nearest-activity");
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final List distances = data['distances'] ?? [];
 
         return distances
-            .map((e) => BeachActivityDistanceModel.fromJson(e))
-            .toList();
+          .map((e) => BeachActivityDistanceModel.fromJson(e))
+          .toList();
       } else {
         throw Exception("Server error: ${response.statusCode}");
       }

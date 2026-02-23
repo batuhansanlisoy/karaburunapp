@@ -1,11 +1,11 @@
-import '../models/beach_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
+import 'package:karaburun/features/beach/data/models/beach_model.dart';
 
 class BeachService {
-  Future<List<Beach>> getBeach({ int? villageId, bool? highlight }) async {
-
+  Future<List<Beach>> getBeach({int? villageId, bool? highlight}) async {
     final Map<String, String> queryParams = {};
 
     if (villageId != null) {
@@ -17,10 +17,16 @@ class BeachService {
     }
 
     final url = Uri.parse("${ApiRoutes.beach}/list")
-      .replace(queryParameters: queryParams);
+        .replace(queryParameters: queryParams);
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
         final List data = jsonDecode(response.body);

@@ -1,14 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
-import '../models/activity_beach_distance_model.dart';
+import 'package:karaburun/features/activity/data/models/activity_beach_distance_model.dart';
 
 class ActivityBeachDistanceService {
-  Future<List<ActivityBeachDistanceModel>> getNearestBeaches({ required int activityId}) async {
+  Future<List<ActivityBeachDistanceModel>> getNearestBeaches({required int activityId}) async {
     final url = Uri.parse("${ApiRoutes.activity}/$activityId/nearest-beaches");
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
