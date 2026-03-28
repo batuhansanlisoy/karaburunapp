@@ -15,6 +15,7 @@ dependencies:
   google_fonts: ^6.2.1
   go_router: ^17.1.0
   url_launcher: ^6.3.2
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -26,9 +27,13 @@ flutter:
 
   assets:
     - assets/.env
-    - assets/images/backImage.jpg
-    - assets/images/cafe.jpg
-    - assets/images/m1.jpg
-    - assets/images/m2.jpg
-    - assets/images/m3.jpg
-    - assets/images/m4.jpg
+    - assets/images/transparent.png
+    - assets/images/splash.png
+
+flutter_native_splash:
+  color: "#0F172A"
+  image: assets/images/transparent.png # Görünmez resim
+  
+  android_12:
+    image: assets/images/transparent.png
+    color: "#0F172A"
