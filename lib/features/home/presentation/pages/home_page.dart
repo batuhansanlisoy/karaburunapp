@@ -4,9 +4,10 @@ import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/activity/data/models/activity_category_model.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
+import 'package:karaburun/features/organization/data/models/organization_model.dart';
 import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
-import 'package:karaburun/features/featured/data/models/featured_organization_model.dart';
 import 'package:karaburun/features/home/presentation/widgets/beach_grid.dart';
+import 'package:karaburun/features/organization/data/repositories/organization_repository.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
 import 'package:karaburun/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
@@ -15,6 +16,7 @@ import 'package:karaburun/features/village/data/repositories/village_repository.
 import 'package:karaburun/features/featured/presentation/widgets/featured_organization_card.dart';
 import 'package:karaburun/features/home/presentation/widgets/category_card.dart';
 import 'package:karaburun/features/home/presentation/widgets/upcoming_event.banner.dart';
+import 'package:karaburun/features/home/presentation/widgets/village_grid.dart';
 import 'package:karaburun/core/utils/icon_helper.dart';
 import 'package:karaburun/core/utils/color_helper.dart';
 import 'package:karaburun/core/config/app_category.dart';
@@ -32,12 +34,13 @@ class _HomePageState extends State<HomePage> {
   final ActivityController _activityController = ActivityController();
   final VillageRepository _villageRepo = VillageRepository();
   final BeachRepository _beachRepo = BeachRepository();
+  final OrganizationRepository _organizationRepository = OrganizationRepository();
 
-  List<Map<String, dynamic>> _orgCategoriesList = [];
-  List<ActivityCategory> _activityCategories = [];
-  List<FeaturedOrganizationModel> _activeFeaturedList = [];
   List<Village> _allVillages = [];
-  List<Beach> _beachList = [];
+  List<ActivityCategory> _activityCategories = [];
+  List<Map<String, dynamic>> _orgCategoriesList = [];
+  List<OrganizationModel> _highlightedOrganizations = [];
+  List<Beach> _highlightedBeachs = [];
   Activity? _upcomingEvent;
 
   String _eventCategoryName = "";
@@ -45,8 +48,8 @@ class _HomePageState extends State<HomePage> {
 
   bool _isInitialDataLoading = true;
   bool _eventLoading = true;
-  bool _featuredLoading = true;
-  bool _beachesLoading = true;
+  bool _highlightedBeachLoading = true;
+  bool _highlightedOrganizationLoading = true;
 
   @override
   void initState() {
@@ -71,23 +74,40 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadContentData() async {
     await Future.wait([
       loadUpcomingEvent(),
-      loadFeaturedOrgs(),
-      loadBeaches(),
+      loadHighligtedOrganizations(),
+      loadHighligtedBeaches(),
     ]);
   }
 
-  Future<void> loadBeaches() async {
+  Future<void> loadHighligtedBeaches() async {
     try {
       final data = await _beachRepo.fetchBeachs(highlight: true); 
+
       if (mounted) {
         setState(() { 
-          _beachList = data; 
-          _beachesLoading = false; 
+          _highlightedBeachs = data; 
+          _highlightedBeachLoading = false; 
         });
       }
     } catch (e) {
       debugPrint("Beach yükleme hatası: $e");
-      if (mounted) setState(() => _beachesLoading = false);
+      if (mounted) setState(() => _highlightedBeachLoading = false);
+    }
+  }
+
+  Future<void> loadHighligtedOrganizations() async {
+    try {
+      final data = await _organizationRepository.fetchOrganizations(highlight: true);
+
+      if (mounted) {
+        setState(() {
+          _highlightedOrganizations = data;
+          _highlightedOrganizationLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint("Öne çıkarılan işletme yüklenme hatası $e");
+      if (mounted) setState(() => _highlightedOrganizationLoading = false);
     }
   }
 
@@ -139,20 +159,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> loadFeaturedOrgs() async {
-    try {
-      final data = await _featuredRepo.fetchFeaturedOrgs(orgInfo: true);
-      if (mounted) {
-        setState(() {
-          _activeFeaturedList = data.where((item) => item.active == true).toList();
-          _featuredLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _featuredLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isInitialDataLoading) return const Center(child: CircularProgressIndicator(color: Colors.orange));
@@ -176,6 +182,8 @@ class _HomePageState extends State<HomePage> {
               villageName: _eventVillageName,
             ),
             const SizedBox(height: 10),
+            VillageGrid(villages: _allVillages),
+            const SizedBox(height: 10),
             _buildContentPanel(),
           ],
         ),
@@ -198,28 +206,29 @@ class _HomePageState extends State<HomePage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1. ÖNE ÇIKANLAR
-        if (!_featuredLoading && _activeFeaturedList.isNotEmpty) ...[
-
+        // öne çıkan işletmeler(organization)
+        if (!_highlightedOrganizationLoading && _highlightedOrganizations.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: _buildSectionTitle("Öne Çıkan İşletmeler", onSeeAllTap: () => context.go('/organization')),
           ),
           const SizedBox(height: 8),
-          _buildFeaturedList(),
+          _buildHihglightedOrganization(),
           const SizedBox(height: 30),
         ],
-        
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: _buildSectionTitle("Popüler Koylar", onSeeAllTap: () => context.go('/beach')),
-        ),
-        const SizedBox(height: 8),
-        BeachGrid(
-          beaches: _beachList,
-          villages: _allVillages,
-          isLoading: _beachesLoading,
-        ),
+        // öne çıkarılan koylar(beach)
+        if (!_highlightedBeachLoading && _highlightedBeachs.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildSectionTitle("Popüler Koylar", onSeeAllTap: () => context.go('/beach')),
+          ),
+          const SizedBox(height: 8),
+          BeachGrid(
+            beaches: _highlightedBeachs,
+            villages: _allVillages,
+            isLoading: _highlightedBeachLoading
+          )
+        ],
       ],
     ),
   );
@@ -289,15 +298,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildFeaturedList() {
+  Widget _buildHihglightedOrganization() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
-        children: _activeFeaturedList.map((item) {
+        children: _highlightedOrganizations.map((item) {
           return FeaturedOrganizationCard(
             item: item,
-            onTap: () => context.go('/organization?catId=${item.organization.categoryId}')); 
+            villages: _allVillages,
+            onTap: () => context.go('/organization?catId=${item.categoryId}')
+          ); 
         }).toList()));
   }
 }

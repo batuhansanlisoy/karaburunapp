@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
+import 'package:karaburun/core/helpers/string_helpers.dart'; // capitalizeAll burada
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart'; // Map helper'ın
 
 class BeachGrid extends StatelessWidget {
   final List<Beach> beaches;
@@ -29,26 +33,28 @@ class BeachGrid extends StatelessWidget {
     if (beaches.isEmpty) return const SizedBox.shrink();
 
     double screenWidth = MediaQuery.of(context).size.width;
+    double gridHeight = 450; 
 
     return SizedBox(
-      height: 380, 
+      height: gridHeight, 
       child: GridView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        // 🌟 Paneldeki 1px padding'e güveniyoruz, burayı sıfırladık
         padding: EdgeInsets.zero, 
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: (380 / 2) / (screenWidth * 0.9), 
+          childAspectRatio: (gridHeight / 2) / (screenWidth * 0.85), 
         ),
         itemCount: beaches.length,
         itemBuilder: (context, index) {
           final beach = beaches[index];
           
           final String? coverPath = beach.cover != null ? beach.cover!['url'] : null;
-          final String imageUrl = coverPath != null ? "${ApiRoutes.fileUrl}$coverPath" : "";
+          final String imageUrl = (coverPath != null && coverPath.isNotEmpty)
+            ? "${ApiRoutes.fileUrl}$coverPath"
+            : "assets/images/no_img.png";
 
           String vName = "Karaburun";
           if (villages.isNotEmpty) {
@@ -57,9 +63,11 @@ class BeachGrid extends StatelessWidget {
           }
 
           return _BeachCard(
+            beach: beach, // Modeli komple yolluyoruz
             imageUrl: imageUrl, 
             beachName: beach.name, 
-            villageName: vName
+            villageName: vName,
+            address: beach.address,
           );
         },
       ),
@@ -68,73 +76,148 @@ class BeachGrid extends StatelessWidget {
 }
 
 class _BeachCard extends StatelessWidget {
+  final Beach beach; // Koordinatlar için lazım
   final String imageUrl;
   final String beachName;
   final String villageName;
+  final String? address;
 
   const _BeachCard({
+    required this.beach,
     required this.imageUrl, 
     required this.beachName, 
-    required this.villageName
+    required this.villageName,
+    this.address,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isAsset = imageUrl.startsWith('assets/');
+    final String? fontFamily = Theme.of(context).textTheme.bodyLarge?.fontFamily;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        image: imageUrl.isNotEmpty 
-          ? DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            )
-          : null,
-        color: Colors.grey[200],
+        color: AppColors.cardBg,
       ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.8),
-            ],
-            stops: const [0.5, 1.0],
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
           children: [
-            Text(
-              beachName.toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 13,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Row(
-              children: [
-                const Icon(Icons.location_on, color: Colors.white70, size: 10),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    villageName,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 10,
+            // 1. KATMAN: GÖRSEL
+            Positioned.fill(
+              child: isAsset 
+                ? Image.asset(imageUrl, fit: BoxFit.cover)
+                : Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/no_img.png',
+                      fit: BoxFit.cover,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
+            ),
+
+            // 2. KATMAN: SİYAH BANT
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
                 ),
-              ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                beachName.capitalizeAll(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 12.5,
+                                  fontFamily: fontFamily,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "• ${villageName.capitalizeAll()}",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: fontFamily,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            (address?.isNotEmpty ?? false) 
+                                ? address!.capitalize()
+                                : "Karaburun, İzmir",
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.95),
+                              fontSize: 10,
+                              fontFamily: fontFamily,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // --- KONUM BUTONU (YUVARLAK İÇİNDE) ---
+                    GestureDetector(
+                      onTap: () {
+                        if (beach.latitude != null && beach.longitude != null) {
+                          MapLauncher.openMap(beach.latitude!, beach.longitude!);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text(
+                                "Koy koordinatları sistemde bulunamadı.",
+                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                              ),
+                              backgroundColor: Colors.redAccent.withOpacity(0.9),
+                              behavior: SnackBarBehavior.floating,
+                              margin: const EdgeInsets.all(20),
+                              duration: const Duration(seconds: 2),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Symbols.near_me_rounded,
+                          color: AppColors.iconOrange, 
+                          size: 18,
+                          fill: 1,
+                          weight: 600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 class OrganizationModel {
   final int id;
   final int categoryId;
+  final int? villageId;
   final String name;
   final String email;
   final String phone;
@@ -10,6 +11,7 @@ class OrganizationModel {
   final String? website;
   final Map<String, dynamic>? cover;
   final List<String> ? gallery;
+  final bool highlight;
   final String address;
   final double? latitude;
   final double? longitude;
@@ -20,6 +22,7 @@ class OrganizationModel {
   OrganizationModel({
     required this.id,
     required this.categoryId,
+    this.villageId,
     required this.name,
     required this.email,
     required this.phone,
@@ -28,6 +31,7 @@ class OrganizationModel {
     required this.cover,
     required this.gallery,
     required this.address,
+    required this.highlight,
     required this.latitude,
     required this.longitude,
     required this.createdAt,
@@ -60,6 +64,7 @@ class OrganizationModel {
     return OrganizationModel(
       id: json['id'],
       categoryId: json['category_id'],
+      villageId: json['village_id'] != null ? int.tryParse(json['village_id'].toString()) : null,
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
@@ -67,6 +72,7 @@ class OrganizationModel {
       website: json['website'],
       cover: coverMap,
       gallery: galleryList,
+      highlight: json['highlight'] == true || json['highlight'] == 1,
       address: json['address'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/features/village/data/models/village_model.dart';
+import 'package:karaburun/features/village/data/repositories/village_repository.dart';
 
 import '../../data/models/activity_model.dart';
 import '../../data/models/activity_category_model.dart';
@@ -19,11 +21,14 @@ class ActivityPage extends StatefulWidget {
 class _ActivityPageState extends State<ActivityPage> {
   final repo = ActivityRepository();
   final categoryRepo = ActivityCategoryRepository();
+  final villageRepo = VillageRepository();
 
   List<Activity> list = [];
   List<ActivityCategory> categories = [];
+  List<Village> villages = [];
   List<Activity> filteredList = [];
   Map<int, ActivityCategory> categoryMap = {};
+  Map<int, Village> villageMap = {};
 
   bool loading = true;
   int? selectedCategoryId;
@@ -38,9 +43,14 @@ class _ActivityPageState extends State<ActivityPage> {
     setState(() => loading = true);
 
     categories = await categoryRepo.fetchCategories();
+    villages   = await villageRepo.fetchVillages();
 
     categoryMap = {
       for (var category in categories) category.id: category,
+    };
+
+    villageMap = {
+      for (var village in villages) village.id: village
     };
 
     list = selectedCategoryId == null
@@ -114,6 +124,7 @@ class _ActivityPageState extends State<ActivityPage> {
             child: widget_list.ActivityList(
               list: filteredList,
               categoryMap: categoryMap,
+              villageMap: villageMap,
               onTap: (item) {
                 Navigator.push(
                   context,

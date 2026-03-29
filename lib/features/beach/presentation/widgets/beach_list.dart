@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 import 'package:karaburun/core/widgets/app_card.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
@@ -27,12 +28,16 @@ class BeachList extends StatelessWidget {
 
         return AppCard(
           title: item.name,
+          explanation: item.extra?['explanation'],
           address: item.address,
           imageUrl: item.cover?['url'] != null
             ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
             : null,
           villageName: village?.name,
-          onTap: () => onTap(item)
+          onTap: () => onTap(item),
+          onNavigationTap: (item.latitude != null && item.longitude != null)
+              ? () => MapLauncher.openMap(item.latitude!, item.longitude!)
+              : null,
         );
       },
     );

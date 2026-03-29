@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 import 'package:karaburun/features/place/data/models/place_model.dart';
 import 'package:karaburun/core/widgets/app_card.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
@@ -27,12 +28,16 @@ class PlaceList extends StatelessWidget {
 
         return AppCard(
           title: item.name.capitalizeAll(),
+          explanation: item.content?.explanation,
           address: item.address.capitalize(),
           imageUrl: item.cover?['url'] != null
             ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
             : null,
           villageName: village?.name,
           onTap: () => onTap(item),
+          onNavigationTap: (item.latitude != null && item.longitude != null)
+              ? () => MapLauncher.openMap(item.latitude!, item.longitude!)
+              : null,
         );
       },
     );

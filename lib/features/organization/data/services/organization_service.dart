@@ -5,12 +5,24 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 
 class OrganizationService {
-  Future<List<OrganizationModel>> getOrganizations({ int? categoryId }) async {
+  Future<List<OrganizationModel>> getOrganizations({
+    int? categoryId,
+    bool? highlight,
+    int? villageId,
+  }) async {
     
     final Map<String, String> queryParams = {};
 
     if (categoryId != null) {
       queryParams["category_id"] = categoryId.toString();
+    }
+
+    if (highlight != null) {
+      queryParams["highlight"] = highlight.toString();
+    }
+
+    if (villageId != null) {
+      queryParams["village_id"] = villageId.toString();
     }
     
     final url = Uri.parse("${ApiRoutes.organization}/list")

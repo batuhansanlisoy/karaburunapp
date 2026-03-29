@@ -16,7 +16,9 @@ class AppColors {
   static const Color textMuted = Color(0xFF64748B);
   static const Color textLight = Color(0xFF475569);
   static const Color textOrange = Color(0xFFFF8500); 
+  static const Color textYellow = Color.fromARGB(255, 255, 171, 45); 
   
+  static const Color bgOrange = Color.fromARGB(255, 236, 152, 61); 
 
   static const Color cardBg = Color(0xFFF8FAFC);
   static const Color divider = Color(0xFFE5E7EB);
@@ -24,7 +26,7 @@ class AppColors {
   // Icon Colors
   static const Color iconOrange = Colors.deepOrangeAccent;
   static const Color iconSoftOrange = Color.fromARGB(226, 243, 145, 79);
-  static const Color iconGreen = Color(0xFF4DB6AC);
+  static const Color iconGreen = Color.fromARGB(255, 49, 150, 91);
   static const Color iconPurple =Color(0xFFBA68C8);
 
   // Background colors

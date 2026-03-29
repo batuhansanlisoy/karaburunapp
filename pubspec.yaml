@@ -29,6 +29,7 @@ flutter:
     - assets/.env
     - assets/images/transparent.png
     - assets/images/splash.png
+    - assets/images/no_img.png
 
 flutter_native_splash:
   color: "#0F172A"
