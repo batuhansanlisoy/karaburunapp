@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class MainBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -14,12 +15,11 @@ class MainBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // Marginleri daralttık, alt boşluğu bir tık azalttık
       margin: const EdgeInsets.fromLTRB(40, 0, 40, 20), 
-      height: 55, // Yüksekliği 70'ten 55'e çektik, çok daha kibar durur
+      height: 55, 
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(25), // Yüksekliğe göre yuvarlaklığı güncelledik
+        borderRadius: BorderRadius.circular(25), 
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
@@ -47,18 +47,17 @@ class MainBottomNav extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          // Seçili olanın arkasındaki o hafif renk dokunuşu
-          color: isSelected ? Colors.white.withOpacity(0.12) : Colors.transparent,
-          borderRadius: BorderRadius.circular(15),
+          color: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Icon(
           icon,
-          size: 24,
-          weight: isSelected ? 700 : 400, // Seçili olan bir tık daha kalın olsun
-          fill: 1, // İkonlar her zaman dolu (istediğin gibi)
-          color: isSelected ? Colors.white : Colors.white.withOpacity(0.4), // Seçili olmayan daha sönük
+          size: 22,
+          weight: isSelected ? 700 : 400,
+          fill: 1,
+          color: isSelected ? AppColors.iconOrange : Colors.white.withOpacity(0.5),
         ),
       ),
     );

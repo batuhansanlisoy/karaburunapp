@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart'; // Kaydırma yönü için şart
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/widgets/custom_ad_dialog.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
-  final Widget child; // GoRouter o anki sayfayı buraya enjekte eder
+  final Widget child;
 
   const MainLayout({super.key, required this.child});
 
@@ -13,10 +14,11 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  bool _isVisible = true; // Menü görünüyor mu?
+
   @override
   void initState() {
     super.initState();
-    // Reklam geciktirme mantığın aynen duruyor
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) _showCustomAd(context);
     });
@@ -33,35 +35,20 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // URL'den hangi BottomNav ikonunun seçili olduğunu hesaplayan mantık
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/organization')) return 1;
     if (location.startsWith('/place')) return 2;
-    if (location.startsWith('/activity')) return 3;
-    if (location.startsWith('/beach')) return 4;
-    return 0;
+    // Diğer sayfalar da (beach, activity) şu anki menü mantığına göre bir indekse düşmeli
+    return 0; 
   }
 
-  // Navbardaki ikonlara basınca sayfayı değiştiren fonksiyon
   void _onTabChange(int index, BuildContext context) {
     switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/organization');
-        break;
-      case 2:
-        context.go('/place');
-        break;
-      case 3:
-        context.go('/activity');
-        break;
-      case 4:
-        context.go('/beach');
-        break;
+      case 0: context.go('/home'); break;
+      case 1: context.go('/organization'); break; // Bookmark/Heart için örnek
+      case 2: context.go('/place'); break; // Settings için örnek
     }
   }
 
@@ -73,15 +60,32 @@ class _MainLayoutState extends State<MainLayout> {
         preferredSize: Size.fromHeight(100),
         child: _MainAppBar(),
       ),
-      // GoRouter'ın yönettiği aktif sayfa buraya gelir
-      body: widget.child,
-      bottomNavigationBar: MainBottomNav(
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onTabChange(index, context),
+      // Body içindeki kaydırmayı dinliyoruz
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse) {
+            if (_isVisible) setState(() => _isVisible = false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            if (!_isVisible) setState(() => _isVisible = true);
+          }
+          return true;
+        },
+        child: widget.child,
+      ),
+      // Animasyonlu kayma efekti
+      bottomNavigationBar: AnimatedSlide(
+        duration: const Duration(milliseconds: 300),
+        offset: _isVisible ? Offset.zero : const Offset(0, 2), // Aşağı doğru saklar
+        child: MainBottomNav(
+          currentIndex: _calculateSelectedIndex(context),
+          onTap: (index) => _onTabChange(index, context),
+        ),
       ),
     );
   }
 }
+
+// _MainAppBar, _Logo ve _ProfileAvatar aynı kaldı...
 
 // --- TASARIM WIDGETLARI (DEĞİŞMEDİ) ---
 
