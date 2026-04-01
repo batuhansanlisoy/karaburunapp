@@ -4,7 +4,11 @@ class FullScreenGallery extends StatefulWidget {
   final List<String> images;
   final int initialIndex;
 
-  const FullScreenGallery({super.key, required this.images, this.initialIndex = 0});
+  const FullScreenGallery({
+    super.key,
+    required this.images,
+    this.initialIndex = 0
+  });
 
   @override
   State<FullScreenGallery> createState() => _FullScreenGalleryState();

@@ -141,32 +141,14 @@ class FeaturedOrganizationCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          if (item.latitude != null && item.longitude != null) {
-                             MapLauncher.openMap(item.latitude!, item.longitude!);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                  "İşletme koordinatları sistemde bulunamadı.",
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                                ),
-                                backgroundColor: Colors.redAccent.withOpacity(0.9),
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.all(20),
-                                duration: const Duration(seconds: 2),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                            );
-                          }
-                        },
+                        onTap: () => MapLauncher.openMap(context, item.latitude, item.longitude),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.15),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Symbols.near_me_rounded,
                             color: AppColors.iconOrange,
                             size: 18,

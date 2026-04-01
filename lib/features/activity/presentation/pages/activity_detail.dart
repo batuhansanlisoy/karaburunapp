@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/helpers/string_helpers.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
@@ -136,21 +138,25 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.activity.name,
+                          widget.activity.name.capitalizeAll(),
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textMain,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       const TabBar(
                         isScrollable: true,
                         tabAlignment: TabAlignment.center,
-                        labelColor: AppColors.primary,
-                        indicatorColor: AppColors.primary,
-                        unselectedLabelColor: AppColors.textMuted,
+                        labelColor: AppColors.textOrange,
+                        indicatorColor: AppColors.textOrange,
+                        unselectedLabelColor: AppColors.textMain,
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500
+                        ),
                         tabs: [
                           Tab(text: "Etkinlik Takvimi"),
                           Tab(text: "Koylar"),
@@ -168,10 +174,20 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                             DistanceCardList(
                               items: _nearBeaches,
                               controller: scrollController,
-                              icon: Icons.beach_access_rounded,
-                              iconColor: AppColors.iconGreen,
                               emptyMessage: "Yakınlarda koy bulunamadı",
                               getName: (item) => _beachList.firstWhere((b) => b.id == item.beachId).name,
+                              getCoverUrl: (item) {
+                                final beach = _beachList.firstWhere((b) => b.id == item.beachId);
+                                if (beach.cover != null && beach.cover!['url'] != null) {
+                                  return "${ApiRoutes.fileUrl}${beach.cover!['url']}";
+                                }
+                                return null;
+                              },
+                              onRouteTap: (item) {
+                                final target = _beachList.firstWhere((p) => p.id == item.beachId);
+
+                                MapLauncher.openMap(context, target.latitude, target.longitude);
+                              },
                               getDistance: (item) => item.distanceMeter,
                             ),
 
@@ -179,10 +195,20 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                             DistanceCardList(
                               items: _nearPlaces,
                               controller: scrollController,
-                              icon: Icons.explore_rounded,
-                              iconColor: AppColors.iconSoftOrange,
                               emptyMessage: "Yakınlarda turistik yer bulunamadı",
                               getName: (item) => _placeList.firstWhere((p) => p.id == item.placeId).name,
+                              getCoverUrl: (item) {
+                                final place = _placeList.firstWhere((p) => p.id == item.placeId);
+                                if (place.cover != null && place.cover!['url'] != null) {
+                                  return "${ApiRoutes.fileUrl}${place.cover!['url']}";
+                                }
+                                return null;
+                              },
+                              onRouteTap: (item) {
+                                final target = _placeList.firstWhere((b) => b.id == item.placeId);
+
+                                MapLauncher.openMap(context, target.latitude, target.longitude);
+                              },
                               getDistance: (item) => item.distanceMeter,
                             ),
 

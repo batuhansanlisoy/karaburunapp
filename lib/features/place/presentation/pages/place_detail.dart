@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/helpers/map_launcher.dart';
+import 'package:karaburun/core/helpers/string_helpers.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/distance_card_list.dart';
@@ -134,21 +135,25 @@ class _PlaceDetailState extends State<PlaceDetail> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.place.name,
+                          widget.place.name.capitalizeAll(),
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textMain,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       const TabBar(
                         isScrollable: true,
                         tabAlignment: TabAlignment.center,
-                        labelColor: AppColors.primary,
-                        indicatorColor: AppColors.primary,
-                        unselectedLabelColor: AppColors.textMuted,
+                        labelColor: AppColors.textOrange,
+                        indicatorColor: AppColors.textOrange,
+                        unselectedLabelColor: AppColors.textMain,
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500
+                        ),
                         tabs: [
                           Tab(text: "Etkinlik"),
                           Tab(text: "Koy"),
@@ -163,27 +168,37 @@ class _PlaceDetailState extends State<PlaceDetail> {
                              DistanceCardList(
                               items: _nearActivities,
                               controller: scrollController,
-                              icon: Icons.celebration,
-                              iconColor: AppColors.iconPurple,
                               emptyMessage: "Yakınlarda etkinlik bulunamadı",
                               getName: (item) => _activityList.firstWhere((b) => b.id == item.activityId).name,
                               getDistance: (item) => item.distanceMeter,
+                              getCoverUrl: (item) {
+                                final activity = _activityList.firstWhere((p) => p.id == item.activityId);
+                                if (activity.cover != null && activity.cover!['url'] != null) {
+                                  return "${ApiRoutes.fileUrl}${activity.cover!['url']}";
+                                }
+                                return null;
+                              },
                               onRouteTap: (item) {
                                 final target = _activityList.firstWhere((b) => b.id == item.activityId);
-                                MapLauncher.openMap(target.latitude ?? 0.0, target.longitude ?? 0.0);
+                                MapLauncher.openMap(context, target.latitude, target.longitude);
                               },
                             ),
                             DistanceCardList(
                               items: _nearBeaches,
                               controller: scrollController,
-                              icon: Icons.beach_access_rounded,
-                              iconColor: AppColors.iconGreen,
                               emptyMessage: "Yakınlarda koy bulunamadı",
                               getName: (item) => _beachList.firstWhere((b) => b.id == item.beachId).name,
                               getDistance: (item) => item.distanceMeter,
+                              getCoverUrl: (item) {
+                                final beach = _beachList.firstWhere((p) => p.id == item.beachId);
+                                if (beach.cover != null && beach.cover!['url'] != null) {
+                                  return "${ApiRoutes.fileUrl}${beach.cover!['url']}";
+                                }
+                                return null;
+                              },
                               onRouteTap: (item) {
                                 final target = _beachList.firstWhere((b) => b.id == item.beachId);
-                                MapLauncher.openMap(target.latitude ?? 0.0, target.longitude ?? 0.0);
+                                MapLauncher.openMap(context, target.latitude, target.longitude);
                               },
                             ),
                             GalleryGrid(images: gallery, controller: scrollController),

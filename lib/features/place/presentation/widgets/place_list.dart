@@ -35,9 +35,7 @@ class PlaceList extends StatelessWidget {
             : null,
           villageName: village?.name,
           onTap: () => onTap(item),
-          onNavigationTap: (item.latitude != null && item.longitude != null)
-              ? () => MapLauncher.openMap(item.latitude!, item.longitude!)
-              : null,
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
         );
       },
     );

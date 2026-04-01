@@ -41,10 +41,7 @@ class ActivityList extends StatelessWidget {
           begin: item.begin,
           end: item.end,
           onTap: () => onTap(item),
-          // --- NAVİGASYON BURADA TETİKLENİYOR ---
-          onNavigationTap: (item.latitude != null && item.longitude != null)
-              ? () => MapLauncher.openMap(item.latitude!, item.longitude!)
-              : null,
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
         );
       },
     );

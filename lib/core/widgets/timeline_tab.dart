@@ -28,13 +28,13 @@ class TimelineTab extends StatelessWidget {
           TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.center,
-            indicatorColor: AppColors.primary,
-            indicatorWeight: 3,
-            dividerHeight: 1,
-            dividerColor: AppColors.divider.withOpacity(0.3),
-            labelColor: AppColors.primary,
+            indicatorColor: AppColors.secondary,
+            labelColor: AppColors.secondary,
+            indicatorWeight: 0.5,
+            dividerHeight: 0,
+            indicatorPadding: const EdgeInsets.only(bottom: 8),
             unselectedLabelColor: AppColors.textMuted,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 11),
             tabs: timeline
                 .map<Widget>((day) => Tab(
                       text: DateHelper.formatToDayMonthYear(day.date),

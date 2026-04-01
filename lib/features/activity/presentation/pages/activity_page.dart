@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
 import 'package:karaburun/features/village/data/repositories/village_repository.dart';
-
 import '../../data/models/activity_model.dart';
 import '../../data/models/activity_category_model.dart';
 import '../../data/repositories/activity_repository.dart';

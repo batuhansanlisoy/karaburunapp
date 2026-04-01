@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/helpers/string_helpers.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/distance_card_list.dart';
@@ -135,21 +137,25 @@ class _BeachDetailState extends State<BeachDetail> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.beach.name,
+                          widget.beach.name.capitalizeAll(),
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textMain,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       const TabBar(
                         isScrollable: true,
                         tabAlignment: TabAlignment.center,
-                        labelColor: AppColors.primary,
-                        indicatorColor: AppColors.primary,
-                        unselectedLabelColor: AppColors.textMuted,
+                        labelColor: AppColors.textOrange,
+                        indicatorColor: AppColors.textOrange,
+                        unselectedLabelColor: AppColors.textMain,
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500
+                        ),
                         tabs: [
                           Tab(text: "Etkinlik"),
                           Tab(text: "Turistik"),
@@ -158,26 +164,44 @@ class _BeachDetailState extends State<BeachDetail> {
                       ),
                       Expanded(
                         child: _isLoading
-                          ? Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator())
                           : TabBarView(
                             children: [
                               DistanceCardList(
                                 items: _nearActivities,
                                 controller: scrollController,
-                                icon: Icons.celebration,
-                                iconColor: AppColors.iconPurple,
                                 emptyMessage: "Yakınlarda etkinlik bulunamadı",
                                 getName: (item) => _activityList.firstWhere((b) => b.id == item.activityId).name,
                                 getDistance: (item) => item.distanceMeter,
+                                getCoverUrl: (item) {
+                                  final activity = _activityList.firstWhere((p) => p.id == item.activityId);
+                                  if (activity.cover != null && activity.cover!['url'] != null) {
+                                    return "${ApiRoutes.fileUrl}${activity.cover!['url']}";
+                                  }
+                                  return null;
+                                },
+                                onRouteTap: (item) {
+                                  final target = _activityList.firstWhere((b) => b.id == item.activityId);
+                                  MapLauncher.openMap(context, target.latitude, target.longitude);
+                                },
                               ),
                               DistanceCardList(
                                 items: _nearPlaces,
                                 controller: scrollController,
-                                icon: Icons.explore_rounded,
-                                iconColor: AppColors.iconSoftOrange,
                                 emptyMessage: "Yakınlarda turistik yer bulunamadı",
                                 getName: (item) => _placeList.firstWhere((p) => p.id == item.placeId).name,
                                 getDistance: (item) => item.distanceMeter,
+                                getCoverUrl: (item) {
+                                  final place = _placeList.firstWhere((p) => p.id == item.placeId);
+                                  if (place.cover != null && place.cover!['url'] != null) {
+                                    return "${ApiRoutes.fileUrl}${place.cover!['url']}";
+                                  }
+                                  return null;
+                                },
+                                onRouteTap: (item) {
+                                  final target = _placeList.firstWhere((b) => b.id == item.placeId);
+                                  MapLauncher.openMap(context, target.latitude, target.longitude);
+                                },
                               ),
                               GalleryGrid(images: gallery, controller: scrollController),
                             ],
