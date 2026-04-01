@@ -73,11 +73,11 @@ class TimelineTab extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.divider.withOpacity(0.5)),
+            border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
             // 🌟 Çok hafif bir gölge kartı canlandırır
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )
@@ -89,7 +89,7 @@ class TimelineTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -111,7 +111,7 @@ class TimelineTab extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary.withOpacity(0.8),
+                        color: AppColors.primary.withValues(alpha: 0.8),
                         letterSpacing: 0.5,
                       ),
                     ),

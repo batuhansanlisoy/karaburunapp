@@ -29,7 +29,7 @@ class AppChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? colorScheme.secondary.withOpacity(0.5)
+                ? colorScheme.secondary.withValues(alpha: 0.5)
                 : Colors.transparent,
             width: 2,
           ),

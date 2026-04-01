@@ -83,11 +83,11 @@ class _VillageGridState extends State<VillageGrid> {
                   width: itemWidth,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 59, 59, 58).withOpacity(0.9),
+                    color: const Color.fromARGB(255, 59, 59, 58).withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

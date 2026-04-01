@@ -46,7 +46,7 @@ class UpcomingEventBanner extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 const Color.fromARGB(255, 92, 100, 102),
-                const Color(0xFF000000).withOpacity(0.85),
+                const Color(0xFF000000).withValues(alpha: 0.85),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -54,7 +54,7 @@ class UpcomingEventBanner extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black.withValues(alpha: 0.15),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
@@ -69,9 +69,9 @@ class UpcomingEventBanner extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: Colors.orange.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.withOpacity(0.5), width: 0.5),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 0.5),
                   ),
                   child: Text(
                     category,
@@ -113,7 +113,7 @@ class UpcomingEventBanner extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   location,
-                                  style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -122,14 +122,14 @@ class UpcomingEventBanner extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             formattedDate,
-                            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
                           ),
                         ],
                       ),
                     ),
                     
                     // Sağ: Ok işareti
-                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.3), size: 14),
+                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withValues(alpha: 0.3), size: 14),
                   ],
                 ),
               ),
@@ -146,9 +146,9 @@ class UpcomingEventBanner extends StatelessWidget {
       width: 55,
       height: 65,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

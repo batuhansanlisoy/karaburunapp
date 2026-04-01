@@ -44,7 +44,7 @@ class CustomAdDialog extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7), // Biraz şeffaflık şık durur
+                  color: Colors.white.withValues(alpha: 0.7), // Biraz şeffaflık şık durur
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

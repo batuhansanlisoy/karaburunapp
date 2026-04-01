@@ -106,7 +106,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
               ),
             Container(
               height: MediaQuery.of(context).size.height * 0.35,
-              color: AppColors.bgDark.withOpacity(0.45),
+              color: AppColors.bgDark.withValues(alpha: 0.45),
             ),
             SafeArea(
               child: IconButton(

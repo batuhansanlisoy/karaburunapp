@@ -78,7 +78,7 @@ class DistanceCardList extends StatelessWidget {
                   child: Container(
                     width: 50,
                     height: 50,
-                    color: AppColors.divider.withOpacity(0.2),
+                    color: AppColors.divider.withValues(alpha: 0.2),
                     child: (fullImageUrl != null && fullImageUrl.isNotEmpty)
                         ? Image.network(
                             fullImageUrl,
@@ -135,7 +135,7 @@ class DistanceCardList extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.06), 
+                      color: Colors.black.withValues(alpha: 0.06), 
                       shape: BoxShape.circle
                     ),
                     child: const Center(
@@ -162,7 +162,7 @@ class DistanceCardList extends StatelessWidget {
       errorBuilder: (context, error, stackTrace) {
         return Container(
           alignment: Alignment.center,
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
           child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
         );
       },

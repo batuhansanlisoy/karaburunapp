@@ -22,7 +22,7 @@ class MainBottomNav extends StatelessWidget {
         borderRadius: BorderRadius.circular(25), // Yüksekliğe göre yuvarlaklığı güncelledik
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -50,7 +50,7 @@ class MainBottomNav extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           // Seçili olanın arkasındaki o hafif renk dokunuşu
-          color: isSelected ? Colors.white.withOpacity(0.12) : Colors.transparent,
+          color: isSelected ? Colors.white.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Icon(
@@ -58,7 +58,7 @@ class MainBottomNav extends StatelessWidget {
           size: 24,
           weight: isSelected ? 700 : 400, // Seçili olan bir tık daha kalın olsun
           fill: 1, // İkonlar her zaman dolu (istediğin gibi)
-          color: isSelected ? Colors.white : Colors.white.withOpacity(0.4), // Seçili olmayan daha sönük
+          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.4), // Seçili olmayan daha sönük
         ),
       ),
     );

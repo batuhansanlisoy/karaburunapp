@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> {
         topLeft: Radius.circular(35), 
         topRight: Radius.circular(35)
       ),
-      border: Border.all(color: Colors.black.withOpacity(0.03), width: 1),
+      border: Border.all(color: Colors.black.withValues(alpha: 0.03), width: 1),
     ),
     padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 25),
     child: Column(

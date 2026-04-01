@@ -54,10 +54,10 @@ class _AppCardState extends State<AppCard> {
       decoration: BoxDecoration(
         color: widget.contentBgColor ?? Colors.white,
         borderRadius: BorderRadius.circular(widget.borderRadius ?? 20),
-        border: Border.all(color: Colors.black.withOpacity(0.08), width: 1.5),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.08), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -118,7 +118,7 @@ class _AppCardState extends State<AppCard> {
                             widget.explanation!,
                             style: TextStyle(
                               fontSize: 13, 
-                              color: AppColors.textMain.withOpacity(0.8),
+                              color: AppColors.textMain.withValues(alpha:  0.8),
                               height: 1.4
                             ),
                           )
@@ -138,7 +138,7 @@ class _AppCardState extends State<AppCard> {
                         duration: const Duration(milliseconds: 200),
                         child: Icon(
                           Symbols.keyboard_arrow_down_rounded,
-                          color: AppColors.textMain.withOpacity(0.3),
+                          color: AppColors.textMain.withValues(alpha:  0.3),
                           size: 24,
                         ),
                       ),
@@ -182,8 +182,18 @@ class _AppCardState extends State<AppCard> {
       child: Container(
         width: 32,
         height: 32,
-        decoration: BoxDecoration(color: Colors.black.withOpacity(0.06), shape: BoxShape.circle),
-        child: const Center(child: Icon(Symbols.near_me_rounded, color: AppColors.iconOrange, size: 16, fill: 1)),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha:  0.06),
+          shape: BoxShape.circle
+        ),
+        child: const Center(
+          child: Icon(
+            Symbols.near_me_rounded,
+            color: AppColors.iconOrange,
+            size: 16,
+            fill: 1
+          )
+        ),
       ),
     );
   }
@@ -216,7 +226,7 @@ class _AppCardState extends State<AppCard> {
         if (widget.categoryName != null)
           Positioned(top: 10, left: 10, child: _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange)),
         if (widget.villageName != null)
-          Positioned(top: 10, right: 10, child: _badge(widget.villageName!.capitalizeAll(), Colors.black.withOpacity(0.6), isVillage: true)),
+          Positioned(top: 10, right: 10, child: _badge(widget.villageName!.capitalizeAll(), Colors.black.withValues(alpha: 0.6), isVillage: true)),
       ],
     );
   }
@@ -224,7 +234,7 @@ class _AppCardState extends State<AppCard> {
   Widget _badge(String text, Color color, {bool isVillage = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30), border: isVillage ? Border.all(color: Colors.white.withOpacity(0.2)) : null),
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30), border: isVillage ? Border.all(color: Colors.white.withValues(alpha: 0.2)) : null),
       child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
     );
   }
