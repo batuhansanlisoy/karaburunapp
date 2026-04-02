@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/layout/main_layout.dart';
+import 'package:karaburun/features/favorite/presentation/pages/favorite_page.dart';
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
 // SplashScreen'i import etmeyi unutma, yolu nereye açtıysan ona göre düzelt
-import 'package:karaburun/core/widgets/splash_screen.dart'; 
+import 'package:karaburun/core/widgets/splash_screen.dart';
+import 'package:karaburun/features/setting/presentation/pages/setting_page.dart'; 
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -40,6 +42,14 @@ final appRouter = GoRouter(
             final catId = state.uri.queryParameters['catId'];
             return OrganizationPage(categoryId: int.tryParse(catId ?? ''));
           },
+        ),
+        GoRoute(
+          path: '/setting',
+          builder: (context, state) => const SettingPage(),
+        ),
+        GoRoute(
+          path: '/favorite',
+          builder: (context, state) => const FavoritePage(),
         ),
         GoRoute(
           path: '/place',

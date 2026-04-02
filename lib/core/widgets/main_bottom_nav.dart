@@ -15,8 +15,8 @@ class MainBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // Marginleri daralttık, alt boşluğu bir tık azalttık
-      margin: const EdgeInsets.fromLTRB(40, 0, 40, 20), 
-      height: 55, // Yüksekliği 70'ten 55'e çektik, çok daha kibar durur
+      margin: const EdgeInsets.fromLTRB(40, 0, 40, 10), 
+      height: 50, // Yüksekliği 70'ten 55'e çektik, çok daha kibar durur
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(25), // Yüksekliğe göre yuvarlaklığı güncelledik

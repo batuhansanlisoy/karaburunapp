@@ -37,10 +37,8 @@ class _MainLayoutState extends State<MainLayout> {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/organization')) return 1;
-    if (location.startsWith('/place')) return 2;
-    if (location.startsWith('/activity')) return 3;
-    if (location.startsWith('/beach')) return 4;
+    if (location.startsWith('/favorite')) return 1;
+    if (location.startsWith('/setting')) return 2;
     return 0;
   }
 
@@ -51,16 +49,10 @@ class _MainLayoutState extends State<MainLayout> {
         context.go('/home');
         break;
       case 1:
-        context.go('/organization');
+        context.go('/favorite');
         break;
       case 2:
-        context.go('/place');
-        break;
-      case 3:
-        context.go('/activity');
-        break;
-      case 4:
-        context.go('/beach');
+        context.go('/setting');
         break;
     }
   }
