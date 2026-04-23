@@ -9,6 +9,8 @@ class AppCard extends StatefulWidget {
   final String? explanation;
   final String? address;
   final String? imageUrl;
+  final String? email;
+  final String? phone;
   final double? borderRadius;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
@@ -16,10 +18,12 @@ class AppCard extends StatefulWidget {
   final Color? contentBgColor;
   final VoidCallback? onTap;
   final VoidCallback? onNavigationTap;
+  final VoidCallback? onCallTap;
   final String? categoryName;
   final String? villageName;
   final DateTime? begin;
   final DateTime? end;
+  final List<dynamic>? products;
 
   const AppCard({
     super.key,
@@ -27,6 +31,8 @@ class AppCard extends StatefulWidget {
     this.explanation,
     this.address,
     this.imageUrl,
+    this.email,
+    this.phone,
     this.borderRadius,
     this.margin,
     this.padding,
@@ -38,6 +44,8 @@ class AppCard extends StatefulWidget {
     this.end,
     this.onTap,
     this.onNavigationTap,
+    this.onCallTap,
+    this.products,
   });
 
   @override
@@ -67,7 +75,7 @@ class _AppCardState extends State<AppCard> {
         borderRadius: BorderRadius.circular(widget.borderRadius ?? 20),
         child: Column(
           children: [
-            // --- ÜST KISIM (Tıklayınca Detaya Gider) ---
+            // --- ÜST KISIM ---
             InkWell(
               onTap: widget.onTap,
               child: Column(
@@ -75,21 +83,74 @@ class _AppCardState extends State<AppCard> {
                 children: [
                   _buildImageStack(),
                   Padding(
-                    padding: widget.padding ?? const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                    padding: widget.padding ?? const EdgeInsets.fromLTRB(12, 12, 12, 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeaderRow(),
-                        const SizedBox(height: 8),
-                        if (widget.address != null)
-                          _buildSimpleText(widget.address!.capitalize(), 12.5, FontWeight.w500),
+
+                        // Ürünler (Yatay Kaydırılabilir)
+                        if (widget.products != null && widget.products!.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            height: 24,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: widget.products!.length,
+                              separatorBuilder: (context, index) => const SizedBox(width: 6),
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.iconGreen.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: AppColors.iconGreen.withValues(alpha: 0.3),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      widget.products![index].toString().capitalize(),
+                                      style: const TextStyle(
+                                        color: AppColors.iconGreen,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+
+                        // Telefon
+                        if (widget.phone != null && widget.phone!.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _buildSimpleText(widget.phone!.formatPhoneNumber(), 12, FontWeight.w500, icon: Symbols.call_rounded),
+                        ],
+
+                        // Email
+                        if (widget.email != null && widget.email!.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          _buildSimpleText(widget.email!.toLowerCase(), 12, FontWeight.w500, icon: Symbols.mail_rounded),
+                        ],
+                        
+                        // Adres
+                        if (widget.address != null && widget.address!.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          _buildSimpleText(widget.address!.capitalize(), 12, FontWeight.w500, icon: Symbols.location_on_rounded),
+                        ],
+
+                        // Tarih (Etkinlikler için)
                         if (widget.begin != null && widget.end != null) ...[
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 10),
                           _buildSimpleText(
                             "${DateHelper.formatDateTime(widget.begin!)} - ${DateHelper.formatDateTime(widget.end!)}",
                             11,
                             FontWeight.w700,
-                            isDate: true,
+                            icon: Symbols.calendar_month_rounded,
                           ),
                         ],
                       ],
@@ -99,11 +160,10 @@ class _AppCardState extends State<AppCard> {
               ),
             ),
 
-            // --- ALT KISIM (Açılır Kapanır Explanation & Ok Butonu) ---
+            // --- ALT KISIM (Açıklama Alanı) ---
             if (widget.explanation != null)
               Column(
                 children: [
-                  // Animasyonlu Açıklama Alanı
                   AnimatedSize(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.fastOutSlowIn,
@@ -126,12 +186,11 @@ class _AppCardState extends State<AppCard> {
                     ),
                   ),
                   
-                  // TAM ORTADAKİ OK BUTONU
                   GestureDetector(
                     onTap: () => setState(() => _isExpanded = !_isExpanded),
                     behavior: HitTestBehavior.opaque,
                     child: Container(
-                      width: double.infinity, // Geniş tıklama alanı
+                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: AnimatedRotation(
                         turns: _isExpanded ? 0.5 : 0,
@@ -152,62 +211,47 @@ class _AppCardState extends State<AppCard> {
     );
   }
 
-  // Helper metodlar
   Widget _buildHeaderRow() {
+    return Text(
+      widget.title.capitalizeAll(),
+      style: TextStyle(
+        fontSize: widget.titleFontSize ?? 16,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textMain,
+        height: 1.1,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildSimpleText(String text, double size, FontWeight weight, {IconData? icon}) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: Text(
-            widget.title.capitalizeAll(),
-            style: TextStyle(
-              fontSize: widget.titleFontSize ?? 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textMain,
-              height: 1.1,
+        if (icon != null) ...[
+          Icon(
+            icon,
+            size: 14,
+            fill: 1,
+            weight: 600,
+            color: AppColors.textMain.withValues(alpha: 0.4)
             ),
-            maxLines: 2,
+          const SizedBox(width: 6),
+        ],
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: size,
+              color: AppColors.textMain.withValues(alpha: 1),
+              fontWeight: weight,
+            ),
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (widget.onNavigationTap != null)
-          _buildNavButton(),
       ],
-    );
-  }
-
-  Widget _buildNavButton() {
-    return GestureDetector(
-      onTap: widget.onNavigationTap,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha:  0.06),
-          shape: BoxShape.circle
-        ),
-        child: const Center(
-          child: Icon(
-            Symbols.near_me_rounded,
-            color: AppColors.iconOrange,
-            size: 16,
-            fill: 1
-          )
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSimpleText(String text, double size, FontWeight weight, {bool isDate = false}) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: size,
-        color:AppColors.textMain,
-        fontWeight: weight,
-      ),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -218,15 +262,88 @@ class _AppCardState extends State<AppCard> {
             ? Image.network(
                 widget.imageUrl!,
                 width: double.infinity,
-                height: 200,
+                height: 280,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => _placeholder(),
               )
             : _placeholder(),
+        
         if (widget.categoryName != null)
-          Positioned(top: 10, left: 10, child: _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange)),
+          Positioned(top: 12, left: 12, child: _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange)),
+        
         if (widget.villageName != null)
-          Positioned(top: 10, right: 10, child: _badge(widget.villageName!.capitalizeAll(), Colors.black.withValues(alpha: 0.6), isVillage: true)),
+          Positioned(top: 12, right: 12, child: _badge(widget.villageName!.capitalizeAll(), Colors.black.withValues(alpha: 0.6), isVillage: true)),
+
+        // --- Aksiyon Butonları (Sağ Alt) ---
+        Positioned(
+          bottom: 12,
+          right: 12,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ARİMA BUTONU (YEŞİL)
+              if (widget.onCallTap != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: widget.onCallTap,
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Symbols.call_rounded,
+                          color: AppColors.iconGreen, // Senin temandaki yeşil
+                          size: 20,
+                          fill: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              // NAVİGASYON BUTONU (TURUNCU)
+              if (widget.onNavigationTap != null)
+                GestureDetector(
+                  onTap: widget.onNavigationTap,
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Symbols.near_me_rounded,
+                        color: AppColors.iconOrange,
+                        size: 20,
+                        fill: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -234,12 +351,21 @@ class _AppCardState extends State<AppCard> {
   Widget _badge(String text, Color color, {bool isVillage = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(30), border: isVillage ? Border.all(color: Colors.white.withValues(alpha: 0.2)) : null),
+      decoration: BoxDecoration(
+        color: color, 
+        borderRadius: BorderRadius.circular(30), 
+        border: isVillage ? Border.all(color: Colors.white.withValues(alpha: 0.2)) : null
+      ),
       child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
     );
   }
 
   Widget _placeholder() {
-    return Container(width: double.infinity, height: 200, color: const Color(0xFFF1F5F9), child: Icon(Symbols.image, size: 40, color: Colors.blueGrey.shade200));
+    return Container(
+      width: double.infinity, 
+      height: 280, // Placeholder boyutu da resimle eşitlendi
+      color: const Color(0xFFF1F5F9), 
+      child: Icon(Symbols.image, size: 40, color: Colors.blueGrey.shade200)
+    );
   }
 }

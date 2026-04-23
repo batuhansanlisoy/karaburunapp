@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:karaburun/features/organization/data/models/organization_subcategory_model.dart';
+
 class OrganizationModel {
   final int id;
   final int categoryId;
@@ -12,12 +14,14 @@ class OrganizationModel {
   final Map<String, dynamic>? cover;
   final List<String> ? gallery;
   final bool highlight;
+  final bool isActive;
   final String address;
   final double? latitude;
   final double? longitude;
   final DateTime createdAt;
   final DateTime updatedAt;
   final String categoryName;
+  final List<OrganizationSubcategoryModel>? subCategories;
 
   OrganizationModel({
     required this.id,
@@ -32,17 +36,25 @@ class OrganizationModel {
     required this.gallery,
     required this.address,
     required this.highlight,
+    required this.isActive,
     required this.latitude,
     required this.longitude,
     required this.createdAt,
     required this.updatedAt,
     required this.categoryName,
+    this.subCategories
   });
 
   factory OrganizationModel.fromJson(Map<String, dynamic> json) {
     
     final contentMap = json['content'] != null
       ? Map<String, dynamic>.from(json['content'])
+      : null;
+    
+    final subCategoriesList = json['sub_categories'] != null
+      ? (json['sub_categories'] as List)
+          .map((i) => OrganizationSubcategoryModel.fromJson(i))
+          .toList()
       : null;
 
     Map<String, dynamic>? coverMap;
@@ -73,12 +85,14 @@ class OrganizationModel {
       cover: coverMap,
       gallery: galleryList,
       highlight: json['highlight'] == true || json['highlight'] == 1,
+      isActive: json['is_active'] == true || json['is_active'] == 1,
       address: json['address'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       categoryName: json['category_name'] ?? '',
+      subCategories: subCategoriesList
     );
   }
 }

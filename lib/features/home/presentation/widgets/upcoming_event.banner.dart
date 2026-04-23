@@ -33,7 +33,6 @@ class UpcomingEventBanner extends StatelessWidget {
     final String eventName = event!.name.capitalize();
     final String category = (categoryName ?? "Etkinlik").capitalize();
     final String location = (villageName ?? "Karaburun Merkez").capitalizeAll();
-    final String formattedDate = "${event!.begin.day} ${_monthName(event!.begin.month)} ${event!.begin.year}";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 20),
@@ -85,7 +84,7 @@ class UpcomingEventBanner extends StatelessWidget {
                 child: Row(
                   children: [
                     // Sol taraf: Takvim İkonu Grubu
-                    _buildDateIcon(event!.begin.day.toString(), _monthName(event!.begin.month).substring(0, 3)),
+                    _buildDateIcon(event!.begin.day.toString(), _monthName(event!.begin.month).substring(0, 5)),
                     
                     const SizedBox(width: 16),
                     
@@ -119,11 +118,6 @@ class UpcomingEventBanner extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            formattedDate,
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11),
-                          ),
                         ],
                       ),
                     ),
@@ -143,7 +137,7 @@ class UpcomingEventBanner extends StatelessWidget {
   // Takvim stili ikon widget'ı
   Widget _buildDateIcon(String day, String month) {
     return Container(
-      width: 55,
+      width: 65,
       height: 65,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),

@@ -55,13 +55,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   // LOGO
                   Image.asset(
                     'assets/images/splash.png',
-                    width: MediaQuery.of(context).size.width, // Hafif küçülttük
+                    width: MediaQuery.of(context).size.width,
                     fit: BoxFit.fill,
                   ),
 
                   // KARABURUNGO YAZISI
                   Transform.translate(
-                    offset: const Offset(0, -50), // Logoya daha da yaklaştırdık
+                    offset: const Offset(0, -50),
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(

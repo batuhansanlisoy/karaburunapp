@@ -4,6 +4,8 @@ import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/activity/data/models/activity_category_model.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
+import 'package:karaburun/features/local_producer/data/models/local_producer_model.dart';
+import 'package:karaburun/features/local_producer/data/repositories/local_producer_repository.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
 import 'package:karaburun/features/home/presentation/widgets/beach_grid.dart';
@@ -14,6 +16,7 @@ import 'package:karaburun/features/organization/data/repositories/organization_c
 import 'package:karaburun/features/featured/data/repositories/featured_organization_service.dart';
 import 'package:karaburun/features/village/data/repositories/village_repository.dart';
 import 'package:karaburun/features/featured/presentation/widgets/featured_organization_card.dart';
+import 'package:karaburun/features/local_producer/presentation/widgets/highligted_local_producer_card.dart';
 import 'package:karaburun/features/home/presentation/widgets/category_card.dart';
 import 'package:karaburun/features/home/presentation/widgets/upcoming_event.banner.dart';
 import 'package:karaburun/features/home/presentation/widgets/village_grid.dart';
@@ -35,11 +38,13 @@ class _HomePageState extends State<HomePage> {
   final VillageRepository _villageRepo = VillageRepository();
   final BeachRepository _beachRepo = BeachRepository();
   final OrganizationRepository _organizationRepository = OrganizationRepository();
+  final LocalProducerRepository _localProducerRepository = LocalProducerRepository();
 
   List<Village> _allVillages = [];
   List<ActivityCategory> _activityCategories = [];
   List<Map<String, dynamic>> _orgCategoriesList = [];
   List<OrganizationModel> _highlightedOrganizations = [];
+  List<LocalProducerModel> _highligtedLocalProducers = [];
   List<Beach> _highlightedBeachs = [];
   Activity? _upcomingEvent;
 
@@ -50,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   bool _eventLoading = true;
   bool _highlightedBeachLoading = true;
   bool _highlightedOrganizationLoading = true;
+  bool _highlightedLocalProducerLoading = true;
 
   @override
   void initState() {
@@ -76,6 +82,7 @@ class _HomePageState extends State<HomePage> {
       loadUpcomingEvent(),
       loadHighligtedOrganizations(),
       loadHighligtedBeaches(),
+      loadHiglightedLocalProducers()
     ]);
   }
 
@@ -97,7 +104,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadHighligtedOrganizations() async {
     try {
-      final data = await _organizationRepository.fetchOrganizations(highlight: true);
+      final data = await _organizationRepository.fetchOrganizations(highlight: true, isActive: true);
 
       if (mounted) {
         setState(() {
@@ -108,6 +115,25 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       debugPrint("Öne çıkarılan işletme yüklenme hatası $e");
       if (mounted) setState(() => _highlightedOrganizationLoading = false);
+    }
+  }
+
+  Future<void> loadHiglightedLocalProducers() async {
+    try {
+      final data = await _localProducerRepository.fetchLocalProducer(highlight: true, isActive: true);
+
+      if (mounted) {
+        setState(() {
+            _highligtedLocalProducers = data;
+            _highlightedLocalProducerLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _highlightedLocalProducerLoading = false;
+        });
+      }
     }
   }
 
@@ -177,7 +203,12 @@ class _HomePageState extends State<HomePage> {
             UpcomingEventBanner(
               event: _upcomingEvent,
               isLoading: _eventLoading,
-              onTap: () => context.go('/activity'),
+              onTap: () {
+    if (_upcomingEvent != null) {
+      // GoRouter üzerinden detay sayfasına 'extra' ile objeyi gönderiyoruz
+      context.push('/activity/detail', extra: _upcomingEvent);
+    }
+  },
               categoryName: _eventCategoryName,
               villageName: _eventVillageName,
             ),
@@ -207,6 +238,16 @@ class _HomePageState extends State<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // öne çıkan işletmeler(organization)
+        if (!_highlightedLocalProducerLoading && _highligtedLocalProducers.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildSectionTitle("Öne Çıkan Yerel Üreticiler", onSeeAllTap: () => context.go('/local_producer')),
+          ),
+          const SizedBox(height: 8),
+          _buildHihglightedLocalProducer(),
+          const SizedBox(height: 30)
+
+        ],
         if (!_highlightedOrganizationLoading && _highlightedOrganizations.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -308,6 +349,20 @@ class _HomePageState extends State<HomePage> {
             item: item,
             villages: _allVillages,
             onTap: () => context.go('/organization?catId=${item.categoryId}')
+          ); 
+        }).toList()));
+  }
+
+   Widget _buildHihglightedLocalProducer() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: _highligtedLocalProducers.map((item) {
+          return HighligtedLocalProducerCard(
+            item: item,
+            villages: _allVillages,
+            onTap: () => context.go('/local_producer')
           ); 
         }).toList()));
   }

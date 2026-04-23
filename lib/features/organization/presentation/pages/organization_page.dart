@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/features/organization/data/models/organization_category_item_model.dart';
+import 'package:karaburun/features/organization/data/models/organization_category_model.dart';
+import 'package:karaburun/features/organization/data/repositories/organization_category_item.repository.dart';
+import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
+import 'package:karaburun/features/village/data/models/village_model.dart';
 import '../../data/models/organization_model.dart';
 import '../../data/repositories/organization_repository.dart';
 import '../widgets/organization_list.dart' as widget_list;
 import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
+import 'package:karaburun/features/village/data/repositories/village_repository.dart' as village_repo;
 
 class OrganizationPage extends StatefulWidget {
   final int? categoryId;
@@ -15,9 +21,18 @@ class OrganizationPage extends StatefulWidget {
 
 class _OrganizationPageState extends State<OrganizationPage> {
   final repo = OrganizationRepository();
+  final itemRepo = OrganizationCategoryItemRepository();
+  final villageRepo = village_repo.VillageRepository();
+  final categoryRepo = OrganizationCategoryRepository();
 
   List<OrganizationModel> list = [];
   List<OrganizationModel> filteredList = [];
+  List<OrganizationCategoryItemModel> categoryItems = [];
+  List<Village> villages = [];
+  Map<int, Village> villageMap = {};
+  List<OrganizationCategoryModel> categories = [];
+  Map<int, OrganizationCategoryModel> categoryMap = {};
+
   bool loading = true;
 
   @override
@@ -31,7 +46,26 @@ class _OrganizationPageState extends State<OrganizationPage> {
     setState(() => loading = true);
 
     try {
-      list = await repo.fetchOrganizations(categoryId: widget.categoryId);
+      final results = await Future.wait([
+        repo.fetchOrganizations(categoryId: widget.categoryId, subCategoryInfo: true),
+        itemRepo.fetchOrganizationCategoryItem(),
+        villageRepo.fetchVillages(),
+        categoryRepo.fetchOrganizationCategory()
+      ]);
+
+      list          = results[0] as List<OrganizationModel>;
+      categoryItems = results[1] as List<OrganizationCategoryItemModel>;
+      villages      = results[2] as List<Village>;
+      categories    = results[3] as List<OrganizationCategoryModel>;
+
+      villageMap = {
+        for (var village in villages) village.id: village,
+      };
+
+      categoryMap = {
+        for (var category in categories) category.id: category,
+      };
+
       filteredList = List.from(list);
     } catch (e) {
       debugPrint("Veri çekme hatası: $e");
@@ -95,7 +129,10 @@ class _OrganizationPageState extends State<OrganizationPage> {
                 body: Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: widget_list.OrganizationList(
-                    list: filteredList
+                    list: filteredList,
+                    categoryItems: categoryItems,
+                    villageMap: villageMap,
+                    categoryMap: categoryMap,
                   ),
                 ),
               ),

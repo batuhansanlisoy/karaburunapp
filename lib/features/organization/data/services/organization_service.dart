@@ -8,7 +8,9 @@ class OrganizationService {
   Future<List<OrganizationModel>> getOrganizations({
     int? categoryId,
     bool? highlight,
+    bool? isActive,
     int? villageId,
+    bool? subCategoryInfo
   }) async {
     
     final Map<String, String> queryParams = {};
@@ -21,8 +23,16 @@ class OrganizationService {
       queryParams["highlight"] = highlight.toString();
     }
 
+    if (isActive != null) {
+      queryParams["is_active"] = isActive.toString();
+    }
+
     if (villageId != null) {
       queryParams["village_id"] = villageId.toString();
+    }
+
+    if (subCategoryInfo != null) {
+      queryParams["sub_category_info"] = subCategoryInfo.toString();
     }
     
     final url = Uri.parse("${ApiRoutes.organization}/list")

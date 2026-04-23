@@ -11,20 +11,27 @@ class ApiRoutes {
   static String get fileUrl => "$scheme://$host:$port";
 
   static String get upload =>
-      "$scheme://$host:$port/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
+    "$scheme://$host:$port/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
 
   static String get organization =>
-      "$baseUrl/${dotenv.env['ORGANIZATION_PATH'] ?? 'organization'}";
+    "$baseUrl/${dotenv.env['ORGANIZATION_PATH'] ?? 'organization'}";
 
   static String get beach =>
-      "$baseUrl/${dotenv.env['BEACH_PATH'] ?? 'beach'}";
+    "$baseUrl/${dotenv.env['BEACH_PATH'] ?? 'beach'}";
+
+  static String get localProducer =>
+    "$baseUrl/${dotenv.env['LOCAL_PRODUCER_PATH'] ?? 'local_producer'}";
 
   static String get place =>
-      "$baseUrl/${dotenv.env['PLACE_PATH'] ?? 'place'}";
+    "$baseUrl/${dotenv.env['PLACE_PATH'] ?? 'place'}";
 
   static String get village =>
-      "$baseUrl/${dotenv.env['VILLAGE_PATH'] ?? 'village'}";
+    "$baseUrl/${dotenv.env['VILLAGE_PATH'] ?? 'village'}";
 
   static String get activity =>
-      "$baseUrl/${dotenv.env['ACTIVITY_PATH'] ?? 'activity'}";
+    "$baseUrl/${dotenv.env['ACTIVITY_PATH'] ?? 'activity'}";
+
+  //form olan kısımın bir headera ihtiyacı yok o0 yüzden base url de api var buda header istiyor burda kullanmıyorum
+  static String get feedback =>
+    "$scheme://$host:$port/${dotenv.env['FEEDBACK_PATH'] ?? 'feedback'}";
 }

@@ -33,7 +33,7 @@ class BeachGrid extends StatelessWidget {
     if (beaches.isEmpty) return const SizedBox.shrink();
 
     double screenWidth = MediaQuery.of(context).size.width;
-    double gridHeight = 450; 
+    double gridHeight = 600; 
 
     return SizedBox(
       height: gridHeight, 

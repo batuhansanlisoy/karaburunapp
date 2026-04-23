@@ -4,7 +4,25 @@ import '../services/activity_category_service.dart';
 class ActivityCategoryRepository {
   final ActivityCategoryService _service = ActivityCategoryService();
 
-  Future<List<ActivityCategory>> fetchCategories() {
-    return _service.getCategories();
+  static List<ActivityCategory>? _cachedActivityCategories;
+
+  Future<List<ActivityCategory>> fetchCategories() async{
+
+    if (_cachedActivityCategories != null && _cachedActivityCategories!.isNotEmpty) {
+      return _cachedActivityCategories!;
+    }
+
+    try {
+      final categories = await _service.getCategories();
+      _cachedActivityCategories = categories;
+
+      return _cachedActivityCategories!;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void clearCache() {
+    _cachedActivityCategories = null;
   }
 }
