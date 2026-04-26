@@ -76,10 +76,8 @@ class _BeachPageState extends State<BeachPage> {
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverToBoxAdapter(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              color: Colors.grey[200],
               child: widget_bar.VillageBar(
                 villages: villages,
                 selectedVillageId: selectedVillageId,
@@ -97,7 +95,7 @@ class _BeachPageState extends State<BeachPage> {
             toolbarHeight: 72,
             titleSpacing: 0,
             title: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
               child: widget_search.SearchInput(
                 hintText: "Plaj & koylarda ara...",
                 onChanged: onSearchChanged,
@@ -106,20 +104,18 @@ class _BeachPageState extends State<BeachPage> {
           ),
         ];
       },
-      body: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: widget_list.BeachList(
-          list: filteredList,
-          villageMap: villageMap,
-          onTap: (item) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BeachDetail(beach: item),
-              ),
-            );
-          },
-        ),
+      // BeachPage içindeki body kısmı
+      body: widget_list.BeachList(
+        list: filteredList,
+        villageMap: villageMap,
+        onTap: (item) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BeachDetail(beach: item),
+            ),
+          );
+        },
       ),
     );
   }

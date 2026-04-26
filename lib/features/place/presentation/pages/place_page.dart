@@ -68,15 +68,14 @@ class _PlacePageState extends State<PlacePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold ve SafeArea kaldırıldı, MainLayout'un ana yapısı devrede.
     return NestedScrollView(
+      // Bu özellik header ile body arasındaki kaydırma koordinasyonunu sağlar
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
+          // 1. Köy Seçim Barı - Kaydırınca yukarı gider
           SliverToBoxAdapter(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              color: Colors.grey[200],
               child: widget_bar.VillageBar(
                 villages: villages,
                 selectedVillageId: selectedVillageId,
@@ -84,17 +83,19 @@ class _PlacePageState extends State<PlacePage> {
               ),
             ),
           ),
+          // 2. Arama Girişi - pinned: false olduğu için bu da kayıp gider
           SliverAppBar(
             backgroundColor: Colors.white,
             surfaceTintColor: Colors.transparent,
             scrolledUnderElevation: 0,
             elevation: 0,
-            floating: true,
+            pinned: false, // Çakılı kalmasın, yukarı aksın
+            floating: true, // Aşağı kaydırınca hemen geri gelsin istiyorsan true kalsın
             snap: true,
             toolbarHeight: 72,
             titleSpacing: 0,
             title: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
               child: widget_search.SearchInput(
                 hintText: "Turistik Yer Ara...",
                 onChanged: onSearchChanged,
@@ -103,20 +104,19 @@ class _PlacePageState extends State<PlacePage> {
           ),
         ];
       },
-      body: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: widget_list.PlaceList(
-          list: filteredList,
-          villageMap: villageMap,
-          onTap: (item) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PlaceDetail(place: item),
-              ),
-            );
-          },
-        ),
+      // Body içinde doğrudan listeyi veriyoruz. 
+      // NestedScrollView zaten body'ye otomatik bir PrimaryScrollController atar.
+      body: widget_list.PlaceList(
+        list: filteredList,
+        villageMap: villageMap,
+        onTap: (item) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PlaceDetail(place: item),
+            ),
+          );
+        },
       ),
     );
   }

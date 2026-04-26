@@ -117,7 +117,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
             toolbarHeight: 72,
             titleSpacing: 0,
             title: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
               child: widget_search.SearchInput(
                 hintText: "İşletme Ara...",
                 onChanged: onSearchChanged,
@@ -126,14 +126,11 @@ class _OrganizationPageState extends State<OrganizationPage> {
           ),
         ];
       },
-      body: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: widget_list.OrganizationList(
-          list: filteredList,
-          categoryItems: categoryItems,
-          villageMap: villageMap,
-          categoryMap: categoryMap,
-        ),
+      body: widget_list.OrganizationList(
+        list: filteredList,
+        categoryItems: categoryItems,
+        villageMap: villageMap,
+        categoryMap: categoryMap,
       ),
     );
   }

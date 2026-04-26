@@ -86,10 +86,8 @@ class _ActivityPageState extends State<ActivityPage> {
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverToBoxAdapter(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              color: Colors.grey[200],
               child: widget_bar.ActivityCategoryBar(
                 categories: categories,
                 selectedCategoryId: selectedCategoryId,
@@ -107,7 +105,7 @@ class _ActivityPageState extends State<ActivityPage> {
             toolbarHeight: 72,
             titleSpacing: 0,
             title: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
               child: widget_search.SearchInput(
                 hintText: "Etkinliklerde ara...",
                 onChanged: onSearchChanged,
@@ -116,22 +114,18 @@ class _ActivityPageState extends State<ActivityPage> {
           ),
         ];
       },
-      body: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: widget_list.ActivityList(
-          list: filteredList,
-          categoryMap: categoryMap,
-          villageMap: villageMap,
-          onTap: (item) {
-            // Navigasyon için GoRouter kullanıyorsan context.push tavsiye ederim
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ActivityDetailPage(activity: item),
-              ),
-            );
-          },
-        ),
+      body: widget_list.ActivityList(
+        list: filteredList,
+        categoryMap: categoryMap,
+        villageMap: villageMap,
+        onTap: (item) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ActivityDetailPage(activity: item),
+            ),
+          );
+        },
       ),
     );
   }

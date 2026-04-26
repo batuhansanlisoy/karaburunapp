@@ -21,7 +21,7 @@ class ActivityCategoryBar extends StatelessWidget {
       height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         itemCount: categories.length + 1,
         itemBuilder: (_, i) {
           if (i == 0) {

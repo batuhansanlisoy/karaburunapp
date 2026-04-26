@@ -21,7 +21,7 @@ class VillageBar extends StatelessWidget {
       height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         itemCount: villages.length + 1, //hepsi için
         itemBuilder: (_, i) {
           if (i==0) {
