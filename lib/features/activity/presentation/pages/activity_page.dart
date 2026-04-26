@@ -81,59 +81,56 @@ class _ActivityPageState extends State<ActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  color: Colors.grey[200],
-                  child: widget_bar.ActivityCategoryBar(
-                    categories: categories,
-                    selectedCategoryId: selectedCategoryId,
-                    onSelect: onCategorySelect,
-                  ),
-                ),
+    // Scaffold ve SafeArea kaldırıldı, MainLayout içindeki ana Scaffold'a güveniyoruz.
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              color: Colors.grey[200],
+              child: widget_bar.ActivityCategoryBar(
+                categories: categories,
+                selectedCategoryId: selectedCategoryId,
+                onSelect: onCategorySelect,
               ),
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                surfaceTintColor: Colors.transparent,
-                scrolledUnderElevation: 0,
-                elevation: 0,
-                floating: true,
-                snap: true,
-                toolbarHeight: 72,
-                titleSpacing: 0,
-                title: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: widget_search.SearchInput(
-                    hintText: "Etkinliklerde ara...",
-                    onChanged: onSearchChanged,
-                  ),
-                ),
-              ),
-            ];
-          },
-          body: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: widget_list.ActivityList(
-              list: filteredList,
-              categoryMap: categoryMap,
-              villageMap: villageMap,
-              onTap: (item) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ActivityDetailPage(activity: item),
-                  ),
-                );
-              },
             ),
           ),
+          SliverAppBar(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            floating: true,
+            snap: true,
+            toolbarHeight: 72,
+            titleSpacing: 0,
+            title: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: widget_search.SearchInput(
+                hintText: "Etkinliklerde ara...",
+                onChanged: onSearchChanged,
+              ),
+            ),
+          ),
+        ];
+      },
+      body: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: widget_list.ActivityList(
+          list: filteredList,
+          categoryMap: categoryMap,
+          villageMap: villageMap,
+          onTap: (item) {
+            // Navigasyon için GoRouter kullanıyorsan context.push tavsiye ederim
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ActivityDetailPage(activity: item),
+              ),
+            );
+          },
         ),
       ),
     );

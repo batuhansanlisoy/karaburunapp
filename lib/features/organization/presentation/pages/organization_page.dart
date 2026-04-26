@@ -99,43 +99,41 @@ class _OrganizationPageState extends State<OrganizationPage> {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: loading
-            ? const Center(child: CircularProgressIndicator())
-            : NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) {
-                  return [
-                    SliverAppBar(
-                      backgroundColor: Colors.white,
-                      surfaceTintColor: Colors.transparent,
-                      scrolledUnderElevation: 0,
-                      elevation: 0,
-                      floating: true,
-                      snap: true,
-                      toolbarHeight: 72,
-                      titleSpacing: 0,
-                      title: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        child: widget_search.SearchInput(
-                          hintText: "İşletme Ara...",
-                          onChanged: onSearchChanged,
-                        ),
-                      ),
-                    ),
-                  ];
-                },
-                body: Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: widget_list.OrganizationList(
-                    list: filteredList,
-                    categoryItems: categoryItems,
-                    villageMap: villageMap,
-                    categoryMap: categoryMap,
-                  ),
-                ),
+    // Scaffold ve SafeArea kaldırıldı, MainLayout'un ana yapısına bağlandı.
+    if (loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverAppBar(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            floating: true,
+            snap: true,
+            toolbarHeight: 72,
+            titleSpacing: 0,
+            title: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: widget_search.SearchInput(
+                hintText: "İşletme Ara...",
+                onChanged: onSearchChanged,
               ),
+            ),
+          ),
+        ];
+      },
+      body: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: widget_list.OrganizationList(
+          list: filteredList,
+          categoryItems: categoryItems,
+          villageMap: villageMap,
+          categoryMap: categoryMap,
+        ),
       ),
     );
   }

@@ -69,58 +69,48 @@ class _LocalProducerPageState extends State<LocalProducerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  color: Colors.grey[200],
-                  child: widget_bar.VillageBar(
-                    villages: villages,
-                    selectedVillageId: selectedVillageId,
-                    onSelect: onVillageSelect,
-                  ),
-                ),
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              color: Colors.grey[200],
+              child: widget_bar.VillageBar(
+                villages: villages,
+                selectedVillageId: selectedVillageId,
+                onSelect: onVillageSelect,
               ),
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                surfaceTintColor: Colors.transparent,
-                scrolledUnderElevation: 0,
-                elevation: 0,
-                floating: true,
-                snap: true,
-                toolbarHeight: 72,
-                titleSpacing: 0,
-                title: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: widget_search.SearchInput(
-                    hintText: "Yerel Üreticilerde Ara...",
-                    onChanged: onSearchChanged,
-                  ),
-                ),
-              ),
-            ];
-          },
-          body: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: widget_list.LocalProducerList(
-              list: filteredList,
-              villageMap: villageMap,
-              onTap: (item) {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (_) => BeachDetail(beach: item),
-                //   ),
-                // );
-              },
             ),
           ),
+          SliverAppBar(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            floating: true,
+            snap: true,
+            toolbarHeight: 72,
+            titleSpacing: 0,
+            title: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: widget_search.SearchInput(
+                hintText: "Yerel Üreticilerde Ara...",
+                onChanged: onSearchChanged,
+              ),
+            ),
+          ),
+        ];
+      },
+      body: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: widget_list.LocalProducerList(
+          list: filteredList,
+          villageMap: villageMap,
+          onTap: (item) {
+            // Detay sayfasına yönlendirme
+          },
         ),
       ),
     );
