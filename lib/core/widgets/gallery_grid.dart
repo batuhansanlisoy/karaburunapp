@@ -15,14 +15,20 @@ class GalleryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (images.isEmpty) {
-      return const Center(
-        child: Text(
-          "Galeri boş",
-          style: TextStyle(
-            fontSize: 16,
-            color: AppColors.textMuted,
+      return ListView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Center(
+              child: Text(
+                "Galeri boş",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 

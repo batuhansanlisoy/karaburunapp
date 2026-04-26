@@ -3,9 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/layout/main_layout.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_detail.dart';
+import 'package:karaburun/features/beach/data/models/beach_model.dart';
+import 'package:karaburun/features/beach/presentation/pages/beach_detail.dart';
 import 'package:karaburun/features/favorite/presentation/pages/favorite_page.dart';
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
+import 'package:karaburun/features/organization/data/models/organization_model.dart';
+import 'package:karaburun/features/organization/presentation/pages/organization_detail.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
@@ -45,6 +49,15 @@ final appRouter = GoRouter(
             final catId = state.uri.queryParameters['catId'];
             return OrganizationPage(categoryId: int.tryParse(catId ?? ''));
           },
+          routes: [
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final org = state.extra as OrganizationModel;
+                return OrganizationDetail(organization: org);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/setting',
@@ -74,6 +87,15 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/beach',
           builder: (context, state) => const BeachPage(),
+          routes: [
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final beach = state.extra as Beach;
+                return BeachDetail(beach: beach);
+              }
+            )
+          ]
         ),
         GoRoute(
           path: '/local_producer',

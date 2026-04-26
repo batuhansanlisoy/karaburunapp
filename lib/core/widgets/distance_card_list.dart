@@ -29,14 +29,23 @@ class DistanceCardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40.0),
-          child: Text(
-            emptyMessage,
-            style: const TextStyle(color: Colors.grey),
+      return ListView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Text(
+                  emptyMessage,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 

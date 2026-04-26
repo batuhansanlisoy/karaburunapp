@@ -12,11 +12,20 @@ class TimelineTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (timeline.isEmpty) {
-      return Center(
-        child: Text(
-          "Takvim boş",
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-        ),
+      return ListView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+            child: Center(
+              child: Text(
+                "Takvim boş",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+              ),
+            ),
+          ),
+        ],
       );
     }
 

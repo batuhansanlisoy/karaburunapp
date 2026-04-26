@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     final baseStyle = Theme.of(context).textTheme.titleLarge;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+      backgroundColor: const Color.fromARGB(211, 0, 0, 0),
       body: Stack( // İmza için Stack kullanmak en garantisi
         children: [
           Center(
@@ -55,8 +55,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   // LOGO
                   Image.asset(
                     'assets/images/splash.png',
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.fill,
+                    width: 250,
+                    fit: BoxFit.contain,
+                    // width: MediaQuery.of(context).size.width,
+                    // fit: BoxFit.fill,
                   ),
 
                   // KARABURUNGO YAZISI
@@ -66,8 +68,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         style: baseStyle?.copyWith(
-                          fontSize: 48, // Boyutu ideal seviyeye çektik
-                          color: const Color.fromARGB(221, 255, 255, 255),
+                          fontSize: 32, // Boyutu ideal seviyeye çektik
+                          color: const Color.fromARGB(255, 255, 255, 255),
                           letterSpacing: -1.5,
                           fontWeight: FontWeight.w800, // Karaburun kısmı da artık daha tok
                         ),

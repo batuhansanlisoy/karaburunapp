@@ -9,6 +9,7 @@ import '../../data/repositories/organization_repository.dart';
 import '../widgets/organization_list.dart' as widget_list;
 import 'package:karaburun/core/widgets/app_search_input.dart' as widget_search;
 import 'package:karaburun/features/village/data/repositories/village_repository.dart' as village_repo;
+import 'package:go_router/go_router.dart';
 
 class OrganizationPage extends StatefulWidget {
   final int? categoryId;
@@ -131,6 +132,10 @@ class _OrganizationPageState extends State<OrganizationPage> {
         categoryItems: categoryItems,
         villageMap: villageMap,
         categoryMap: categoryMap,
+        onTap: (item) {
+            // Burası sihirli dokunuş: GoRouter ile detay sayfasına gidiyoruz
+            context.push('/organization/detail', extra: item);
+        },
       ),
     );
   }

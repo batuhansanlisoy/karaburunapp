@@ -85,10 +85,6 @@ class _MainAppBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -122,7 +118,7 @@ class _Logo extends StatelessWidget {
       text: TextSpan(
         style: baseStyle?.copyWith(
           fontSize: 22,
-          color: const Color.fromARGB(221, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
           letterSpacing: -0.5,
         ),
         children: [

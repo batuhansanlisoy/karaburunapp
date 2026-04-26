@@ -11,12 +11,14 @@ class BeachGrid extends StatelessWidget {
   final List<Beach> beaches;
   final List<Village> villages;
   final bool isLoading;
+  final Function(Beach)? onBeachTap;
 
   const BeachGrid({
     super.key,
     required this.beaches,
     required this.villages,
     required this.isLoading,
+    this.onBeachTap
   });
 
   @override
@@ -62,12 +64,15 @@ class BeachGrid extends StatelessWidget {
             if (match.isNotEmpty) vName = match.first.name;
           }
 
-          return _BeachCard(
-            beach: beach, // Modeli komple yolluyoruz
-            imageUrl: imageUrl, 
-            beachName: beach.name, 
-            villageName: vName,
-            address: beach.address,
+          return GestureDetector(
+            onTap: () => onBeachTap?.call(beach),
+            child: _BeachCard(
+              beach: beach,
+              imageUrl: imageUrl, 
+              beachName: beach.name, 
+              villageName: vName,
+              address: beach.address,
+            ),
           );
         },
       ),

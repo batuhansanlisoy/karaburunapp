@@ -204,11 +204,11 @@ class _HomePageState extends State<HomePage> {
               event: _upcomingEvent,
               isLoading: _eventLoading,
               onTap: () {
-    if (_upcomingEvent != null) {
-      // GoRouter üzerinden detay sayfasına 'extra' ile objeyi gönderiyoruz
-      context.push('/activity/detail', extra: _upcomingEvent);
-    }
-  },
+                if (_upcomingEvent != null) {
+                  // GoRouter üzerinden detay sayfasına 'extra' ile objeyi gönderiyoruz
+                  context.push('/activity/detail', extra: _upcomingEvent);
+                }
+              },
               categoryName: _eventCategoryName,
               villageName: _eventVillageName,
             ),
@@ -267,7 +267,10 @@ class _HomePageState extends State<HomePage> {
           BeachGrid(
             beaches: _highlightedBeachs,
             villages: _allVillages,
-            isLoading: _highlightedBeachLoading
+            isLoading: _highlightedBeachLoading,
+            onBeachTap: (beach) {
+              context.push('/beach/detail', extra: beach);
+            },
           )
         ],
       ],

@@ -8,7 +8,7 @@ class AppColors {
 
   // PRIMARY
   static const Color primary = Colors.blueAccent;
-  static const Color secondary = Colors.redAccent;
+  static const Color secondary = Color(0xFFD84242);
   static const Color primarySoft = Color(0xFFEFF6FF);
 
   // TEXT

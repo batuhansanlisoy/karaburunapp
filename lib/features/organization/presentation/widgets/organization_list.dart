@@ -13,13 +13,15 @@ class OrganizationList extends StatelessWidget {
   final List<OrganizationCategoryItemModel> categoryItems;
   final Map<int, Village> villageMap;
   final Map<int, OrganizationCategoryModel> categoryMap;
+  final Function(OrganizationModel) onTap;
 
   const OrganizationList({
     super.key,
     required this.list,
     required this.categoryItems,
     required this.villageMap,
-    required this.categoryMap
+    required this.categoryMap,
+    required this.onTap
   });
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -52,19 +54,23 @@ class OrganizationList extends StatelessWidget {
           }
         }
 
-        return AppCard(
-          title: item.name,
-          address: item.address,
-          email: item.email,
-          phone: item.phone,
-          imageUrl: item.cover?['url'] != null
-              ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
-              : null,
-          products: matchedProductNames,
-          villageName: village?.name,
-          categoryName: category?.name,
-          onCallTap: () => _makePhoneCall(item.phone),
-          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
+        return GestureDetector(
+          onTap: () => onTap(item),
+          child: 
+            AppCard(
+              title: item.name,
+              address: item.address,
+              email: item.email,
+              phone: item.phone,
+              imageUrl: item.cover?['url'] != null
+                  ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
+                  : null,
+              products: matchedProductNames,
+              villageName: village?.name,
+              categoryName: category?.name,
+              onCallTap: () => _makePhoneCall(item.phone),
+              onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
+            )
         );
       },
     );
