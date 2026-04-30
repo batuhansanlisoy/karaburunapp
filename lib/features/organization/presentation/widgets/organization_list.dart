@@ -34,7 +34,6 @@ class OrganizationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 20),
       itemCount: list.length,
       itemBuilder: (_, i) {
         final item = list[i];

@@ -20,7 +20,6 @@ class BeachList extends StatelessWidget {
  @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(0),
       itemCount: list.length,
       itemBuilder: (_, i) {
         final item = list[i];
