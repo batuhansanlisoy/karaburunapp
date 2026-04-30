@@ -9,27 +9,23 @@ class ActivityController {
   final ActivityCategoryRepository _activityCategoryRepository = ActivityCategoryRepository();
 
   // En yakın etkinliği getiren ana fonksiyon
-  Future<Activity?> getUpcomingEvent() async {
+  Future<List<Activity>> getUpcomingEvents() async {
     try {
       final List<Activity> data = await _repository.fetchActivity();
-      if (data.isEmpty) return null;
+      if (data.isEmpty) return [];
 
       final now = DateTime.now();
 
-      // Mantık (Logic) burada: Filtrele ve Sırala
-      List<Activity> futureEvents = data.where((e) => e.begin.isAfter(now)).toList();
-      
-      // Eğer gelecek etkinlik yoksa, test için en sonuncuyu al (Opsiyonel)
-      if (futureEvents.isEmpty) {
-        data.sort((a, b) => b.begin.compareTo(a.begin));
-        return data.first;
-      }
+      // Sadece bugünden sonraki etkinlikleri filtrele ve tarihe göre sırala
+      List<Activity> futureEvents = data
+          .where((e) => e.begin.isAfter(now))
+          .toList()
+        ..sort((a, b) => a.begin.compareTo(b.begin));
 
-      futureEvents.sort((a, b) => a.begin.compareTo(b.begin));
-      return futureEvents.first;
+      return futureEvents;
     } catch (e) {
       debugPrint('ActivityController Hatası: $e');
-      return null;
+      return [];
     }
   }
 

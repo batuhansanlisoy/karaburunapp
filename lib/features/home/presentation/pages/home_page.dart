@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
@@ -13,7 +15,6 @@ import 'package:karaburun/features/organization/data/repositories/organization_r
 import 'package:karaburun/features/village/data/models/village_model.dart';
 import 'package:karaburun/features/activity/presentation/controllers/activity_controller.dart';
 import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
-import 'package:karaburun/features/featured/data/repositories/featured_organization_service.dart';
 import 'package:karaburun/features/village/data/repositories/village_repository.dart';
 import 'package:karaburun/features/featured/presentation/widgets/featured_organization_card.dart';
 import 'package:karaburun/features/local_producer/presentation/widgets/highligted_local_producer_card.dart';
@@ -33,7 +34,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final OrganizationCategoryRepository _orgCategoryRepo = OrganizationCategoryRepository();
-  final FeaturedOrganizationRepository _featuredRepo = FeaturedOrganizationRepository();
   final ActivityController _activityController = ActivityController();
   final VillageRepository _villageRepo = VillageRepository();
   final BeachRepository _beachRepo = BeachRepository();
@@ -46,10 +46,10 @@ class _HomePageState extends State<HomePage> {
   List<OrganizationModel> _highlightedOrganizations = [];
   List<LocalProducerModel> _highligtedLocalProducers = [];
   List<Beach> _highlightedBeachs = [];
-  Activity? _upcomingEvent;
-
-  String _eventCategoryName = "";
-  String _eventVillageName = "";
+  List<Activity> _upcomingEvents = [];
+  PageController? _eventPageController;
+  Timer? _eventTimer;
+  int _currentEventIndex = 0;
 
   bool _isInitialDataLoading = true;
   bool _eventLoading = true;
@@ -61,6 +61,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadInitialData();
+  }
+
+  @override
+  void dispose() {
+    _eventTimer?.cancel();
+    _eventPageController?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadInitialData() async {
@@ -79,7 +86,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadContentData() async {
     await Future.wait([
-      loadUpcomingEvent(),
+      loadUpcomingEvents(),
       loadHighligtedOrganizations(),
       loadHighligtedBeaches(),
       loadHiglightedLocalProducers()
@@ -164,25 +171,47 @@ class _HomePageState extends State<HomePage> {
     try { _activityCategories = await _activityController.getActivityCategories(); } catch (e) {}
   }
 
-  Future<void> loadUpcomingEvent() async {
+  Future<void> loadUpcomingEvents() async {
     try {
-      final result = await _activityController.getUpcomingEvent();
-      if (mounted && result != null) {
-        String catName = "Etkinlik";
-        if (_activityCategories.isNotEmpty) {
-          final match = _activityCategories.where((c) => c.id == result.categoryId);
-          if (match.isNotEmpty) catName = match.first.name;
+      final results = await _activityController.getUpcomingEvents();
+      if (mounted) {
+        setState(() {
+          _upcomingEvents = results;
+          _eventLoading = false;
+        });
+
+        if (_upcomingEvents.length > 1) {
+          _setupEventTimer();
         }
-        String vName = "Karaburun Merkez";
-        if (_allVillages.isNotEmpty) {
-          final match = _allVillages.where((v) => v.id == result.villageId);
-          if (match.isNotEmpty) vName = match.first.name;
-        }
-        setState(() { _upcomingEvent = result; _eventCategoryName = catName; _eventVillageName = vName; _eventLoading = false; });
       }
     } catch (e) {
       if (mounted) setState(() => _eventLoading = false);
     }
+  }
+
+  void _setupEventTimer() {
+    _eventPageController = PageController();
+    _eventTimer?.cancel();
+    _eventTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_eventPageController != null && _eventPageController!.hasClients) {
+        _currentEventIndex = (_currentEventIndex + 1) % _upcomingEvents.length;
+        _eventPageController!.animateToPage(
+          _currentEventIndex,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOutQuart,
+        );
+      }
+    });
+  }
+
+  String _getEventCategoryName(int id) {
+    final match = _activityCategories.where((c) => c.id == id);
+    return match.isNotEmpty ? match.first.name : "Etkinlik";
+  }
+
+  String _getEventVillageName(int id) {
+    final match = _allVillages.where((v) => v.id == id);
+    return match.isNotEmpty ? match.first.name : "Karaburun";
   }
 
   @override
@@ -193,6 +222,7 @@ class _HomePageState extends State<HomePage> {
       color: Colors.white,
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 50),
         child: Column(
           children: [
             const SizedBox(height: 12),
@@ -200,18 +230,25 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 1),
               child: _buildOrgCategoryList()
             ),
-            UpcomingEventBanner(
-              event: _upcomingEvent,
-              isLoading: _eventLoading,
-              onTap: () {
-                if (_upcomingEvent != null) {
-                  // GoRouter üzerinden detay sayfasına 'extra' ile objeyi gönderiyoruz
-                  context.push('/activity/detail', extra: _upcomingEvent);
-                }
-              },
-              categoryName: _eventCategoryName,
-              villageName: _eventVillageName,
-            ),
+            if (!_eventLoading && _upcomingEvents.isNotEmpty)
+              SizedBox(
+                height: 160, // Banner yüksekliğine göre ayarla
+                child: PageView.builder(
+                  controller: _eventPageController,
+                  itemCount: _upcomingEvents.length,
+                  onPageChanged: (index) => _currentEventIndex = index,
+                  itemBuilder: (context, index) {
+                    final event = _upcomingEvents[index];
+                    return UpcomingEventBanner(
+                      event: event,
+                      isLoading: false,
+                      categoryName: _getEventCategoryName(event.categoryId),
+                      villageName: _getEventVillageName(event.villageId),
+                      onTap: () => context.push('/activity/detail', extra: event),
+                    );
+                  },
+                ),
+              ),
             const SizedBox(height: 10),
             VillageGrid(villages: _allVillages),
             const SizedBox(height: 10),
@@ -351,7 +388,7 @@ class _HomePageState extends State<HomePage> {
           return FeaturedOrganizationCard(
             item: item,
             villages: _allVillages,
-            onTap: () => context.go('/organization?catId=${item.categoryId}')
+            onTap: () => context.push('/organization/detail', extra: item)
           ); 
         }).toList()));
   }
