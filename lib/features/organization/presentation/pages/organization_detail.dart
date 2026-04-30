@@ -259,7 +259,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
 
     return ListView(
       controller: controller,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 70),
       children: [
         // Açıklama
         const Text(
@@ -324,7 +324,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
           subtitle: widget.organization.phone.formatPhoneNumber(),
           onTap: () => _launchURL("tel:${widget.organization.phone}"),
         ),
-        
+
         if (hasWebsite)
         _buildContactRow(
           icon: Symbols.language,

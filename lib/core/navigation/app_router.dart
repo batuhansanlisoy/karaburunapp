@@ -13,8 +13,6 @@ import 'package:karaburun/features/organization/presentation/pages/organization_
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
-// SplashScreen'i import etmeyi unutma, yolu nereye açtıysan ona göre düzelt
-import 'package:karaburun/core/widgets/splash_screen.dart';
 import 'package:karaburun/features/setting/presentation/pages/setting_page.dart';
 import 'package:karaburun/features/local_producer/presentation/pages/local_producer_page.dart'; 
 
@@ -22,15 +20,9 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
-  initialLocation: '/splash', // Uygulama splash ile başlasın
+  initialLocation: '/home', // Uygulama splash ile başlasın
   navigatorKey: _rootNavigatorKey,
   routes: [
-    // --- Splash Screen (ShellRoute dışında!) ---
-    GoRoute(
-      path: '/splash',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const SplashScreen(),
-    ),
 
     // --- Uygulama Ana Yapısı ---
     ShellRoute(

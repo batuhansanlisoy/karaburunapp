@@ -21,20 +21,27 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/.env
-    - assets/images/transparent.png
-    - assets/images/splash.png
     - assets/images/no_img.png
+    - assets/images/launcher_icon.png
+    - assets/images/splash_icon.png
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/launcher_icon.png"
+  adaptive_icon_background: "#0F172A"
 
 flutter_native_splash:
-  color: "#0F172A"
-  image: assets/images/transparent.png # Görünmez resim
-  
+  color: "#1e293a"
+  image: assets/images/splash_icon.png
+
   android_12:
-    image: assets/images/transparent.png
-    color: "#0F172A"
+    image: assets/images/splash_icon.png
+    icon_background_color: "#1e293a"
