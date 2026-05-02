@@ -6,11 +6,13 @@ class ActivityRepository {
 
     Future<List<Activity>> fetchActivity({
         int? villageId,
-        int? categoryId
+        int? categoryId,
+        List<int>? ids,
     }) {
         return _service.getActivity(
             villageId: villageId,
-            categoryId: categoryId
+            categoryId: categoryId,
+            ids: ids,
         );
     }
 }

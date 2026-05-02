@@ -5,7 +5,11 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ActivityService {
-  Future<List<Activity>> getActivity({int? villageId, int? categoryId}) async {
+  Future<List<Activity>> getActivity({
+    int? villageId,
+    int? categoryId,
+    List<int>? ids,
+  }) async {
     final Map<String, String> queryParams = {};
 
     if (villageId != null) {
@@ -14,6 +18,10 @@ class ActivityService {
 
     if (categoryId != null) {
       queryParams["category_id"] = categoryId.toString();
+    }
+
+    if (ids != null && ids.isNotEmpty) {
+      queryParams["ids"] = ids.join(',');
     }
 
     final url = Uri.parse("${ApiRoutes.activity}/list")

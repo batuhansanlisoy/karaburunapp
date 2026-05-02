@@ -30,8 +30,12 @@ class ApiRoutes {
 
   static String get activity =>
     "$baseUrl/${dotenv.env['ACTIVITY_PATH'] ?? 'activity'}";
+  
+  static String get config =>
+    "$baseUrl/${dotenv.env['CONFIG_PATH'] ?? 'config'}";
 
   //form olan kısımın bir headera ihtiyacı yok o0 yüzden base url de api var buda header istiyor burda kullanmıyorum
   static String get feedback =>
     "$scheme://$host:$port/${dotenv.env['FEEDBACK_PATH'] ?? 'feedback'}";
+
 }

@@ -9,12 +9,18 @@ class OrganizationRepository {
       bool? highlight,
       bool? isActive,
       bool? subCategoryInfo,
+      List<int>? ids,
   }) {
       return _service.getOrganizations(
         categoryId: categoryId,
         highlight: highlight,
         isActive: isActive,
-        subCategoryInfo: subCategoryInfo
+        subCategoryInfo: subCategoryInfo,
+        ids: ids,
       );
     }
+  
+  Future<OrganizationModel> singleOrganization({required int orgId}) {
+    return _service.singleOrganization(orgId: orgId);
+  }
 }

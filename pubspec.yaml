@@ -16,6 +16,7 @@ dependencies:
   go_router: ^17.1.0
   url_launcher: ^6.3.2
   flutter_native_splash: ^2.4.7
+  shared_preferences: ^2.3.5
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +32,7 @@ flutter:
     - assets/images/no_img.png
     - assets/images/launcher_icon.png
     - assets/images/splash_icon.png
+    - assets/images/afis.png
 
 flutter_launcher_icons:
   android: "launcher_icon"

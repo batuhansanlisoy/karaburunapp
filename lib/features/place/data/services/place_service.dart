@@ -5,11 +5,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:karaburun/features/place/data/models/place_model.dart';
 
 class PlaceService {
-  Future<List<Place>> getPlaces({int? villageId}) async {
+  Future<List<Place>> getPlaces({int? villageId, List<int>? ids}) async {
     final Map<String, String> queryParams = {};
 
     if (villageId != null) {
       queryParams["village_id"] = villageId.toString();
+    }
+
+    if (ids != null && ids.isNotEmpty) {
+      queryParams["ids"] = ids.join(',');
     }
 
     final url = Uri.parse("${ApiRoutes.place}/list")

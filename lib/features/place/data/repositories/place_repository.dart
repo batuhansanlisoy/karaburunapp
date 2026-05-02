@@ -4,9 +4,10 @@ import '../services/place_service.dart';
 class PlaceRepository {
   final PlaceService _service = PlaceService();
 
-  Future<List<Place>> fetchPlaces({ int? villageId }) {
+  Future<List<Place>> fetchPlaces({ int? villageId, List<int>? ids }) {
     return _service.getPlaces(
-      villageId: villageId
+      villageId: villageId,
+      ids: ids
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:karaburun/core/widgets/custom_ad_dialog.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
+import 'package:karaburun/core/config/launch_popup_manager.dart'; // Menajeri ekle
 
 class MainLayout extends StatefulWidget {
-  final Widget child; // GoRouter o anki sayfayı buraya enjekte eder
+  final Widget child;
 
   const MainLayout({super.key, required this.child});
 
@@ -16,24 +16,17 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   void initState() {
     super.initState();
-    // Reklam geciktirme mantığın aynen duruyor
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) _showCustomAd(context);
+
+    // Sayfa ilk açıldığında menajere haber veriyoruz
+    // WidgetsBinding kullanarak BuildContext'in hazır olduğundan emin oluyoruz
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      LaunchPopupManager().checkAndShow(context);
     });
   }
 
-  void _showCustomAd(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => CustomAdDialog(
-        imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000",
-        onTap: () {},
-      ),
-    );
-  }
+  // BURADAKİ _showCustomAd FONKSİYONUNU SİLDİK
+  // Çünkü artık tüm logic LaunchPopupManager içinde dönüyor.
 
-  // URL'den hangi BottomNav ikonunun seçili olduğunu hesaplayan mantık
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
@@ -42,7 +35,6 @@ class _MainLayoutState extends State<MainLayout> {
     return 0;
   }
 
-  // Navbardaki ikonlara basınca sayfayı değiştiren fonksiyon
   void _onTabChange(int index, BuildContext context) {
     switch (index) {
       case 0:
@@ -65,7 +57,6 @@ class _MainLayoutState extends State<MainLayout> {
         preferredSize: Size.fromHeight(100),
         child: _MainAppBar(),
       ),
-      // GoRouter'ın yönettiği aktif sayfa buraya gelir
       body: widget.child,
       bottomNavigationBar: MainBottomNav(
         currentIndex: _calculateSelectedIndex(context),
@@ -75,13 +66,14 @@ class _MainLayoutState extends State<MainLayout> {
   }
 }
 
-// --- TASARIM WIDGETLARI (DEĞİŞMEDİ) ---
+// --- TASARIM WIDGETLARI ---
 
 class _MainAppBar extends StatelessWidget {
   const _MainAppBar();
 
   @override
   Widget build(BuildContext context) {
+    // AppBar tasarımı (Senin mevcut kodun)
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
@@ -118,7 +110,7 @@ class _Logo extends StatelessWidget {
       text: TextSpan(
         style: baseStyle?.copyWith(
           fontSize: 22,
-          color: const Color.fromARGB(255, 255, 255, 255),
+          color: Colors.white,
           letterSpacing: -0.5,
         ),
         children: [

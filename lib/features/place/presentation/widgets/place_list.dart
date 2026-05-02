@@ -9,13 +9,17 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 class PlaceList extends StatelessWidget {
   final List<Place> list;
   final Map<int ,Village> villageMap;
+  final Set<int> favoriteIds;
   final Function(Place) onTap;
+  final Function(int id) onFavoriteToggle;
 
   const PlaceList({
     super.key,
     required this.list,
     required this.villageMap,
+    required this.favoriteIds,
     required this.onTap,
+    required this.onFavoriteToggle,
   });
 
   @override
@@ -26,6 +30,8 @@ class PlaceList extends StatelessWidget {
         final item = list[i];
         final village = villageMap[item.villageId];
 
+        final bool isCurrentlySaved = favoriteIds.contains(item.id);
+
         return AppCard(
           title: item.name.capitalizeAll(),
           explanation: item.content?.explanation,
@@ -35,7 +41,9 @@ class PlaceList extends StatelessWidget {
             : null,
           villageName: village?.name,
           onTap: () => onTap(item),
-          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude),
+          isSaved: isCurrentlySaved,
+          onSaveTap: () => onFavoriteToggle(item.id),
         );
       },
     );

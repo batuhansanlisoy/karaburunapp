@@ -8,13 +8,17 @@ import '../../data/models/beach_model.dart';
 class BeachList extends StatelessWidget {
   final List<Beach> list;
   final Map<int, Village> villageMap;
+  final Set<int> favoriteIds;
   final Function(Beach) onTap;
+  final Function(int id) onFavoriteToggle;
 
   const BeachList({
     super.key,
     required this.list,
     required this.villageMap,
-    required this.onTap
+    required this.favoriteIds,
+    required this.onTap,
+    required this.onFavoriteToggle,
   });
 
  @override
@@ -24,6 +28,8 @@ class BeachList extends StatelessWidget {
       itemBuilder: (_, i) {
         final item = list[i];
         final village = villageMap[item.villageId];
+        
+        final bool isCurrentlySaved = favoriteIds.contains(item.id);
 
         return AppCard(
           title: item.name,
@@ -34,7 +40,9 @@ class BeachList extends StatelessWidget {
             : null,
           villageName: village?.name,
           onTap: () => onTap(item),
-          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude),
+          isSaved: isCurrentlySaved,
+          onSaveTap: () => onFavoriteToggle(item.id),
         );
       },
     );

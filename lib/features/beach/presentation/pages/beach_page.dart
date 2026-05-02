@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_detail.dart';
 
 import '../../data/models/beach_model.dart';
@@ -24,6 +25,7 @@ class _BeachPageState extends State<BeachPage> {
   List<Beach> filteredList = [];
   List<Village> villages = [];
   Map<int, Village> villageMap = {};
+  Set<int> _savedBeachIds = {};
 
   bool loading = true;
   int? selectedVillageId;
@@ -35,23 +37,34 @@ class _BeachPageState extends State<BeachPage> {
   }
 
   Future<void> loadData() async {
+    if (!mounted) return;
     setState(() => loading = true);
 
-    villages = await villageRepo.fetchVillages();
+    try {
+      final results = await Future.wait([
+        selectedVillageId == null
+            ? repo.fetchBeachs()
+            : repo.fetchBeachs(villageId: selectedVillageId),
+        villageRepo.fetchVillages(),
+        SavedManager.getSavedIds(SavedManager.beachKey),
+      ]);
 
-    villageMap = {
-      for (var village in villages) village.id: village,
-    };
+      list = results[0] as List<Beach>;
+      villages = results[1] as List<Village>;
+      _savedBeachIds = (results[2] as List<int>).toSet();
 
-    list = selectedVillageId == null
-      ? await repo.fetchBeachs()
-      : await repo.fetchBeachs(villageId: selectedVillageId);
-    
-    filteredList = List.from(list);
+      villageMap = {
+        for (var village in villages) village.id: village,
+      };
 
-    setState(() {
-      loading = false;
-    });
+      filteredList = List.from(list);
+    } catch (e) {
+      debugPrint("Beach veri çekme hatası: $e");
+    } finally {
+      if (mounted) {
+        setState(() => loading = false);
+      }
+    }
   }
 
   void onSearchChanged(String query) {
@@ -67,6 +80,31 @@ class _BeachPageState extends State<BeachPage> {
   void onVillageSelect(int? id) {
     selectedVillageId = id;
     loadData();
+  }
+
+  Future<void> toggleFavorite(int id) async {
+    await SavedManager.toggleSave(SavedManager.beachKey, id);
+    
+    final updatedIds = await SavedManager.getSavedIds(SavedManager.beachKey);
+    final isAdded = updatedIds.contains(id);
+
+    setState(() {
+      _savedBeachIds = updatedIds.toSet();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars(); 
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkarıldı"),
+          duration: const Duration(milliseconds: 1000),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isAdded ? Colors.green.shade700 : Colors.grey.shade800,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
   }
 
   @override
@@ -108,6 +146,8 @@ class _BeachPageState extends State<BeachPage> {
       body: widget_list.BeachList(
         list: filteredList,
         villageMap: villageMap,
+        favoriteIds: _savedBeachIds,
+        onFavoriteToggle: toggleFavorite,
         onTap: (item) {
           Navigator.push(
             context,

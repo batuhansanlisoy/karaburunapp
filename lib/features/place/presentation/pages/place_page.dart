@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/features/place/presentation/pages/place_detail.dart';
 import '../../data/models/place_model.dart';
 import '../../data/repositories/place_repository.dart';
@@ -23,6 +24,7 @@ class _PlacePageState extends State<PlacePage> {
   List<Place> filteredList = [];
   List<Village> villages = [];
   Map<int, Village> villageMap = {};
+  Set<int> _savedPlaceIds = {};
 
   bool loading = true;
   int? selectedVillageId;
@@ -32,23 +34,61 @@ class _PlacePageState extends State<PlacePage> {
     super.initState();
     loadData();
   }
-
+  
   Future<void> loadData() async {
-    setState(() => loading = true );
+    if (!mounted) return;
+    setState(() => loading = true);
 
-    villages = await villageRepo.fetchVillages();
+    try {
+      final results = await Future.wait([
+        selectedVillageId == null
+            ? repo.fetchPlaces()
+            : repo.fetchPlaces(villageId: selectedVillageId),
+        villageRepo.fetchVillages(),
+        SavedManager.getSavedIds(SavedManager.placeKey),
+      ]);
 
-    villageMap = {
-      for (var village in villages) village.id: village,
-    };
+      list = results[0] as List<Place>;
+      villages = results[1] as List<Village>;
+      _savedPlaceIds = (results[2] as List<int>).toSet();
 
-    list = selectedVillageId == null 
-      ? await repo.fetchPlaces()
-      : await repo.fetchPlaces(villageId: selectedVillageId);
+      villageMap = {
+        for (var village in villages) village.id: village,
+      };
+
+      filteredList = List.from(list);
+    } catch (e) {
+      debugPrint("Beach veri çekme hatası: $e");
+    } finally {
+      if (mounted) {
+        setState(() => loading = false);
+      }
+    }
+  }
+
+  Future<void> toggleFavorite(int id) async {
+    await SavedManager.toggleSave(SavedManager.placeKey, id);
     
-    filteredList = List.from(list);
+    final updatedIds = await SavedManager.getSavedIds(SavedManager.placeKey);
+    final isAdded = updatedIds.contains(id);
 
-    setState(() => loading = false);
+    setState(() {
+      _savedPlaceIds = updatedIds.toSet();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars(); 
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkarıldı"),
+          duration: const Duration(milliseconds: 1000),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isAdded ? Colors.green.shade700 : Colors.grey.shade800,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    }
   }
 
   void onSearchChanged(String query) {
@@ -109,6 +149,8 @@ class _PlacePageState extends State<PlacePage> {
       body: widget_list.PlaceList(
         list: filteredList,
         villageMap: villageMap,
+        favoriteIds: _savedPlaceIds,
+        onFavoriteToggle: toggleFavorite,
         onTap: (item) {
           Navigator.push(
             context,

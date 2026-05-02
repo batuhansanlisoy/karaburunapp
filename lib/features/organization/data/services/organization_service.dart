@@ -10,7 +10,8 @@ class OrganizationService {
     bool? highlight,
     bool? isActive,
     int? villageId,
-    bool? subCategoryInfo
+    bool? subCategoryInfo,
+    List<int>? ids,
   }) async {
     
     final Map<String, String> queryParams = {};
@@ -34,6 +35,10 @@ class OrganizationService {
     if (subCategoryInfo != null) {
       queryParams["sub_category_info"] = subCategoryInfo.toString();
     }
+
+    if (ids != null && ids.isNotEmpty) {
+      queryParams["ids"] = ids.join(',');
+    }
     
     final url = Uri.parse("${ApiRoutes.organization}/list")
       .replace(queryParameters: queryParams);
@@ -55,6 +60,30 @@ class OrganizationService {
       }
     } catch (e) {
       throw Exception("Organization fetch error: $e");
+    }
+  }
+
+  Future<OrganizationModel> singleOrganization({required int orgId}) async {
+    final url = Uri.parse("${ApiRoutes.organization}/$orgId/single");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        
+        return OrganizationModel.fromJson(data);
+      } else {
+        throw Exception("Sunucu hatası: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("İşletme getirme hatası: $e");
     }
   }
 }

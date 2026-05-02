@@ -11,6 +11,8 @@ import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_detail.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
+import 'package:karaburun/features/place/data/models/place_model.dart';
+import 'package:karaburun/features/place/presentation/pages/place_detail.dart';
 import 'package:karaburun/features/place/presentation/pages/place_page.dart';
 import 'package:karaburun/features/activity/presentation/pages/activity_page.dart';
 import 'package:karaburun/features/setting/presentation/pages/setting_page.dart';
@@ -62,6 +64,15 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/place',
           builder: (context, state) => const PlacePage(),
+          routes: [
+            GoRoute(
+              path: 'detail',
+              builder: (context, state) {
+                final place = state.extra as Place;
+                return PlaceDetail(place: place);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: '/activity',

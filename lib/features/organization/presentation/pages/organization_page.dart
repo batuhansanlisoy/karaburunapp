@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/features/organization/data/models/organization_category_item_model.dart';
 import 'package:karaburun/features/organization/data/models/organization_category_model.dart';
 import 'package:karaburun/features/organization/data/repositories/organization_category_item.repository.dart';
@@ -33,6 +34,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
   Map<int, Village> villageMap = {};
   List<OrganizationCategoryModel> categories = [];
   Map<int, OrganizationCategoryModel> categoryMap = {};
+  Set<int> _savedOrgIds = {};
 
   bool loading = true;
 
@@ -51,13 +53,15 @@ class _OrganizationPageState extends State<OrganizationPage> {
         repo.fetchOrganizations(categoryId: widget.categoryId, subCategoryInfo: true),
         itemRepo.fetchOrganizationCategoryItem(),
         villageRepo.fetchVillages(),
-        categoryRepo.fetchOrganizationCategory()
+        categoryRepo.fetchOrganizationCategory(),
+        SavedManager.getSavedIds(SavedManager.orgKey),
       ]);
 
       list          = results[0] as List<OrganizationModel>;
       categoryItems = results[1] as List<OrganizationCategoryItemModel>;
       villages      = results[2] as List<Village>;
       categories    = results[3] as List<OrganizationCategoryModel>;
+      _savedOrgIds  = (results[4] as List<int>).toSet();
 
       villageMap = {
         for (var village in villages) village.id: village,
@@ -68,6 +72,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
       };
 
       filteredList = List.from(list);
+      
     } catch (e) {
       debugPrint("Veri çekme hatası: $e");
     } finally {
@@ -92,15 +97,38 @@ class _OrganizationPageState extends State<OrganizationPage> {
   @override
   void didUpdateWidget(covariant OrganizationPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Eğer MainLayout'tan gelen categoryId değişmişse, verileri tekrar çek
     if (oldWidget.categoryId != widget.categoryId) {
       loadData();
+    }
+  }
+
+  Future<void> toggleFavorite(int id) async {
+    await SavedManager.toggleSave(SavedManager.orgKey, id);
+    
+    final updatedIds = await SavedManager.getSavedIds(SavedManager.orgKey);
+    final isAdded = updatedIds.contains(id); // Ekledik mi çıkardık mı kontrolü
+
+    setState(() {
+      _savedOrgIds = updatedIds.toSet();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars(); 
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkarıldı"),
+          duration: const Duration(milliseconds: 1000),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: isAdded ? Colors.green.shade700 : Colors.grey.shade800,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    // Scaffold ve SafeArea kaldırıldı, MainLayout'un ana yapısına bağlandı.
     if (loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -132,8 +160,9 @@ class _OrganizationPageState extends State<OrganizationPage> {
         categoryItems: categoryItems,
         villageMap: villageMap,
         categoryMap: categoryMap,
+        favoriteIds: _savedOrgIds,
+        onFavoriteToggle: toggleFavorite,
         onTap: (item) {
-            // Burası sihirli dokunuş: GoRouter ile detay sayfasına gidiyoruz
             context.push('/organization/detail', extra: item);
         },
       ),

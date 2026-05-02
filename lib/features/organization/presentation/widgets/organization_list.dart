@@ -13,7 +13,9 @@ class OrganizationList extends StatelessWidget {
   final List<OrganizationCategoryItemModel> categoryItems;
   final Map<int, Village> villageMap;
   final Map<int, OrganizationCategoryModel> categoryMap;
+  final Set<int> favoriteIds;
   final Function(OrganizationModel) onTap;
+  final Function(int id) onFavoriteToggle;
 
   const OrganizationList({
     super.key,
@@ -21,7 +23,9 @@ class OrganizationList extends StatelessWidget {
     required this.categoryItems,
     required this.villageMap,
     required this.categoryMap,
-    required this.onTap
+    required this.favoriteIds,
+    required this.onTap,
+    required this.onFavoriteToggle,
   });
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -35,41 +39,49 @@ class OrganizationList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: list.length,
-      itemBuilder: (_, i) {
+      itemBuilder: (context, i) {
         final item = list[i];
         final village = villageMap[item.villageId];
         final category = categoryMap[item.categoryId];
-        final List<String> matchedProductNames = [];
         
+        // Ürün eşleştirme mantığı (Daha temiz bir döngü ile)
+        final List<String> matchedProductNames = [];
         if (item.subCategories != null) {
           for (var sub in item.subCategories!) {
             final categoryItem = categoryItems.firstWhere(
-              (element) => element.id == sub.itemId
+              (element) => element.id == sub.itemId,
+              orElse: () => OrganizationCategoryItemModel(
+                id: 0,
+                name: '',
+                organizationCategoryId: 0,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              ),
             );
-            
             if (categoryItem.name.isNotEmpty) {
               matchedProductNames.add(categoryItem.name);
             }
           }
         }
 
-        return GestureDetector(
+        final bool isCurrentlySaved = favoriteIds.contains(item.id);
+
+        return AppCard(
+          title: item.name,
+          address: item.address,
+          email: item.email,
+          phone: item.phone,
+          imageUrl: item.cover?['url'] != null
+              ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
+              : null,
+          products: matchedProductNames,
+          villageName: village?.name,
+          categoryName: category?.name,
           onTap: () => onTap(item),
-          child: 
-            AppCard(
-              title: item.name,
-              address: item.address,
-              email: item.email,
-              phone: item.phone,
-              imageUrl: item.cover?['url'] != null
-                  ? "${ApiRoutes.fileUrl}${item.cover!['url']}"
-                  : null,
-              products: matchedProductNames,
-              villageName: village?.name,
-              categoryName: category?.name,
-              onCallTap: () => _makePhoneCall(item.phone),
-              onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
-            )
+          onCallTap: () => _makePhoneCall(item.phone),
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude),
+          isSaved: isCurrentlySaved,
+          onSaveTap: () => onFavoriteToggle(item.id),
         );
       },
     );

@@ -24,6 +24,8 @@ class AppCard extends StatefulWidget {
   final DateTime? begin;
   final DateTime? end;
   final List<dynamic>? products;
+  final bool isSaved;
+  final VoidCallback? onSaveTap;
 
   const AppCard({
     super.key,
@@ -46,6 +48,8 @@ class AppCard extends StatefulWidget {
     this.onNavigationTap,
     this.onCallTap,
     this.products,
+    this.isSaved = false,
+    this.onSaveTap
   });
 
   @override
@@ -268,12 +272,54 @@ class _AppCardState extends State<AppCard> {
               )
             : _placeholder(),
         
-        if (widget.categoryName != null)
-          Positioned(top: 12, left: 12, child: _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange)),
-        
-        if (widget.villageName != null)
-          Positioned(top: 12, right: 12, child: _badge(widget.villageName!.capitalizeAll(), Colors.black.withValues(alpha: 0.6), isVillage: true)),
+        Positioned(
+          top: 12,
+          left: 12,
+          right: 60, // Kalp butonuna çarpmaması için sağdan pay bıraktık
+          child: Wrap(
+            spacing: 8, // Aralarındaki yatay boşluk
+            runSpacing: 8, // Alt satıra geçerse dikey boşluk
+            children: [
+              if (widget.categoryName != null)
+                _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange),
+              
+              if (widget.villageName != null)
+                _badge(widget.villageName!.capitalizeAll(), Colors.black.withValues(alpha: 0.6), isVillage: true),
+            ],
+          ),
+        ),
 
+        // --- SAĞ ÜST: KAYDET (KALP) BUTONU ---
+        Positioned(
+          top: 12, // Kategoriyle aynı hizaya çektik
+          right: 12,
+          child: GestureDetector(
+            onTap: widget.onSaveTap,
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.8),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Icon(
+                  widget.isSaved ? Symbols.favorite_rounded : Symbols.favorite,
+                  color: widget.isSaved ? Colors.red : AppColors.textMain.withValues(alpha: 0.4),
+                  size: 20,
+                  fill: widget.isSaved ? 1 : 0,
+                ),
+              ),
+            ),
+          ),
+        ),
         // --- Aksiyon Butonları (Sağ Alt) ---
         Positioned(
           bottom: 12,
@@ -291,7 +337,7 @@ class _AppCardState extends State<AppCard> {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: Colors.white.withValues(alpha: 0.7),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -321,7 +367,7 @@ class _AppCardState extends State<AppCard> {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: Colors.white.withValues(alpha: 0.7),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(

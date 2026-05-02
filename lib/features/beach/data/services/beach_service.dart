@@ -5,7 +5,11 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 
 class BeachService {
-  Future<List<Beach>> getBeach({int? villageId, bool? highlight}) async {
+  Future<List<Beach>> getBeach({
+    int? villageId,
+    bool? highlight,
+    List<int>? ids
+  }) async {
     final Map<String, String> queryParams = {};
 
     if (villageId != null) {
@@ -14,6 +18,10 @@ class BeachService {
 
     if (highlight != null) {
       queryParams["highlight"] = highlight.toString();
+    }
+
+    if (ids != null && ids.isNotEmpty) {
+      queryParams["ids"] = ids.join(',');
     }
 
     final url = Uri.parse("${ApiRoutes.beach}/list")

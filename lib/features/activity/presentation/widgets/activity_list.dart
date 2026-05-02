@@ -10,14 +10,18 @@ class ActivityList extends StatelessWidget {
   final List<Activity> list;
   final Map<int, ActivityCategory> categoryMap;
   final Map<int, Village> villageMap;
+  final Set<int> favoriteIds;
   final Function(Activity) onTap;
+  final Function(int id) onFavoriteToggle;
 
   const ActivityList({
     super.key,
     required this.list,
     required this.categoryMap,
     required this.villageMap,
+    required this.favoriteIds,
     required this.onTap,
+    required this.onFavoriteToggle,
   });
 
   @override
@@ -28,6 +32,8 @@ class ActivityList extends StatelessWidget {
         final item = list[i];
         final category = categoryMap[item.categoryId];
         
+        final bool isCurrentlySaved = favoriteIds.contains(item.id);
+
         return AppCard(
           title: item.name,
           explanation: item.content?.explanation,
@@ -40,7 +46,9 @@ class ActivityList extends StatelessWidget {
           begin: item.begin,
           end: item.end,
           onTap: () => onTap(item),
-          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude)
+          onNavigationTap: () => MapLauncher.openMap(context, item.latitude, item.longitude),
+          isSaved: isCurrentlySaved,
+          onSaveTap: () => onFavoriteToggle(item.id),
         );
       },
     );
