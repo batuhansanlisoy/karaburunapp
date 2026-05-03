@@ -22,10 +22,10 @@ class ActivityDetailPage extends StatefulWidget {
   const ActivityDetailPage({super.key, required this.activity});
 
   @override
-  _ActivityDetailPageState createState() => _ActivityDetailPageState();
+  ActivityDetailPageState createState() => ActivityDetailPageState();
 }
 
-class _ActivityDetailPageState extends State<ActivityDetailPage> {
+class ActivityDetailPageState extends State<ActivityDetailPage> {
   
   final ActivityBeachDistanceRepository _beachDistanceRepo = ActivityBeachDistanceRepository();
   final ActivityPlaceDistanceRepository _placeRepository= ActivityPlaceDistanceRepository();

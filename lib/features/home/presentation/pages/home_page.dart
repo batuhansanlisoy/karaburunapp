@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
@@ -164,11 +163,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadVillages() async {
-    try { _allVillages = await _villageRepo.fetchVillages(); } catch (e) {}
+    try { 
+      _allVillages = await _villageRepo.fetchVillages();
+    } catch (e) {
+      debugPrint("Yerleşle yükleme hatası: $e");
+    }
   }
 
   Future<void> loadActivityCategories() async {
-    try { _activityCategories = await _activityController.getActivityCategories(); } catch (e) {}
+    try {
+      _activityCategories = await _activityController.getActivityCategories();
+    } catch (e) {
+      debugPrint("Etkinlik kategorisi yükleme hatası: $e");
+    }
   }
 
   Future<void> loadUpcomingEvents() async {

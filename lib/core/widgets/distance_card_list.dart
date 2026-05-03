@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:karaburun/utils/string_helpers.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/helpers/distance_helpers.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/widgets/full_screen_gallery.dart'; 
 import '../theme/app_colors.dart';
 

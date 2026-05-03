@@ -62,7 +62,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),

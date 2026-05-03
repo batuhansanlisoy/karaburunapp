@@ -21,10 +21,10 @@ class PlaceDetail extends StatefulWidget {
   const PlaceDetail({super.key, required this.place});
 
   @override
-  _PlaceDetailState createState() => _PlaceDetailState();
+  PlaceDetailState createState() => PlaceDetailState();
 }
 
-class _PlaceDetailState extends State<PlaceDetail> {
+class PlaceDetailState extends State<PlaceDetail> {
   final PlaceActivityDistanceRepository _activityDistanceRepo = PlaceActivityDistanceRepository();
   final PlaceBeachDistanceRepository _beachDistanceRepo = PlaceBeachDistanceRepository();  
   final ActivityRepository _activityRepo = ActivityRepository();

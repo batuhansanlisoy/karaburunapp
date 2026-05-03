@@ -30,7 +30,8 @@ class MapLauncher {
         await launchUrl(googleUrl, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      // Hata durumunda da kullanıcıyı bilgilendirebilirsin
+      if (!context.mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Harita uygulaması başlatılamadı.")),
       );

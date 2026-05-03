@@ -57,7 +57,7 @@ class _VillageGridState extends State<VillageGrid> {
                   child: AnimatedRotation(
                     duration: const Duration(milliseconds: 300),
                     turns: isExpanded ? 0.5 : 0, // Aşağı/Yukarı ok animasyonu
-                    child: Icon(
+                    child: const Icon(
                       Symbols.keyboard_arrow_down_rounded,
                       color: AppColors.textOrange,
                       size: 24,

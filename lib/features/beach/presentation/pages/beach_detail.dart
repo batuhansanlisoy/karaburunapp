@@ -21,10 +21,10 @@ class BeachDetail extends StatefulWidget {
   const BeachDetail({super.key, required this.beach});
 
   @override
-  _BeachDetailState createState() => _BeachDetailState();
+  BeachDetailState createState() => BeachDetailState();
 }
 
-class _BeachDetailState extends State<BeachDetail> {
+class BeachDetailState extends State<BeachDetail> {
   final BeachActivityDistanceRepository _activityDistanceRepo = BeachActivityDistanceRepository();
   final BeachPlaceDistanceRepository _placeDistanceRepo = BeachPlaceDistanceRepository();  
   final ActivityRepository _activityRepo = ActivityRepository();
