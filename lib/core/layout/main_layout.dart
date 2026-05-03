@@ -80,7 +80,7 @@ class _MainAppBar extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: const SafeArea(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,13 +128,29 @@ class _NotificationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Icon(
-        Symbols.notifications,
-        fill: 1.0, // İçi dolu
-        color: Color.fromARGB(234, 255, 171, 45),
-        size: 22,
+    return Padding(
+      padding: const EdgeInsets.only(right: 1.0),
+      child: GestureDetector( // Tıklama özelliği ekledik
+        onTap: () {
+          // GoRouter kullanıyorsan push ile yeni sayfaya gönderiyoruz
+          context.push('/notifications'); 
+        },
+        child: Container(
+          padding: const EdgeInsets.all(5.0),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 38, 40, 48).withValues(alpha: 0.6),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Symbols.notifications,
+            fill: 1.0,
+            color: Color.fromARGB(255, 255, 255, 255),
+            size: 22,
+            weight: 500,
+            grade: 200,
+            opticalSize: 20,
+          ),
+        ),
       ),
     );
   }

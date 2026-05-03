@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/full_screen_gallery.dart';
@@ -64,25 +65,25 @@ class GalleryGrid extends StatelessWidget {
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
+            child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                memCacheHeight: 300,
+                placeholder: (context, url) => Container(
                   color: AppColors.cardBg,
                   child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.textOrange),
+                    ),
                   ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
+                ),
+                errorWidget: (context, url, error) => Container(
                   color: AppColors.cardBg,
                   child: const Icon(Symbols.broken_image, color: AppColors.textMuted),
-                );
-              },
-            ),
+                ),
+              )
           ),
         );
       },

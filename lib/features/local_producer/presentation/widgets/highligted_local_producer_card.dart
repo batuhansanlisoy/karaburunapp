@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart'; // Eklendi
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/local_producer/data/models/local_producer_model.dart';
@@ -29,6 +30,7 @@ class HighligtedLocalProducerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageUrl = item.cover?['url'] ?? "";
+    final String fullUrl = "${ApiRoutes.fileUrl}$imageUrl"; // URL dışarı alındı
     final String? fontFamily = Theme.of(context).textTheme.bodyLarge?.fontFamily;
 
     String villageName = "Karaburun";
@@ -49,136 +51,149 @@ class HighligtedLocalProducerCard extends StatelessWidget {
         width: 300,
         height: 280, 
         margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
+        // Arka plan resmini Stack içine aldık, ClipRRect ile köşeleri koruyoruz
+        child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          image: DecorationImage(
-            image: (imageUrl.isNotEmpty)
-                ? NetworkImage("${ApiRoutes.fileUrl}$imageUrl") as ImageProvider
-                : const AssetImage("assets/images/no_img.png"),
-            fit: BoxFit.cover,
-            onError: (exception, stackTrace) => const AssetImage("assets/images/no_img.png"),
-          ),
-        ),
-        child: Column(
-          children: [
-            const Spacer(),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), 
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.8), 
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    item.name.capitalizeAll(),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 12.5,
-                                      fontFamily: fontFamily,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "• ${villageName.capitalizeAll()}",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: fontFamily,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      // Telefon İkonu
-                      if (item.phone.isNotEmpty) 
-                        GestureDetector(
-                          onTap: () => _makePhoneCall(item.phone),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Symbols.call_rounded,
-                              color: AppColors.iconGreen,
-                              size: 18,
-                              weight: 800,
-                              fill: 1,
-                            ),
+          child: Stack(
+            children: [
+              // --- CACHELENMİŞ ARKA PLAN RESMİ ---
+              Positioned.fill(
+                child: (imageUrl.isNotEmpty)
+                    ? CachedNetworkImage(
+                        imageUrl: fullUrl,
+                        fit: BoxFit.cover,
+                        memCacheHeight: 550, // RAM tasarrufu için kısıt
+                        placeholder: (context, url) => Container(
+                          color: AppColors.cardBg,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
-                    ],
-                  ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          "assets/images/no_img.png",
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset("assets/images/no_img.png", fit: BoxFit.cover),
+              ),
 
-                  // Yatay Kaydırılabilir Ürünler Listesi
-                  if (products.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 22, // Sabit yükseklik verdik, overlay büyümesin
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: products.length,
-                        separatorBuilder: (context, index) => const SizedBox(width: 6),
-                        itemBuilder: (context, index) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.iconGreen.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                color: AppColors.iconGreen.withValues(alpha: 0.4),
-                                width: 0.5,
+              // --- İÇERİK KATMANI ---
+              Column(
+                children: [
+                  const Spacer(),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), 
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.8), 
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          item.name.capitalizeAll(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 12.5,
+                                            fontFamily: fontFamily,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        "• ${villageName.capitalizeAll()}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: fontFamily,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Center(
-                              child: Text(
-                                products[index].toString().capitalize(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: fontFamily,
+                            
+                            if (item.phone.isNotEmpty) 
+                              GestureDetector(
+                                onTap: () => _makePhoneCall(item.phone),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Symbols.call_rounded,
+                                    color: AppColors.iconGreen,
+                                    size: 18,
+                                    weight: 800,
+                                    fill: 1,
+                                  ),
                                 ),
                               ),
+                          ],
+                        ),
+
+                        if (products.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 22,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: products.length,
+                              separatorBuilder: (context, index) => const SizedBox(width: 6),
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.iconGreen.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: AppColors.iconGreen.withValues(alpha: 0.4),
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      products[index].toString().capitalize(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: fontFamily,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

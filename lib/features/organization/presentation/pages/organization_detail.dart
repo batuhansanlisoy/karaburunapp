@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:karaburun/features/organization/data/models/organization_category_item_model.dart';
 import 'package:karaburun/features/organization/data/models/organization_category_model.dart';
@@ -83,9 +84,18 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.40,
                 width: double.infinity,
-                child: Image.network(coverUrl, fit: BoxFit.cover),
+                child: CachedNetworkImage(
+                  imageUrl: coverUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColors.bgDark,
+                    child: const Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                  ),
+                ),
               ),
-            
             // Karartma Layer
             Container(
               height: MediaQuery.of(context).size.height * 0.40,

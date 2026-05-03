@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
@@ -113,10 +114,16 @@ class _BeachCard extends StatelessWidget {
             Positioned.fill(
               child: isAsset 
                 ? Image.asset(imageUrl, fit: BoxFit.cover)
-                : Image.network(
-                    imageUrl,
+                : CachedNetworkImage(
+                    imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                    placeholder: (context, url) => Container(
+                      color: AppColors.bgDark,
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white24),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Image.asset(
                       'assets/images/no_img.png',
                       fit: BoxFit.cover,
                     ),

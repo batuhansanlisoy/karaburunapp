@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -14,9 +15,28 @@ class FullScreenImage extends StatelessWidget {
         children: [
           Center(
             child: InteractiveViewer(
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.contain,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                ),
+                // Hata durumu yönetimi
+                errorWidget: (context, url, error) => const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                    SizedBox(height: 10),
+                    Text(
+                      "Görsel açılamadı", 
+                      style: TextStyle(color: Colors.white54)
+                    ),
+                  ],
+                ),
+                fadeInDuration: const Duration(milliseconds: 400),
               ),
             ),
           ),

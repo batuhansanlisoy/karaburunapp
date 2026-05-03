@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_detail.dart';
-
 import '../../data/models/beach_model.dart';
 import '../../data/repositories/beach_repository.dart';
 import '../widgets/beach_list.dart' as widget_list;
@@ -97,7 +96,7 @@ class _BeachPageState extends State<BeachPage> {
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkarıldı"),
+          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkartıldı"),
           duration: const Duration(milliseconds: 1000),
           behavior: SnackBarBehavior.floating,
           backgroundColor: isAdded ? Colors.green.shade700 : Colors.grey.shade800,

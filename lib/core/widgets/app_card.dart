@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
@@ -131,20 +132,20 @@ class _AppCardState extends State<AppCard> {
 
                         // Telefon
                         if (widget.phone != null && widget.phone!.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          _buildSimpleText(widget.phone!.formatPhoneNumber(), 12, FontWeight.w500, icon: Symbols.call_rounded),
+                          const SizedBox(height: 10),
+                          _buildSimpleText(widget.phone!.formatPhoneNumber(), 13, FontWeight.w500, icon: Symbols.call_rounded),
                         ],
 
                         // Email
                         if (widget.email != null && widget.email!.isNotEmpty) ...[
                           const SizedBox(height: 6),
-                          _buildSimpleText(widget.email!.toLowerCase(), 12, FontWeight.w500, icon: Symbols.mail_rounded),
+                          _buildSimpleText(widget.email!.toLowerCase(), 13, FontWeight.w500, icon: Symbols.mail_rounded),
                         ],
                         
                         // Adres
                         if (widget.address != null && widget.address!.isNotEmpty) ...[
                           const SizedBox(height: 6),
-                          _buildSimpleText(widget.address!.capitalize(), 12, FontWeight.w500, icon: Symbols.location_on_rounded),
+                          _buildSimpleText(widget.address!.capitalize(), 13, FontWeight.w500, icon: Symbols.location_on_rounded),
                         ],
 
                         // Tarih (Etkinlikler için)
@@ -216,16 +217,39 @@ class _AppCardState extends State<AppCard> {
   }
 
   Widget _buildHeaderRow() {
-    return Text(
-      widget.title.capitalizeAll(),
-      style: TextStyle(
-        fontSize: widget.titleFontSize ?? 16,
-        fontWeight: FontWeight.w700,
-        color: AppColors.textMain,
-        height: 1.1,
-      ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center, // Başlık metniyle tam ortalı hiza
+      children: [
+        Expanded(
+          child: Text(
+            widget.title.capitalizeAll(),
+            style: TextStyle(
+              fontSize: widget.titleFontSize ?? 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textMain,
+              height: 1.1,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        
+        const SizedBox(width: 8), 
+
+        GestureDetector(
+          onTap: widget.onSaveTap,
+          behavior: HitTestBehavior.opaque,
+          child: Icon(
+            widget.isSaved ? Symbols.bookmark_added : Symbols.bookmark_add,
+            color: widget.isSaved ? AppColors.textLight : AppColors.textLight,
+            size: 24,
+            fill: widget.isSaved ? 1 : 0,
+            weight: 400,
+            opticalSize: 48,
+            grade: 200,
+          ),
+        ),
+      ],
     );
   }
 
@@ -238,8 +262,8 @@ class _AppCardState extends State<AppCard> {
             icon,
             size: 14,
             fill: 1,
-            weight: 600,
-            color: AppColors.textMain.withValues(alpha: 0.4)
+            weight: 700,
+            color: AppColors.textLight
             ),
           const SizedBox(width: 6),
         ],
@@ -248,7 +272,7 @@ class _AppCardState extends State<AppCard> {
             text,
             style: TextStyle(
               fontSize: size,
-              color: AppColors.textMain.withValues(alpha: 1),
+              color: AppColors.textMain,
               fontWeight: weight,
             ),
             maxLines: 1,
@@ -263,22 +287,24 @@ class _AppCardState extends State<AppCard> {
     return Stack(
       children: [
         widget.imageUrl != null
-            ? Image.network(
-                widget.imageUrl!,
+            ? CachedNetworkImage(
+                imageUrl: widget.imageUrl!,
                 width: double.infinity,
                 height: 280,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _placeholder(),
+                placeholder: (context, url) => _placeholder(),
+                errorWidget: (context, url, error) => _placeholder(),
+                fadeInDuration: const Duration(milliseconds: 200),
               )
             : _placeholder(),
         
         Positioned(
           top: 12,
           left: 12,
-          right: 60, // Kalp butonuna çarpmaması için sağdan pay bıraktık
+          right: 60,
           child: Wrap(
-            spacing: 8, // Aralarındaki yatay boşluk
-            runSpacing: 8, // Alt satıra geçerse dikey boşluk
+            spacing: 8,
+            runSpacing: 8,
             children: [
               if (widget.categoryName != null)
                 _badge(widget.categoryName!.capitalizeAll(), AppColors.iconOrange),
@@ -290,36 +316,36 @@ class _AppCardState extends State<AppCard> {
         ),
 
         // --- SAĞ ÜST: KAYDET (KALP) BUTONU ---
-        Positioned(
-          top: 12, // Kategoriyle aynı hizaya çektik
-          right: 12,
-          child: GestureDetector(
-            onTap: widget.onSaveTap,
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.8),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Icon(
-                  widget.isSaved ? Symbols.favorite_rounded : Symbols.favorite,
-                  color: widget.isSaved ? Colors.red : AppColors.textMain.withValues(alpha: 0.4),
-                  size: 20,
-                  fill: widget.isSaved ? 1 : 0,
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Positioned(
+        //   top: 12, // Kategoriyle aynı hizaya çektik
+        //   right: 12,
+        //   child: GestureDetector(
+        //     onTap: widget.onSaveTap,
+        //     child: Container(
+        //       width: 38,
+        //       height: 38,
+        //       decoration: BoxDecoration(
+        //         color: const Color.fromARGB(255, 54, 54, 54).withValues(alpha: 0.4),
+        //         shape: BoxShape.circle,
+        //         boxShadow: [
+        //           BoxShadow(
+        //             color: Colors.black.withValues(alpha: 0.1),
+        //             blurRadius: 4,
+        //             offset: const Offset(0, 2),
+        //           ),
+        //         ],
+        //       ),
+        //       child: Center(
+        //         child: Icon(
+        //           widget.isSaved ? Symbols.favorite_rounded : Symbols.favorite,
+        //           color: widget.isSaved ? Colors.red : AppColors.textMain.withValues(alpha: 0.4),
+        //           size: 20,
+        //           fill: widget.isSaved ? 1 : 0,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         // --- Aksiyon Butonları (Sağ Alt) ---
         Positioned(
           bottom: 12,
@@ -334,10 +360,10 @@ class _AppCardState extends State<AppCard> {
                   child: GestureDetector(
                     onTap: widget.onCallTap,
                     child: Container(
-                      width: 42,
-                      height: 42,
+                      width: 38,
+                      height: 38,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: const Color.fromARGB(255, 255, 255, 255).withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -351,7 +377,8 @@ class _AppCardState extends State<AppCard> {
                         child: Icon(
                           Symbols.call_rounded,
                           color: AppColors.iconGreen, // Senin temandaki yeşil
-                          size: 20,
+                          size: 18,
+                          weight: 700,
                           fill: 1,
                         ),
                       ),
@@ -364,10 +391,10 @@ class _AppCardState extends State<AppCard> {
                 GestureDetector(
                   onTap: widget.onNavigationTap,
                   child: Container(
-                    width: 42,
-                    height: 42,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: const Color.fromARGB(255, 255, 255, 255).withValues(alpha: 0.9),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -381,7 +408,8 @@ class _AppCardState extends State<AppCard> {
                       child: Icon(
                         Symbols.near_me_rounded,
                         color: AppColors.iconOrange,
-                        size: 20,
+                        size: 18,
+                        weight: 700,
                         fill: 1,
                       ),
                     ),

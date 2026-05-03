@@ -79,6 +79,36 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
     }
   }
 
+  // --- KALDIRMA İŞLEMİ ---
+  Future<void> _handleRemove(dynamic item, String type) async {
+    String key = "";
+    if (type == "org") key = SavedManager.orgKey;
+    if (type == "beach") key = SavedManager.beachKey;
+    if (type == "activity") key = SavedManager.activityKey;
+    if (type == "place") key = SavedManager.placeKey;
+
+    await SavedManager.toggleSave(key, item.id);
+
+    setState(() {
+      if (type == "org") _organizations.removeWhere((e) => e.id == item.id);
+      if (type == "beach") _beaches.removeWhere((e) => e.id == item.id);
+      if (type == "activity") _activities.removeWhere((e) => e.id == item.id);
+      if (type == "place") _places.removeWhere((e) => e.id == item.id);
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Kaydedilenlerden kaldırıldı"),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(milliseconds: 1000),
+          backgroundColor: Colors.grey.shade900,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,9 +155,16 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
   Widget _buildList(List<dynamic> items, String type) {
     if (items.isEmpty) {
       return Center(
-        child: Text(
-          "Kayıtlı veri bulunamadı.",
-          style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Symbols.bookmark_remove, size: 64, color: Colors.grey.shade200),
+            const SizedBox(height: 16),
+            Text(
+              "Kayıtlı veri bulunamadı.",
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+            ),
+          ],
         ),
       );
     }
@@ -140,15 +177,27 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
-          return _buildFavoriteItem(
-            item: item,
-            type: type,
-            onTap: () {
-              if (type == "org") context.push("/organization/detail", extra: item);
-              if (type == "beach") context.push("/beach/detail", extra: item);
-              if (type == "activity") context.push("/activity/detail", extra: item);
-              if (type == "place") context.push("/place/detail", extra: item);
-            },
+          
+          return Dismissible(
+            key: Key("${type}_${item.id}"),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) => _handleRemove(item, type),
+            background: Container(
+              color: Colors.red.shade600,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: const Icon(Symbols.delete_forever, color: Colors.white, fill: 1),
+            ),
+            child: _buildFavoriteItem(
+              item: item,
+              type: type,
+              onTap: () {
+                if (type == "org") context.push("/organization/detail", extra: item);
+                if (type == "beach") context.push("/beach/detail", extra: item);
+                if (type == "activity") context.push("/activity/detail", extra: item);
+                if (type == "place") context.push("/place/detail", extra: item);
+              },
+            ),
           );
         },
       ),
@@ -162,25 +211,22 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
   }) {
     return GestureDetector(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque, // Tüm alana tıklanabilmesi için
+      behavior: HitTestBehavior.opaque,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
-            // Alt çizgiyi daha belirgin yaptık (Grey 200)
-            bottom: BorderSide(color: Colors.grey.shade200, width: 1.5),
+            bottom: BorderSide(color: Colors.grey.shade100, width: 1.5),
           ),
         ),
         child: Row(
           children: [
-            // Sol Taraf: İçerik Bilgileri
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Başlık
                   Text(
                     item.name.toString().capitalizeAll(),
                     style: const TextStyle(
@@ -190,61 +236,38 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                       height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  // Konum
+                  const SizedBox(height: 12),
                   _buildInfoRow(
                     icon: Symbols.location_on_rounded,
                     text: item.address?.toString().capitalize() ?? "Karaburun",
                   ),
-
-                  // İşletme (org) detayları
                   if (type == "org") ...[
                     const SizedBox(height: 6),
                     _buildInfoRow(
                       icon: Symbols.call,
                       text: item.phone?.toString().formatPhoneNumber() ?? "-",
                     ),
-                    const SizedBox(height: 6),
-                    _buildInfoRow(
-                      icon: Symbols.mail,
-                      text: item.email?.toString().toLowerCase() ?? "-",
-                    ),
                   ],
-
-                  // Etkinlik (activity) detayları
                   if (type == "activity") ...[
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Symbols.calendar_month,
-                          size: 14,
-                          fill: 1,
-                          weight: 700,
-                          color: AppColors.iconPurple.withValues(alpha: 0.7),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          "${item.begin != null ? DateHelper.formatDateTime(item.begin!) : '-'} - ${item.end != null ? DateHelper.formatDateTime(item.end!) : '-'}",
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textMain,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 8),
+                    _buildInfoRow(
+                      icon: Symbols.calendar_month,
+                      text: "${item.begin != null ? DateHelper.formatDateTime(item.begin!) : '-'} - ${item.end != null ? DateHelper.formatDateTime(item.end!) : '-'}",
                     ),
                   ],
                 ],
               ),
             ),
 
-            // Sağ Taraf: Caret Right İkonu
-            Icon(
-              Symbols.chevron_right,
-              color: AppColors.textMain.withValues(alpha: 0.2), // Hafif silik kalsın, içeriği boğmasın
-              size: 24,
+            // SİLME BUTONU
+            IconButton(
+              onPressed: () => _handleRemove(item, type),
+              icon: Icon(
+                Symbols.delete,
+                color: Colors.red.withValues(alpha: 0.3),
+                size: 22,
+                weight: 500,
+              ),
             ),
           ],
         ),
@@ -252,27 +275,16 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
     );
   }
 
-  // AppCard'daki _buildSimpleText mantığıyla ortak info satırı
   Widget _buildInfoRow({required IconData icon, required String text}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          fill: 1,
-          size: 14,
-          color: AppColors.iconOrange.withValues(alpha: 0.7),
-          weight: 700,
-        ),
+        Icon(icon, fill: 1, size: 14, color: AppColors.textLight, weight: 700),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
             text,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textMain,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppColors.textMain, fontWeight: FontWeight.w500),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

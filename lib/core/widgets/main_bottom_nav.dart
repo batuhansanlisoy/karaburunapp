@@ -32,7 +32,7 @@ class MainBottomNav extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildNavItem(0, Symbols.home),
-          _buildNavItem(1, Symbols.bookmark_heart),
+          _buildNavItem(1, Symbols.bookmark),
           _buildNavItem(2, Symbols.settings),
         ],
       ),

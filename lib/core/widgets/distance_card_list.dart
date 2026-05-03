@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:karaburun/utils/string_helpers.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -88,16 +89,15 @@ class DistanceCardList extends StatelessWidget {
                     height: 50,
                     color: AppColors.divider.withValues(alpha: 0.2),
                     child: (fullImageUrl != null && fullImageUrl.isNotEmpty)
-                        ? Image.network(
-                            fullImageUrl,
+                        ? CachedNetworkImage(
+                            imageUrl: fullImageUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => _buildNoImage(),
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                child: CircularProgressIndicator(strokeWidth: 1.5),
-                              );
-                            },
+                            memCacheHeight: 150,
+                            placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 1.5),
+                            ),
+                            errorWidget: (context, url, error) => _buildNoImage(),
+                            fadeInDuration: const Duration(milliseconds: 300),
                           )
                         : _buildNoImage(),
                   ),

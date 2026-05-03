@@ -8,6 +8,7 @@ import 'package:karaburun/features/beach/presentation/pages/beach_detail.dart';
 import 'package:karaburun/features/favorite/presentation/pages/favorite_page.dart';
 import 'package:karaburun/features/home/presentation/pages/home_page.dart';
 import 'package:karaburun/features/beach/presentation/pages/beach_page.dart';
+import 'package:karaburun/features/notification/presentation/pages/notif_page.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_detail.dart';
 import 'package:karaburun/features/organization/presentation/pages/organization_page.dart';
@@ -56,6 +57,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/setting',
           builder: (context, state) => const SettingPage(),
+        ),
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotifPage(),
         ),
         GoRoute(
           path: '/favorite',

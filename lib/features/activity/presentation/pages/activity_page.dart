@@ -93,7 +93,7 @@ class _ActivityPageState extends State<ActivityPage> {
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkarıldı"),
+          content: Text(isAdded ? "Kaydedilenlere eklendi" : "Kaydedilenlerden çıkartıldı"),
           duration: const Duration(milliseconds: 1000),
           behavior: SnackBarBehavior.floating,
           backgroundColor: isAdded ? Colors.green.shade700 : Colors.grey.shade800,

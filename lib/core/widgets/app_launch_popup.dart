@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -30,14 +31,20 @@ class AppLaunchPopup extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: isNetwork
-                  ? Image.network(
-                      imageUrl,
+                  ? CachedNetworkImage(
+                      imageUrl:  imageUrl,
                       fit: BoxFit.cover,
-                      // Yükleme sırasında hata olursa (internet yoksa vs.) siyah ekran yerine ikon gösterir
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      placeholder: (context, url) => Container(
+                        color: const Color(0xFF1E293B),
+                        child: const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
                         color: const Color(0xFF1E293B),
                         child: const Icon(Symbols.broken_image_rounded, color: Colors.white, size: 40),
                       ),
+                      fadeInDuration: const Duration(milliseconds: 700),
                     )
                   : Image.asset(
                       imageUrl,
