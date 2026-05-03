@@ -28,7 +28,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/.env
+    - .env
     - assets/images/no_img.png
     - assets/images/launcher_icon.png
     - assets/images/splash_icon.png
