@@ -4,6 +4,7 @@ import 'package:karaburun/core/helpers/date.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/core/helpers/string_helpers.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 // Modeller
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
@@ -193,7 +194,7 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
 
                   // Konum
                   _buildInfoRow(
-                    icon: Icons.location_on_rounded,
+                    icon: Symbols.location_on_rounded,
                     text: item.address?.toString().capitalize() ?? "Karaburun",
                   ),
 
@@ -201,12 +202,12 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                   if (type == "org") ...[
                     const SizedBox(height: 6),
                     _buildInfoRow(
-                      icon: Icons.call_rounded,
+                      icon: Symbols.call,
                       text: item.phone?.toString().formatPhoneNumber() ?? "-",
                     ),
                     const SizedBox(height: 6),
                     _buildInfoRow(
-                      icon: Icons.mail_rounded,
+                      icon: Symbols.mail,
                       text: item.email?.toString().toLowerCase() ?? "-",
                     ),
                   ],
@@ -217,9 +218,11 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                     Row(
                       children: [
                         Icon(
-                          Icons.calendar_month_rounded,
+                          Symbols.calendar_month,
                           size: 14,
-                          color: AppColors.textMain.withValues(alpha: 0.4),
+                          fill: 1,
+                          weight: 700,
+                          color: AppColors.iconPurple.withValues(alpha: 0.7),
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -239,7 +242,7 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
 
             // Sağ Taraf: Caret Right İkonu
             Icon(
-              Icons.chevron_right_rounded,
+              Symbols.chevron_right,
               color: AppColors.textMain.withValues(alpha: 0.2), // Hafif silik kalsın, içeriği boğmasın
               size: 24,
             ),
@@ -256,8 +259,10 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
       children: [
         Icon(
           icon,
+          fill: 1,
           size: 14,
-          color: AppColors.textMain.withValues(alpha: 0.4),
+          color: AppColors.iconOrange.withValues(alpha: 0.7),
+          weight: 700,
         ),
         const SizedBox(width: 6),
         Flexible(

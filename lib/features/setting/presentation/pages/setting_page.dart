@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -88,16 +89,29 @@ class _SettingPageState extends State<SettingPage> {
                 icon: Symbols.call,
                 title: "İletişim Hattı 1",
                 subtitle: "0535 045 47 51",
-                onTap: () => _launchAction("tel:05350604836"),
+                onTap: () => _launchAction("tel:05350454751"),
               ),
               _buildSettingItem(
                 icon: Symbols.call,
                 title: "İletişim Hattı 2",
                 subtitle: "0535 060 48 36",
-                onTap: () => _launchAction("tel:05350454751"),
+                onTap: () => _launchAction("tel:05350604836"),
               ),
             ]),
-            const SizedBox(height: 100),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Text(
+                  "Versiyon 1.0.0+1",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textMuted, // Mevcut renk paletine sadık kaldık
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 70),
           ],
         ),
       ),
@@ -215,7 +229,7 @@ class _SettingPageState extends State<SettingPage> {
       leading: _buildIconContainer(icon, const Color(0xFF475569)),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-      trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
+      trailing: const Icon(Symbols.chevron_forward, size: 20, color: Colors.grey),
     );
   }
 }

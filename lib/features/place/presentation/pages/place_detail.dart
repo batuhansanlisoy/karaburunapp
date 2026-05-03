@@ -14,6 +14,7 @@ import '../../data/models/place_activity_distance_model.dart';
 import '../../data/repositories/place_activity_distance_repository.dart';
 import '../../data/models/place_beach_distance_model.dart';
 import '../../data/repositories/place_beach_distance_repository.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class PlaceDetail extends StatefulWidget {
   final Place place;
@@ -106,9 +107,15 @@ class _PlaceDetailState extends State<PlaceDetail> {
               color: AppColors.bgDark.withValues(alpha: 0.45),
             ),
             SafeArea(
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.5),
+                  child: IconButton(
+                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
               ),
             ),
             DraggableScrollableSheet(

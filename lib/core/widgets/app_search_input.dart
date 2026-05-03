@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class SearchInput extends StatelessWidget {
   final ValueChanged<String>? onChanged;
@@ -42,7 +43,7 @@ class SearchInput extends StatelessWidget {
         ),
 
         prefixIcon: Icon(
-          Icons.search,
+          Symbols.search,
           size: 22,
           color: Colors.grey.shade600,
         ),

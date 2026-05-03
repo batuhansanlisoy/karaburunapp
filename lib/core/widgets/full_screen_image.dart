@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class FullScreenImage extends StatelessWidget {
   final String imageUrl;
@@ -31,7 +32,7 @@ class FullScreenImage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
-                  Icons.close,
+                  Symbols.close,
                   color: Colors.white,
                   size: 28,
                 ),

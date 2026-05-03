@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
-import 'package:karaburun/core/config/launch_popup_manager.dart'; // Menajeri ekle
+import 'package:karaburun/core/config/launch_popup_manager.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class MainLayout extends StatefulWidget {
   final Widget child;
@@ -17,15 +18,10 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
 
-    // Sayfa ilk açıldığında menajere haber veriyoruz
-    // WidgetsBinding kullanarak BuildContext'in hazır olduğundan emin oluyoruz
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LaunchPopupManager().checkAndShow(context);
     });
   }
-
-  // BURADAKİ _showCustomAd FONKSİYONUNU SİLDİK
-  // Çünkü artık tüm logic LaunchPopupManager içinde dönüyor.
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
@@ -73,7 +69,6 @@ class _MainAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // AppBar tasarımı (Senin mevcut kodun)
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
@@ -91,7 +86,7 @@ class _MainAppBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _Logo(),
-            _ProfileAvatar(),
+            _NotificationIcon(),
           ],
         ),
       ),
@@ -128,14 +123,19 @@ class _Logo extends StatelessWidget {
   }
 }
 
-class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar();
+class _NotificationIcon extends StatelessWidget {
+  const _NotificationIcon();
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
-      radius: 22,
-      backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(
+        Symbols.notifications,
+        fill: 1.0, // İçi dolu
+        color: Color.fromARGB(234, 255, 171, 45),
+        size: 22,
+      ),
     );
   }
 }

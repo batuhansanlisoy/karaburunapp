@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class FullScreenGallery extends StatefulWidget {
   final List<String> images;
@@ -67,7 +68,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
                 ),
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
-                  Icons.close,
+                  Symbols.close,
                   color: Colors.white,
                   size: 28,
                 ),

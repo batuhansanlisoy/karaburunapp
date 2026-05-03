@@ -10,6 +10,7 @@ import 'package:karaburun/features/beach/data/models/beach_model.dart';
 import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
 import 'package:karaburun/features/place/data/models/place_model.dart';
 import 'package:karaburun/features/place/data/repositories/place_repository.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import '../../data/models/activity_model.dart';
 import '../../data/models/activity_beach_distance_model.dart';
 import '../../data/repositories/activity_beach_distance_repository.dart';
@@ -109,9 +110,15 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
               color: AppColors.bgDark.withValues(alpha: 0.45),
             ),
             SafeArea(
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.5),
+                  child: IconButton(
+                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
               ),
             ),
             DraggableScrollableSheet(

@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/symbols.dart'; // Symbols sınıfı için
+import 'package:material_symbols_icons/symbols.dart';
 
 class IconHelper {
   static IconData getIcon(dynamic data) {
-    if (data == null || data.toString().isEmpty) return Symbols.category; // Varsayılanı da Symbol yapalım
+    if (data == null || data.toString().isEmpty) return Symbols.category;
     
-    String strData = data.toString().trim();
-
-    // 0x ile başlıyorsa veya hex koduysa (e887 gibi) direkt koda git
-    if (strData.startsWith('0x') || _isHexCode(strData)) {
-      return _getIconFromCode(strData);
-    }
+    String name = data.toString().trim();
     
-    return _getIconByName(strData);
+    // Artık sadece isme göre ikon döndürüyoruz
+    return _getIconByName(name);
   }
 
+  static IconData _getIconByName(String name) {
+    final cleanName = name
+        .replaceFirst('Icons.', '')
+        .replaceFirst('Symbols.', '')
+        .trim()
+        .toLowerCase();
+    
+    switch (cleanName) {
+      case 'hotel': return Symbols.hotel;
+      case 'local_cafe': return Symbols.local_cafe;
+      case 'beach_access': return Symbols.beach_access;
+      case 'directions_run': return Symbols.directions_run;
+      case 'shopping_cart': return Symbols.shopping_cart;
+      case 'home': return Symbols.home;
+      case 'restaurant': return Symbols.restaurant;
+      case 'construction': return Symbols.construction;
+      case 'bed': return Symbols.bed;
+      case 'storefront': return Symbols.storefront;
+      case 'directions_bus': return Symbols.directions_bus;
+      case 'medical_services': return Symbols.medical_services;
+      default: return Symbols.category;
+    }
+  }
+
+  // --- İLERİDE LAZIM OLURSA DİYE YORUM SATIRINA ALINAN HEX MANTIĞI ---
+  /*
   static bool _isHexCode(String s) {
     return RegExp(r'^[0-9a-fA-F]{4,5}$').hasMatch(s);
   }
@@ -33,21 +55,5 @@ class IconHelper {
       return Symbols.category;
     }
   }
-
-  static IconData _getIconByName(String name) {
-    final cleanName = name.replaceFirst('Icons.', '').replaceFirst('Symbols.', '').trim();
-    
-    // Proje içinde MaterialSymbols kullanmaya karar verdiysen 
-    // statik isimleri de Symbols üzerinden döndürmek görsel uyumu sağlar.
-    switch (cleanName) {
-      case 'restaurant': return Symbols.restaurant;
-      case 'hotel': return Symbols.hotel;
-      case 'local_cafe': return Symbols.local_cafe;
-      case 'beach_access': return Symbols.beach_access;
-      case 'celebration': return Symbols.celebration;
-      case 'landscape': return Symbols.landscape;
-      case 'shopping_basket': return Symbols.shopping_basket;
-      default: return Symbols.category;
-    }
-  }
+  */
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:karaburun/utils/string_helpers.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/helpers/distance_helpers.dart';
-// 🌟 FullScreenGallery'yi import etmeyi unutma
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:karaburun/core/widgets/full_screen_gallery.dart'; 
 import '../theme/app_colors.dart';
 
@@ -172,7 +172,7 @@ class DistanceCardList extends StatelessWidget {
         return Container(
           alignment: Alignment.center,
           color: Colors.grey.withValues(alpha: 0.1),
-          child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
+          child: const Icon(Symbols.broken_image, size: 20, color: Colors.grey),
         );
       },
     );

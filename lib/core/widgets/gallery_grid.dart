@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/full_screen_gallery.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class GalleryGrid extends StatelessWidget {
   final List<String> images;
@@ -78,7 +79,7 @@ class GalleryGrid extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: AppColors.cardBg,
-                  child: const Icon(Icons.broken_image, color: AppColors.textMuted),
+                  child: const Icon(Symbols.broken_image, color: AppColors.textMuted),
                 );
               },
             ),

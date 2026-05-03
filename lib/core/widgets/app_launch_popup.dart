@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class AppLaunchPopup extends StatelessWidget {
   final String imageUrl;
@@ -35,7 +36,7 @@ class AppLaunchPopup extends StatelessWidget {
                       // Yükleme sırasında hata olursa (internet yoksa vs.) siyah ekran yerine ikon gösterir
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: const Color(0xFF1E293B),
-                        child: const Icon(Icons.broken_image_rounded, color: Colors.white, size: 40),
+                        child: const Icon(Symbols.broken_image_rounded, color: Colors.white, size: 40),
                       ),
                     )
                   : Image.asset(
@@ -63,7 +64,7 @@ class AppLaunchPopup extends StatelessWidget {
                   ),
                 ),
                 child: const Icon(
-                  Icons.close_rounded,
+                  Symbols.close,
                   color: Colors.white,
                   size: 26,
                 ),

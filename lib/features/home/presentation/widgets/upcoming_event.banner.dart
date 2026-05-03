@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/core/helpers/string_helpers.dart'; 
+import 'package:material_symbols_icons/symbols.dart';
 
 class UpcomingEventBanner extends StatelessWidget {
   final Activity? event;
@@ -107,7 +108,13 @@ class UpcomingEventBanner extends StatelessWidget {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_rounded, color: Colors.orange, size: 14),
+                              const Icon(
+                                size: 14,
+                                fill: 1,
+                                weight: 700,
+                                color: Colors.orange,
+                                Symbols.location_on_rounded
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
@@ -123,7 +130,7 @@ class UpcomingEventBanner extends StatelessWidget {
                     ),
                     
                     // Sağ: Ok işareti
-                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withValues(alpha: 0.3), size: 14),
+                    Icon(Symbols.chevron_forward, color: Colors.white.withValues(alpha: 0.3), size: 22),
                   ],
                 ),
               ),

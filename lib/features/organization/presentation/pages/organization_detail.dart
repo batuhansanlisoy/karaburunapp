@@ -99,7 +99,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
                 child: CircleAvatar(
                   backgroundColor: Colors.black.withValues(alpha: 0.5),
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -419,10 +419,10 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: Icon(icon, color: AppColors.textOrange),
+        leading: Icon(icon, color: AppColors.iconOrange, weight: 700, fill: 1, size: 20,),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
         subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-        trailing: const Icon(Icons.chevron_right, size: 20),
+        trailing: const Icon(Symbols.chevron_right, size: 20),
         onTap: onTap,
       ),
     );
