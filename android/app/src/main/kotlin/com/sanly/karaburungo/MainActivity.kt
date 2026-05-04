@@ -1,4 +1,4 @@
-package com.example.karaburun
+package com.sanly.karaburungo
 
 import io.flutter.embedding.android.FlutterActivity
 

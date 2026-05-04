@@ -127,7 +127,7 @@ class _SettingPageState extends State<SettingPage> {
         title: const Text("KaraburunGO Hakkında", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
         children: const [
           Padding(
-            padding: EdgeInsets.fromLTRB(70, 0, 20, 20),
+            padding: EdgeInsets.fromLTRB(30, 0, 20, 20),
             child: Text(
               "KaraburunGO, Yarımada’nın dijital kalbi ve en kapsamlı yaşam rehberidir. "
               "Keşfedilmeyi bekleyen gizli koylardan en güncel yerel etkinliklere kadar, "

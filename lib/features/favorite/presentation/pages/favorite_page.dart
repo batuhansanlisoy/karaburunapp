@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+// Core & Helpers
 import 'package:karaburun/core/helpers/date.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/utils/saved_manager.dart';
 import 'package:karaburun/core/helpers/string_helpers.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 
 // Modeller
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
@@ -79,7 +83,32 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
     }
   }
 
-  // --- KALDIRMA İŞLEMİ ---
+  // SİLME ONAY DİYALOĞU
+  Future<void> _showDeleteConfirmDialog(dynamic item, String type) async {
+    return showDialog(
+      context: context,
+      barrierColor: const Color.fromARGB(178, 0, 0, 0),
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Favorilerden Kaldır"),
+        content: Text("${item.name} listenden kaldırılacak. Emin misin?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Vazgeç", style: TextStyle(color: AppColors.textMain)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _handleRemove(item, type);
+            },
+            child: const Text("Kaldır", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleRemove(dynamic item, String type) async {
     String key = "";
     if (type == "org") key = SavedManager.orgKey;
@@ -178,26 +207,16 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
         itemBuilder: (context, index) {
           final item = items[index];
           
-          return Dismissible(
-            key: Key("${type}_${item.id}"),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) => _handleRemove(item, type),
-            background: Container(
-              color: Colors.red.shade600,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: const Icon(Symbols.delete_forever, color: Colors.white, fill: 1),
-            ),
-            child: _buildFavoriteItem(
-              item: item,
-              type: type,
-              onTap: () {
-                if (type == "org") context.push("/organization/detail", extra: item);
-                if (type == "beach") context.push("/beach/detail", extra: item);
-                if (type == "activity") context.push("/activity/detail", extra: item);
-                if (type == "place") context.push("/place/detail", extra: item);
-              },
-            ),
+          return _buildFavoriteItem(
+            item: item,
+            type: type,
+            onTap: () {
+              if (type == "org") context.push("/organization/detail", extra: item);
+              if (type == "beach") context.push("/beach/detail", extra: item);
+              if (type == "activity") context.push("/activity/detail", extra: item);
+              if (type == "place") context.push("/place/detail", extra: item);
+            },
+            onLongPress: () => _showDeleteConfirmDialog(item, type), // UZUN BASINCA ONAY ÇIKAR
           );
         },
       ),
@@ -208,13 +227,22 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
     required dynamic item,
     required String type,
     required VoidCallback onTap,
+    required VoidCallback onLongPress,
   }) {
+    final String fileUrl = ApiRoutes.fileUrl;
+    String? finalImageUrl;
+    
+    if (item.cover != null && item.cover is Map && item.cover['url'] != null) {
+      finalImageUrl = "$fileUrl${item.cover['url']}";
+    }
+
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress, // UZUN BASMA TETİKLEYİCİSİ
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -222,7 +250,25 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
           ),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- GÖRSEL ---
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: finalImageUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: finalImageUrl,
+                      width: 85,
+                      height: 85,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => _imagePlaceholder(),
+                      errorWidget: (context, url, error) => _imagePlaceholder(),
+                    )
+                  : _imagePlaceholder(),
+            ),
+            const SizedBox(width: 16),
+
+            // --- İÇERİK ---
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,26 +276,28 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                   Text(
                     item.name.toString().capitalizeAll(),
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textMain,
-                      height: 1.1,
+                      height: 1.2,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   _buildInfoRow(
                     icon: Symbols.location_on_rounded,
                     text: item.address?.toString().capitalize() ?? "Karaburun",
                   ),
                   if (type == "org") ...[
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     _buildInfoRow(
                       icon: Symbols.call,
                       text: item.phone?.toString().formatPhoneNumber() ?? "-",
                     ),
                   ],
                   if (type == "activity") ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     _buildInfoRow(
                       icon: Symbols.calendar_month,
                       text: "${item.begin != null ? DateHelper.formatDateTime(item.begin!) : '-'} - ${item.end != null ? DateHelper.formatDateTime(item.end!) : '-'}",
@@ -258,20 +306,19 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                 ],
               ),
             ),
-
-            // SİLME BUTONU
-            IconButton(
-              onPressed: () => _handleRemove(item, type),
-              icon: Icon(
-                Symbols.delete,
-                color: Colors.red.withValues(alpha: 0.3),
-                size: 22,
-                weight: 500,
-              ),
-            ),
+            // SİLME BUTONU BURADAN KALDIRILDI
           ],
         ),
       ),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Container(
+      width: 85,
+      height: 85,
+      color: const Color(0xFFF1F5F9),
+      child: const Icon(Symbols.image, size: 24, color: Colors.blueGrey),
     );
   }
 
@@ -279,12 +326,16 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, fill: 1, size: 14, color: AppColors.textLight, weight: 700),
+        Icon(icon, fill: 1, size: 13, color: AppColors.textLight, weight: 700),
         const SizedBox(width: 6),
         Flexible(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, color: AppColors.textMain, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 12, 
+              color: AppColors.textMain, 
+              fontWeight: FontWeight.w500
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

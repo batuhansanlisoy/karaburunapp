@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
-import 'package:go_router/go_router.dart';
 import 'package:karaburun/utils/string_helpers.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -74,37 +73,33 @@ class _VillageGridState extends State<VillageGrid> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Wrap(
-            spacing: 8, // Kutular arası yatay boşluk
-            runSpacing: 10, // Satırlar arası dikey boşluk
+            spacing: 8,
+            runSpacing: 10,
             children: displayedVillages.map((village) {
-              return GestureDetector(
-                onTap: () => context.go('/organization?villageId=${village.id}'),
-                child: Container(
-                  width: itemWidth,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 59, 59, 58).withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    village.name.capitalize(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      fontFamily: Theme.of(context).textTheme.bodyLarge?.fontFamily,
+              return Container(
+                width: itemWidth,
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 59, 59, 58).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  ],
+                ),
+                child: Text(
+                  village.name.capitalize(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               );
             }).toList(),

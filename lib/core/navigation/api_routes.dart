@@ -19,6 +19,9 @@ class ApiRoutes {
   static String get beach =>
     "$baseUrl/${dotenv.env['BEACH_PATH'] ?? 'beach'}";
 
+  static String get notification =>
+    "$baseUrl/${dotenv.env['NOTIFICATION_PATH'] ?? 'notification'}";
+
   static String get localProducer =>
     "$baseUrl/${dotenv.env['LOCAL_PRODUCER_PATH'] ?? 'local_producer'}";
 
