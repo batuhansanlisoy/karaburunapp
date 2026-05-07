@@ -1,17 +1,25 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiRoutes {
+  static String get scheme => dotenv.env['SCHEME']!;
+  static String get host => dotenv.env['HOST']!;
+  static String get prefix => dotenv.env['API_PREFIX']!;
+  
+  static String get _portStr {
+    final port = dotenv.env['PORT'];
+    if (port == null || port.isEmpty || port == '80' || port == '443') {
+      return "";
+    }
+    return ":$port";
+  }
 
-  static String get scheme => dotenv.env['SCHEME'] ?? 'http';
-  static String get host => dotenv.env['HOST'] ?? 'localhost';
-  static String get prefix => dotenv.env['API_PREFIX'] ?? 'api';
-  static int get port => int.tryParse(dotenv.env['PORT'] ?? '3000') ?? 3000;
+  static String get _rawBase => "$scheme://$host$_portStr";
 
-  static String get baseUrl => "$scheme://$host:$port/$prefix";
-  static String get fileUrl => "$scheme://$host:$port";
+  static String get baseUrl => "$_rawBase/$prefix";
+  static String get fileUrl => _rawBase;
 
   static String get upload =>
-    "$scheme://$host:$port/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
+    "$_rawBase/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
 
   static String get organization =>
     "$baseUrl/${dotenv.env['ORGANIZATION_PATH'] ?? 'organization'}";
@@ -37,8 +45,9 @@ class ApiRoutes {
   static String get config =>
     "$baseUrl/${dotenv.env['CONFIG_PATH'] ?? 'config'}";
 
-  //form olan kısımın bir headera ihtiyacı yok o0 yüzden base url de api var buda header istiyor burda kullanmıyorum
   static String get feedback =>
-    "$scheme://$host:$port/${dotenv.env['FEEDBACK_PATH'] ?? 'feedback'}";
+    "$_rawBase/${dotenv.env['FEEDBACK_PATH'] ?? 'feedback'}";
 
+  static String get request =>
+    "$_rawBase/${dotenv.env['REQUEST_PATH'] ?? 'request'}";
 }

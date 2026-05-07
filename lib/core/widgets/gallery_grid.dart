@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/full_screen_gallery.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -46,8 +47,8 @@ class GalleryGrid extends StatelessWidget {
       itemCount: images.length,
       itemBuilder: (context, index) {
         final imageUrl = images[index].startsWith("http")
-            ? images[index]
-            : "http://10.0.2.2:3000${images[index]}";
+          ? images[index]
+          : "${ApiRoutes.fileUrl}${images[index]}";
 
         return GestureDetector(
           onTap: () {
@@ -56,8 +57,8 @@ class GalleryGrid extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => FullScreenGallery(
                   images: images
-                      .map((e) => e.startsWith("http") ? e : "http://10.0.2.2:3000$e")
-                      .toList(),
+                    .map((e) => e.startsWith("http") ? e : "${ApiRoutes.fileUrl}$e")
+                    .toList(),
                   initialIndex: index,
                 ),
               ),
