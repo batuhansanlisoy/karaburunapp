@@ -5,14 +5,13 @@ class Place {
   final int villageId;
   final String name;
   final Content? content;
-  final Map<String, dynamic>? cover; // Bu aynı kaldı
+  final Map<String, dynamic>? cover;
   final List<String>? gallery;
   final String address;
   final double? latitude;
   final double? longitude;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final String villageName;
 
   Place({
     required this.id,
@@ -25,12 +24,11 @@ class Place {
     required this.latitude,
     required this.longitude,
     required this.createdAt,
-    required this.updatedAt,
-    required this.villageName
+    required this.updatedAt
   });
 
   factory Place.fromJson(Map<String, dynamic> json) {
-    
+  
     Content? content;
     if(json['content'] != null) {
       content = Content.fromJson(Map<String, dynamic>.from(json['content']));
@@ -38,20 +36,23 @@ class Place {
 
     Map<String, dynamic>? coverMap;
     if (json['cover'] != null) {
-      try {
-        final decoded = jsonDecode(json['cover']);
-        if (decoded is Map<String, dynamic>) {
-          coverMap = decoded;
+      if (json['cover'] is Map<String, dynamic>) {
+        coverMap = json['cover'];
+      } else if (json['cover'] is String) {
+        try {
+          coverMap = jsonDecode(json['cover']);
+        } catch (e) {
+          coverMap = null;
         }
-      } catch (e) {
-        coverMap = null;
       }
     }
 
-    // gallery null değilse decode et
-    final galleryList = json["gallery"] != null
-        ? List<String>.from(jsonDecode(json["gallery"]))
-        : null;
+    List<String>? galleryList;
+    if (json['gallery'] != null && json['gallery'] is List) {
+      galleryList = (json['gallery'] as List)
+          .map((e) => e.toString())
+          .toList();
+    }
 
     return Place(
       id: json["id"],
@@ -60,12 +61,11 @@ class Place {
       content: content,
       cover: coverMap,
       gallery: galleryList,
-      address: json["address"],
+      address: json["address"] ?? '',
       latitude: json["latitude"] != null ? double.tryParse(json["latitude"].toString()) : null,
       longitude: json["longitude"] != null ? double.tryParse(json["longitude"].toString()) : null,
       createdAt: DateTime.parse(json["created_at"]),
       updatedAt: DateTime.parse(json["updated_at"]),
-      villageName: json['name'],
     );
   }
 }

@@ -30,40 +30,40 @@ class Beach {
     });
 
     factory Beach.fromJson(Map<String, dynamic> json) {
-
-        final extraMap = json['extra'] != null
-            ? Map<String, dynamic>.from(json['extra'])
-            : null;
-
-        Map<String, dynamic>? coverMap;
-        if (json['cover'] != null) {
+      Map<String, dynamic>? coverMap;
+      if (json['cover'] != null) {
+        if (json['cover'] is Map<String, dynamic>) {
+          coverMap = json['cover'];
+        } else if (json['cover'] is String) {
           try {
-            final decoded = jsonDecode(json['cover']);
-            if (decoded is Map<String, dynamic>) {
-              coverMap = decoded;
-            }
+            coverMap = jsonDecode(json['cover']);
           } catch (e) {
             coverMap = null;
           }
         }
+      }
 
-        final galleryList = json['gallery'] != null
-          ? List<String>.from(json['gallery'])
-          : null;
+      List<String>? galleryList;
+      if (json['gallery'] != null && json['gallery'] is List) {
+        galleryList = (json['gallery'] as List)
+            .map((item) => item.toString())
+            .toList();
+      }
 
-        return Beach(
-          id: json['id'],
-          villageId: json['village_id'],
-          name: json['name'],
-          extra: extraMap,
-          cover: coverMap,
-          gallery: galleryList,
-          highlight: json['highlight'] == true || json['highlight'] == 1,
-          address: json['address'],
-          latitude: json['latitude'] == null ? null : double.tryParse(json['latitude'].toString()),
-          longitude: json['longitude'] == null ? null : double.tryParse(json['longitude'].toString()),
-          createdAt: DateTime.parse(json['created_at']),
-          updatedAt: DateTime.parse(json['updated_at'])
-        );
+      return Beach(
+        id: json['id'] as int,
+        villageId: json['village_id'] as int,
+        name: json['name'] as String,
+        extra: json['extra'] is Map<String, dynamic> ? json['extra'] : null,
+        cover: coverMap,
+        gallery: galleryList,
+        // Backend'den 1 veya 0 gelirse diye sağlama alıyoruz
+        highlight: json['highlight'] == 1 || json['highlight'] == true,
+        address: json['address'] ?? '',
+        latitude: double.tryParse(json['latitude']?.toString() ?? ''),
+        longitude: double.tryParse(json['longitude']?.toString() ?? ''),
+        createdAt: DateTime.parse(json['created_at']),
+        updatedAt: DateTime.parse(json['updated_at']),
+      );
     }
 }
