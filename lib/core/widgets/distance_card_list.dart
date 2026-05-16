@@ -171,7 +171,11 @@ class DistanceCardList extends StatelessWidget {
         return Container(
           alignment: Alignment.center,
           color: Colors.grey.withValues(alpha: 0.1),
-          child: const Icon(Symbols.broken_image, size: 20, color: Colors.grey),
+          child: const Icon(
+            Symbols.broken_image_rounded,
+            size: 20,
+            color: Colors.grey
+          ),
         );
       },
     );

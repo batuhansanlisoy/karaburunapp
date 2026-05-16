@@ -187,7 +187,7 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Symbols.bookmark_remove, size: 64, color: Colors.grey.shade200),
+            Icon(Symbols.bookmark_remove_rounded, size: 64, color: Colors.grey.shade200),
             const SizedBox(height: 16),
             Text(
               "Kayıtlı veri bulunamadı.",
@@ -292,14 +292,14 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
                   if (type == "org") ...[
                     const SizedBox(height: 4),
                     _buildInfoRow(
-                      icon: Symbols.call,
+                      icon: Symbols.call_rounded,
                       text: item.phone?.toString().formatPhoneNumber() ?? "-",
                     ),
                   ],
                   if (type == "activity") ...[
                     const SizedBox(height: 6),
                     _buildInfoRow(
-                      icon: Symbols.calendar_month,
+                      icon: Symbols.calendar_month_rounded,
                       text: "${item.begin != null ? DateHelper.formatDateTime(item.begin!) : '-'} - ${item.end != null ? DateHelper.formatDateTime(item.end!) : '-'}",
                     ),
                   ],

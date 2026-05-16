@@ -61,7 +61,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
                     errorWidget: (context, url, error) => const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                        Icon(Symbols.broken_image_rounded, color: Colors.white54, size: 40),
                         SizedBox(height: 10),
                         Text("Görsel yüklenemedi", style: TextStyle(color: Colors.white54)),
                       ],
@@ -83,7 +83,7 @@ class _FullScreenGalleryState extends State<FullScreenGallery> {
                 ),
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
-                  Symbols.close,
+                  Symbols.close_rounded,
                   color: Colors.white,
                   size: 28,
                 ),

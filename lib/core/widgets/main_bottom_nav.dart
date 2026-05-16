@@ -13,13 +13,12 @@ class MainBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Container(
-      // Marginleri daralttık, alt boşluğu bir tık azalttık
-      margin: const EdgeInsets.fromLTRB(40, 0, 40, 10), 
-      height: 50, // Yüksekliği 70'ten 55'e çektik, çok daha kibar durur
+      height: 45 + bottomPadding,
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(25), // Yüksekliğe göre yuvarlaklığı güncelledik
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.15),
@@ -28,14 +27,21 @@ class MainBottomNav extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(0, Symbols.home),
-          _buildNavItem(1, Symbols.bookmark),
-          _buildNavItem(2, Symbols.settings),
-        ],
-      ),
+      child: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        bottom: true,
+        child:  Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildNavItem(0, Symbols.home_rounded),
+            _buildNavItem(1, Symbols.bookmark_rounded),
+            _buildNavItem(2, Symbols.travel_explore_rounded),
+            _buildNavItem(3, Symbols.settings_rounded),
+          ],
+        ),
+      )
     );
   }
 
@@ -47,18 +53,18 @@ class MainBottomNav extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          // Seçili olanın arkasındaki o hafif renk dokunuşu
           color: isSelected ? Colors.white.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(15),
         ),
         child: Icon(
           icon,
-          size: 24,
-          weight: isSelected ? 700 : 400, // Seçili olan bir tık daha kalın olsun
-          fill: 1, // İkonlar her zaman dolu (istediğin gibi)
-          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.4), // Seçili olmayan daha sönük
+          size: 26,
+          weight: 700,
+          grade: 40,
+          fill: 1,
+          color: Colors.white,
         ),
       ),
     );

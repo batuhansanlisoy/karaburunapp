@@ -70,22 +70,32 @@ class _NotifPageState extends State<NotifPage> {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(vertical: 8),
                       leading: const CircleAvatar(
-                        radius: 16,
+                        radius: 15,
                         backgroundColor: AppColors.iconOrange,
                         child: Icon(
-                          Symbols.notifications,
+                          Symbols.notifications_rounded,
                           color: Colors.white,
-                          size: 22
+                          size: 20,
+                          weight: 700,
+                          grade: 0,
+                          fill: 1,
+                          opticalSize: 24
                         ),
                       ),
                       title: Text(
-                        item.title ?? "Başlık Yok",
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        item.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textMain
+                        ),
                       ),
                       subtitle: Text(
-                        item.message ?? "",
+                        item.message,
                         maxLines: 5,
                         overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.textMuted
+                        ),
                       ),
                       onTap: () {
                         // Bildirim detayına gitmek istersen burayı kullanabilirsin

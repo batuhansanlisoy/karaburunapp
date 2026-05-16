@@ -130,7 +130,11 @@ class UpcomingEventBanner extends StatelessWidget {
                     ),
                     
                     // Sağ: Ok işareti
-                    Icon(Symbols.chevron_forward, color: Colors.white.withValues(alpha: 0.3), size: 22),
+                    Icon(
+                      Symbols.chevron_forward_rounded,
+                      color: Colors.white.withValues(alpha: 0.3),
+                      size: 22
+                    ),
                   ],
                 ),
               ),

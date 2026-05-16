@@ -15,12 +15,13 @@ class ActivityController {
       if (data.isEmpty) return [];
 
       final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
 
       // Sadece bugünden sonraki etkinlikleri filtrele ve tarihe göre sırala
       List<Activity> futureEvents = data
-          .where((e) => e.begin.isAfter(now))
+          .where((e) => e.end.isAfter(today) || e.end.isAtSameMomentAs(today))
           .toList()
-        ..sort((a, b) => a.begin.compareTo(b.begin));
+        ..sort((a, b) => a.end.compareTo(b.end));
 
       return futureEvents;
     } catch (e) {

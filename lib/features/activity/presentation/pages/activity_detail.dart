@@ -112,7 +112,7 @@ class ActivityDetailPageState extends State<ActivityDetailPage> {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: AppColors.bgDark,
-                    child: const Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                    child: const Icon(Symbols.broken_image_rounded, color: Colors.white54, size: 40),
                   ),
                 ),
               ),
@@ -126,7 +126,7 @@ class ActivityDetailPageState extends State<ActivityDetailPage> {
                 child: CircleAvatar(
                   backgroundColor: Colors.black.withValues(alpha: 0.5),
                   child: IconButton(
-                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
+                    icon: const Icon(Symbols.arrow_back_rounded, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),

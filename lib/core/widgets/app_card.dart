@@ -240,7 +240,7 @@ class _AppCardState extends State<AppCard> {
           onTap: widget.onSaveTap,
           behavior: HitTestBehavior.opaque,
           child: Icon(
-            widget.isSaved ? Symbols.bookmark_added : Symbols.bookmark_add,
+            widget.isSaved ? Symbols.bookmark_added_rounded : Symbols.bookmark_add_rounded,
             color: widget.isSaved ? AppColors.textLight : AppColors.textLight,
             size: 24,
             fill: widget.isSaved ? 1 : 0,
@@ -439,7 +439,11 @@ class _AppCardState extends State<AppCard> {
       width: double.infinity, 
       height: 280, // Placeholder boyutu da resimle eşitlendi
       color: const Color(0xFFF1F5F9), 
-      child: Icon(Symbols.image, size: 40, color: Colors.blueGrey.shade200)
+      child: Icon(
+        Symbols.image_rounded,
+        size: 40,
+        color: Colors.blueGrey.shade200
+      )
     );
   }
 }

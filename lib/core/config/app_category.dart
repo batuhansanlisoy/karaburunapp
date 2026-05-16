@@ -4,21 +4,21 @@ import 'package:material_symbols_icons/symbols.dart';
 class AppCategory {
   static const List<Map<String, dynamic>> staticCategories = [
     {
-      "icon": Symbols.add_a_photo,
+      "icon": Symbols.photo_camera_rounded,
       "title": "Turistik",
       "color": AppColors.iconOrange,
       "path": "/place", // Adresimiz belli
     },
     {
-      "icon": Symbols.celebration,
+      "icon": Symbols.star_shine_rounded,
       "title": "Etkinlik",
-      "color": AppColors.iconPurple,
+      "color": AppColors.iconYellow,
       "path": "/activity",
     },
     {
-      "icon": Symbols.beach_access,
+      "icon": Symbols.beach_access_rounded,
       "title": "Koylar",
-      "color": AppColors.iconGreen,
+      "color": AppColors.iconBlue,
       "path": "/beach",
     }
   ];

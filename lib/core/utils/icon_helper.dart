@@ -3,7 +3,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 class IconHelper {
   static IconData getIcon(dynamic data) {
-    if (data == null || data.toString().isEmpty) return Symbols.category;
+    if (data == null || data.toString().isEmpty) return Symbols.category_rounded;
     
     String name = data.toString().trim();
     
@@ -19,19 +19,19 @@ class IconHelper {
         .toLowerCase();
     
     switch (cleanName) {
-      case 'hotel': return Symbols.hotel;
-      case 'local_cafe': return Symbols.local_cafe;
-      case 'beach_access': return Symbols.beach_access;
-      case 'directions_run': return Symbols.directions_run;
-      case 'shopping_cart': return Symbols.shopping_cart;
-      case 'home': return Symbols.home;
-      case 'restaurant': return Symbols.restaurant;
-      case 'construction': return Symbols.construction;
-      case 'bed': return Symbols.bed;
-      case 'storefront': return Symbols.storefront;
-      case 'directions_bus': return Symbols.directions_bus;
-      case 'medical_services': return Symbols.medical_services;
-      default: return Symbols.category;
+      case 'hotel': return Symbols.hotel_rounded;
+      case 'local_cafe': return Symbols.local_cafe_rounded;
+      case 'beach_access': return Symbols.beach_access_rounded;
+      case 'directions_run': return Symbols.directions_run_rounded;
+      case 'shopping_cart': return Symbols.shopping_cart_rounded;
+      case 'home': return Symbols.home_rounded;
+      case 'restaurant': return Symbols.restaurant_rounded;
+      case 'construction': return Symbols.construction_rounded;
+      case 'bed': return Symbols.bed_rounded;
+      case 'storefront': return Symbols.storefront_rounded;
+      case 'directions_bus': return Symbols.directions_bus_rounded;
+      case 'medical_services': return Symbols.medical_services_rounded;
+      default: return Symbols.category_rounded;
     }
   }
 

@@ -109,7 +109,11 @@ class PlaceDetailState extends State<PlaceDetail> {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: AppColors.bgDark,
-                    child: const Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                    child: const Icon(
+                      Symbols.broken_image_rounded,
+                      color: Colors.white54,
+                      size: 40
+                    ),
                   ),
                 ),
               ),
@@ -123,7 +127,10 @@ class PlaceDetailState extends State<PlaceDetail> {
                 child: CircleAvatar(
                   backgroundColor: Colors.black.withValues(alpha: 0.5),
                   child: IconButton(
-                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
+                    icon: const Icon(
+                      Symbols.arrow_back_rounded,
+                      color: Colors.white
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),

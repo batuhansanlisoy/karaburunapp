@@ -33,21 +33,29 @@ class TimelineTab extends StatelessWidget {
       length: timeline.length,
       child: Column(
         children: [
-          // 🌟 Daha modern ve temiz TabBar
           TabBar(
             isScrollable: true,
+            indicator: const BoxDecoration(),
             tabAlignment: TabAlignment.center,
-            indicatorColor: AppColors.secondary,
-            labelColor: AppColors.secondary,
-            indicatorWeight: 0.5,
+            labelColor: AppColors.textDark,
             dividerHeight: 0,
-            indicatorPadding: const EdgeInsets.only(bottom: 8),
             unselectedLabelColor: AppColors.textMuted,
-            labelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 11),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
             tabs: timeline
-                .map<Widget>((day) => Tab(
-                      text: DateHelper.formatToDayMonthYear(day.date),
-                    ))
+              .map<Widget>((day) => Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Symbols.event_rounded,
+                          fill: 1, 
+                          size: 14
+                        ),
+                        const SizedBox(width: 6),
+                        Text(DateHelper.formatToDayMonthYear(day.date)),
+                      ],
+                    ),
+                  ))
                 .toList(),
           ),
           Expanded(
@@ -71,7 +79,6 @@ class TimelineTab extends StatelessWidget {
 
     return ListView.builder(
       controller: controller,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       itemCount: events.length,
       itemBuilder: (context, index) {
         final item = events[index];
@@ -81,46 +88,30 @@ class TimelineTab extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppColors.cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
-            // 🌟 Çok hafif bir gölge kartı canlandırır
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ],
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              // 🌟 Sol Taraf: Saat İkonu Alanı (DistanceCard'daki ikon stili)
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
                 child: const Icon(
-                  Symbols.schedule, // Material Symbols Saat
-                  color: AppColors.primary,
+                  Symbols.schedule_rounded,
+                  color: AppColors.iconBlue,
                   size: 22,
                   weight: 500,
                 ),
               ),
               const SizedBox(width: 16),
-              
-              // 🌟 Orta Taraf: Metin Alanı
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       item.time,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: const TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary.withValues(alpha: 0.8),
+                        color: AppColors.textBlue,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -128,18 +119,17 @@ class TimelineTab extends StatelessWidget {
                     Text(
                       item.title,
                       style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textMain,
                       ),
                     ),
                   ],
                 ),
               ),
-              
-              // 🌟 Sağ Taraf: İleri butonu veya ok (Opsiyonel)
+
               const Icon(
-                Symbols.chevron_right,
+                Symbols.chevron_right_rounded,
                 color: AppColors.textMuted,
                 size: 20,
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:karaburun/core/widgets/main_bottom_nav.dart';
 import 'package:karaburun/core/config/launch_popup_manager.dart';
@@ -27,7 +28,8 @@ class _MainLayoutState extends State<MainLayout> {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/favorite')) return 1;
-    if (location.startsWith('/setting')) return 2;
+    if (location.startsWith('/explore')) return 2;
+    if (location.startsWith('/setting')) return 3;
     return 0;
   }
 
@@ -40,6 +42,9 @@ class _MainLayoutState extends State<MainLayout> {
         context.go('/favorite');
         break;
       case 2:
+        context.go('/explore');
+        break;
+      case 3:
         context.go('/setting');
         break;
     }
@@ -47,23 +52,32 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(100),
-        child: _MainAppBar(),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFF1E293B),
+        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarContrastEnforced: false
       ),
-      body: widget.child,
-      bottomNavigationBar: MainBottomNav(
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onTabChange(index, context),
-      ),
+      child: Scaffold(
+        extendBody: true,
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: _MainAppBar(),
+        ),
+        body: widget.child,
+        bottomNavigationBar: MainBottomNav(
+          currentIndex: _calculateSelectedIndex(context),
+          onTap: (index) => _onTabChange(index, context),
+        ),
+      )
     );
   }
 }
 
-// --- TASARIM WIDGETLARI ---
-
+// burası uygulama en üst ekranı
 class _MainAppBar extends StatelessWidget {
   const _MainAppBar();
 
@@ -80,7 +94,7 @@ class _MainAppBar extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: const SafeArea(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,6 +108,7 @@ class _MainAppBar extends StatelessWidget {
   }
 }
 
+// karaburun go yazısı
 class _Logo extends StatelessWidget {
   const _Logo();
 
@@ -123,6 +138,7 @@ class _Logo extends StatelessWidget {
   }
 }
 
+// main appbardaki notification ikonu
 class _NotificationIcon extends StatelessWidget {
   const _NotificationIcon();
 
@@ -142,13 +158,13 @@ class _NotificationIcon extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: const Icon(
-            Symbols.notifications,
+            Symbols.notifications_rounded,
             fill: 1.0,
             color: Color.fromARGB(255, 255, 255, 255),
             size: 22,
-            weight: 500,
-            grade: 200,
-            opticalSize: 20,
+            weight: 700,
+            grade: 0,
+            opticalSize: 24,
           ),
         ),
       ),

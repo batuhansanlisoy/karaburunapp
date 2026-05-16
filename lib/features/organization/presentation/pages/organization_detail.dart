@@ -92,7 +92,11 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
                   ),
                   errorWidget: (context, url, error) => Container(
                     color: AppColors.bgDark,
-                    child: const Icon(Symbols.broken_image, color: Colors.white54, size: 40),
+                    child: const Icon(
+                      Symbols.broken_image_rounded,
+                      color: Colors.white54,
+                      size: 40
+                    ),
                   ),
                 ),
               ),
@@ -109,7 +113,10 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
                 child: CircleAvatar(
                   backgroundColor: Colors.black.withValues(alpha: 0.5),
                   child: IconButton(
-                    icon: const Icon(Symbols.arrow_back, color: Colors.white),
+                    icon: const Icon(
+                      Symbols.arrow_back_rounded,
+                      color: Colors.white
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -294,10 +301,10 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
           Row(
             children: [
               if (hasWifi)
-                _buildFeatureChip(Symbols.wifi, "Ücretsiz Wi-Fi", Colors.blue),
+                _buildFeatureChip(Symbols.wifi_rounded, "Ücretsiz Wi-Fi", Colors.blue),
               if (hasDelivery) ...[
                 const SizedBox(width: 8),
-                _buildFeatureChip(Symbols.moped_package, "Paket Servis", Colors.green),
+                _buildFeatureChip(Symbols.hand_package_rounded, "Paket Servis", Colors.green),
               ],
             ],
           ),
@@ -311,9 +318,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Column(
             children: paymentMethods.map((method) {
               return _buildPaymentMethod(method.toString());
             }).toList(),
@@ -329,7 +334,8 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
         const SizedBox(height: 12),
         
         _buildContactRow(
-          icon: Symbols.call,
+          icon: Symbols.call_rounded,
+          iconColor: AppColors.iconGreen,
           title: "Telefon",
           subtitle: widget.organization.phone.formatPhoneNumber(),
           onTap: () => _launchURL("tel:${widget.organization.phone}"),
@@ -337,14 +343,16 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
 
         if (hasWebsite)
         _buildContactRow(
-          icon: Symbols.language,
+          icon: Symbols.public_rounded,
+          iconColor: AppColors.iconPurple,
           title: "Web Sitesi",
           subtitle: website,
           onTap: () => _launchURL(website),
         ),
 
         _buildContactRow(
-          icon: Symbols.map,
+          icon: Symbols.map_rounded,
+          iconColor: AppColors.iconOrange,
           title: "Yol Tarifi Al",
           subtitle: widget.organization.address.capitalize(),
           onTap: () {
@@ -367,7 +375,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: color),
+          Icon(icon, size: 18, color: color, fill: 1),
           const SizedBox(width: 6),
           Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13)),
         ],
@@ -383,38 +391,45 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
     switch (method.toLowerCase()) {
       case 'cash':
       case 'nakit':
-        icon = Symbols.payments;
+        icon = Symbols.payments_rounded;
         label = "Nakit";
         break;
       case 'card':
       case 'kart':
-        icon = Symbols.credit_card;
+        icon = Symbols.credit_card_rounded;
         label = "Kredi Kartı";
         break;
       case 'door':
       case 'kapıda ödeme':
-        icon = Symbols.delivery_dining;
+        icon = Symbols.paid_rounded;
         label = "Kapıda Ödeme";
         break;
       case 'havale':
-        icon = Symbols.account_balance;
+        icon = Symbols.swap_horiz_rounded;
         label = "Iban / Havale";
         break;
       default:
-        icon = Symbols.sell;
+        icon = Symbols.sell_rounded;
         label = method.capitalizeAll();
     }
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: Colors.black54),
+          Icon(
+            icon,
+            size: 18,
+            color: AppColors.iconDefault,
+            fill: 1,
+          ),
           const SizedBox(width: 8),
           Text(label, style: const TextStyle(fontSize: 13, color: Colors.black87)),
         ],
@@ -422,17 +437,28 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
     );
   }
 
-  Widget _buildContactRow({required IconData icon, required String title, required String subtitle, required VoidCallback onTap}) {
+  Widget _buildContactRow({
+    required IconData icon,
+    Color? iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap
+  }) {
     return Card(
       elevation: 0,
       color: Colors.grey[50],
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: Icon(icon, color: AppColors.iconOrange, weight: 700, fill: 1, size: 20,),
+        leading: Icon(
+          icon, color: iconColor ?? AppColors.iconDefault,
+          weight: 700,
+          fill: 1,
+          size: 20
+        ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
         subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-        trailing: const Icon(Symbols.chevron_right, size: 20),
+        trailing: const Icon(Symbols.chevron_right_rounded, size: 20),
         onTap: onTap,
       ),
     );

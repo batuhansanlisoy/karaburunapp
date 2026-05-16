@@ -82,7 +82,10 @@ class GalleryGrid extends StatelessWidget {
                 ),
                 errorWidget: (context, url, error) => Container(
                   color: AppColors.cardBg,
-                  child: const Icon(Symbols.broken_image, color: AppColors.textMuted),
+                  child: const Icon(
+                    Symbols.broken_image_rounded,
+                    color: AppColors.textMuted
+                  ),
                 ),
               )
           ),

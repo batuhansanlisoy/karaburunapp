@@ -43,8 +43,11 @@ class SearchInput extends StatelessWidget {
         ),
 
         prefixIcon: Icon(
-          Symbols.search,
+          Symbols.search_rounded,
           size: 22,
+          opticalSize: 24,
+          weight: 500,
+          grade: 0,
           color: Colors.grey.shade600,
         ),
       ),

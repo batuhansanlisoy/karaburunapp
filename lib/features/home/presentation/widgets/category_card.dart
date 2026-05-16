@@ -19,31 +19,42 @@ class CategoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 65,
+        width: 70,
         height: 90,
-        margin: const EdgeInsets.only(right: 4),
+        margin: const EdgeInsets.only(right: 0),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-            ),
-          ],
+          border: Border.all(
+            color: Colors.black12.withValues(alpha: 0.05),
+            width: 2,
+          ),
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: color.withValues(alpha: 0.1),
+          //     spreadRadius: .1,
+          //     blurRadius: .1,
+          //   ),
+          // ],
         ),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 26, fill: 1.0, weight: 900),
+            Icon(
+              icon,
+              color: color,
+              size: 26,
+              fill: 1.0,
+              weight: 700
+            ),
             const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w900,
+                color: color,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

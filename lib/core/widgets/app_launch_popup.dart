@@ -71,7 +71,7 @@ class AppLaunchPopup extends StatelessWidget {
                   ),
                 ),
                 child: const Icon(
-                  Symbols.close,
+                  Symbols.close_rounded,
                   color: Colors.white,
                   size: 26,
                 ),
