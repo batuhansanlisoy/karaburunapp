@@ -100,7 +100,7 @@ class _SettingPageState extends State<SettingPage> {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 30),
               child: Text(
-                "Versiyon 1.0.0+1",
+                "Versiyon 1.0.1+2",
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.textMuted,
