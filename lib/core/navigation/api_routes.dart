@@ -18,6 +18,9 @@ class ApiRoutes {
   static String get baseUrl => "$_rawBase/$prefix";
   static String get fileUrl => _rawBase;
 
+  static String get explore =>
+    "$baseUrl/${dotenv.env['EXPLORE_PATH'] ?? 'explore'}";
+
   static String get upload =>
     "$_rawBase/${dotenv.env['UPLOAD_PATH'] ?? 'upload'}";
 
