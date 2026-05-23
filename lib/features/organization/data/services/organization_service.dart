@@ -5,6 +5,31 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 
 class OrganizationService {
+
+  Future<OrganizationModel> getSingle({required int orgId}) async {
+    final url = Uri.parse("${ApiRoutes.organization}/$orgId/single");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        
+        return OrganizationModel.fromJson(data);
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Single organization fetch error: $e");
+    }
+  }
+
   Future<List<OrganizationModel>> getOrganizations({
     int? categoryId,
     bool? highlight,
@@ -60,30 +85,6 @@ class OrganizationService {
       }
     } catch (e) {
       throw Exception("Organization fetch error: $e");
-    }
-  }
-
-  Future<OrganizationModel> singleOrganization({required int orgId}) async {
-    final url = Uri.parse("${ApiRoutes.organization}/$orgId/single");
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
-          "Content-Type": "application/json",
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        
-        return OrganizationModel.fromJson(data);
-      } else {
-        throw Exception("Sunucu hatası: ${response.statusCode}");
-      }
-    } catch (e) {
-      throw Exception("İşletme getirme hatası: $e");
     }
   }
 }

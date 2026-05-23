@@ -5,6 +5,30 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ActivityService {
+
+  Future<Activity> getSingle(int activityId) async {
+    final url = Uri.parse("${ApiRoutes.activity}/$activityId/single");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return Activity.fromJson(data);
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Single activity fetch error: $e");
+    }
+  }
+
   Future<List<Activity>> getActivity({
     int? villageId,
     int? categoryId,

@@ -4,6 +4,10 @@ import '../services/local_producer_service.dart';
 class LocalProducerRepository {
   final LocalProducerService _service = LocalProducerService();
 
+  Future<LocalProducerModel?> fetchSingleLocalProducer(int localProducerId) {
+    return _service.getSingle(localProducerId);
+  }
+
   Future<List<LocalProducerModel>> fetchLocalProducer({ 
     bool? isActive,
     bool? highlight,

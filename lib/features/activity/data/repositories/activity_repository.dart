@@ -4,6 +4,10 @@ import '../services/activiy_service.dart';
 class ActivityRepository {
     final ActivityService _service = ActivityService();
 
+    Future<Activity?> fetchSingleActivity(int activityId) {
+      return _service.getSingle(activityId);
+    }
+
     Future<List<Activity>> fetchActivity({
         int? villageId,
         int? categoryId,

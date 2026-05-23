@@ -5,6 +5,30 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/local_producer/data/models/local_producer_model.dart';
 
 class LocalProducerService {
+
+  Future<LocalProducerModel> getSingle(int localProducerId) async {
+    final url = Uri.parse("${ApiRoutes.localProducer}/$localProducerId/single");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return LocalProducerModel.fromJson(data);
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Single Local Producer fetch error: $e");
+    }
+  }
+
   Future<List<LocalProducerModel>> getLocalProducer({
     bool? isActive,
     bool? highlight,

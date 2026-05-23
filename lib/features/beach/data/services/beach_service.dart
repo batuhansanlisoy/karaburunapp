@@ -5,6 +5,29 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 
 class BeachService {
+  Future<Beach> getSingle(int beachId) async {
+    final url = Uri.parse("${ApiRoutes.beach}/$beachId/single");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "X-API-KEY": dotenv.env['MOBILE_API_KEY'] ?? '',
+          "Content-Type": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return Beach.fromJson(data);
+      } else {
+        throw Exception("Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Single beach fetch error: $e");
+    }
+  }
+
   Future<List<Beach>> getBeach({
     int? villageId,
     bool? highlight,
