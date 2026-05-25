@@ -4,72 +4,137 @@ import 'package:karaburun/features/organization/data/models/organization_categor
 import 'package:karaburun/features/organization/data/models/organization_category_model.dart';
 import 'package:karaburun/features/organization/data/repositories/organization_category_item.repository.dart';
 import 'package:karaburun/features/organization/data/repositories/organization_category_repository.dart';
-import 'package:url_launcher/url_launcher.dart'; // Telefon ve web için lazım
+import 'package:karaburun/features/organization/data/repositories/organization_repository.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:karaburun/core/helpers/string_helpers.dart';
 import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import 'package:karaburun/features/organization/data/models/organization_model.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:karaburun/core/helpers/map_launcher.dart';
 
 class OrganizationDetail extends StatefulWidget {
-  final OrganizationModel organization;
-  const OrganizationDetail({super.key, required this.organization});
+  final OrganizationModel? organization;
+  final int? organizationId;
+
+  const OrganizationDetail({
+    super.key,
+    this.organization,
+    this.organizationId
+  });
 
   @override
   State<OrganizationDetail> createState() => _OrganizationDetailState();
 }
 
 class _OrganizationDetailState extends State<OrganizationDetail> {
-  final categoryRepo = OrganizationCategoryRepository();
-  final itemRepo = OrganizationCategoryItemRepository();
+  final _organizationRepository = OrganizationRepository();
+  final _categoryRepo = OrganizationCategoryRepository();
+  final _itemRepo = OrganizationCategoryItemRepository();
 
-  List<OrganizationCategoryItemModel> categoryItems = [];
-  List<OrganizationCategoryModel> categories = [];
-  Map<int, OrganizationCategoryModel> categoryMap = {};
+  OrganizationModel? _currentOrganization;
+  List<OrganizationCategoryItemModel> _categoryItems = [];
+  List<OrganizationCategoryModel> _categories = [];
+  Map<int, OrganizationCategoryModel> _categoryMap = {};
 
-  bool loading = true;
+  bool _isLoading = true;
+  bool _hasError  = false;
 
   @override
   void initState() {
     super.initState();
+    _currentOrganization = widget.organization;
     loadData();
   }
 
   Future<void> loadData() async {
     if (!mounted) return;
-    setState(() => loading = true);
+    setState(() => _isLoading = true);
 
     try {
-      final results = await Future.wait([
-        itemRepo.fetchOrganizationCategoryItem(),
-        categoryRepo.fetchOrganizationCategory()
-      ]);
-      
-      categoryItems = results[0] as List<OrganizationCategoryItemModel>;
-      categories    = results[1] as List<OrganizationCategoryModel>;
-
-      categoryMap = {
-        for (var category in categories) category.id: category,
-      };
-
-    } catch (e) {
-      debugPrint("Veri çekme hatası: $e");
-    } finally {
-      if (mounted) {
-        setState(() => loading = false);
+      if (_currentOrganization == null && widget.organizationId != null) {
+        final fetchedOrganization = await _organizationRepository.singleOrganization(widget.organizationId!);
+        if (fetchedOrganization != null) {
+          if (mounted) {
+            setState(() {
+              _currentOrganization = fetchedOrganization;
+            });
+          }
+        } else {
+          _setError();
+          return;
+        }
       }
+
+      if (_currentOrganization != null) {
+
+        final results = await Future.wait([
+          _itemRepo.fetchOrganizationCategoryItem(),
+          _categoryRepo.fetchOrganizationCategory()
+        ]);
+        
+        _categoryItems = results[0] as List<OrganizationCategoryItemModel>;
+        _categories    = results[1] as List<OrganizationCategoryModel>;
+
+        _categoryMap = {
+          for (var category in _categories) category.id: category,
+        };
+
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      } else {
+        _setError();
+      }
+    } catch (e) {
+      debugPrint("Organization detail fetcherror: $e");
+      _setError();
+    }
+  }
+
+  void _setError() {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _hasError  = true;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading && _currentOrganization == null) {
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.textOrange,
+          ),
+        ),
+      );
+    }
+
+    if (_hasError || _currentOrganization == null) {
+      return Center(
+        child: Text(
+          "İşletme detayları yüklenemedi!",
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7), 
+            fontSize: 16,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      );
+    }
+
     final String fileUrl = ApiRoutes.fileUrl;
-    final coverUrl = widget.organization.cover != null
-        ? "$fileUrl${widget.organization.cover!['url']}"
+
+    final coverUrl = _currentOrganization!.cover != null
+        ? "$fileUrl${_currentOrganization!.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.organization.gallery?.map((path) {
+    final List<String> gallery = _currentOrganization!.gallery?.map((path) {
       return "$fileUrl$path";
     }).toList() ?? [];
 
@@ -126,7 +191,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
             // İçerik Paneli
             DraggableScrollableSheet(
               initialChildSize: 0.65,
-              minChildSize: 0.65,
+              minChildSize: 0.3,
               maxChildSize: 1.0,
               builder: (context, scrollController) {
                 return Container(
@@ -153,7 +218,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
                         child: Column(
                           children: [
                             Text(
-                              widget.organization.name.capitalizeAll(),
+                              _currentOrganization!.name.capitalizeAll(),
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 22,
@@ -208,16 +273,16 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
     );
   }
   Widget _buildProductTab(ScrollController controller) {
-  if (loading) {
+  if (_isLoading) {
     return const Center(child: CircularProgressIndicator(color: AppColors.textOrange));
   }
 
   final List<String> matchedProductNames = [];
   
-  if (widget.organization.subCategories != null) {
-    for (var sub in widget.organization.subCategories!) {
+  if (_currentOrganization!.subCategories != null) {
+    for (var sub in _currentOrganization!.subCategories!) {
       try {
-        final categoryItem = categoryItems.firstWhere(
+        final categoryItem = _categoryItems.firstWhere(
           (element) => element.id == sub.itemId
         );
         if (categoryItem.name.isNotEmpty) {
@@ -265,14 +330,14 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
 }
 
   Widget _buildInfoTab(ScrollController controller) {
-    // Content içindeki dinamik verileri çekelim
-    final content = widget.organization.content;
+    final content = _currentOrganization!.content;
     final bool hasWifi = content?['has_wifi'] == "1" || content?['has_wifi'] == true;
     final bool hasDelivery = content?['has_delivery'] == "1" || content?['has_delivery'] == true;
     final List<dynamic> paymentMethods = content?['payment_methods'] ?? [];
 
-    final String? website = widget.organization.website;
+    final String? website = _currentOrganization!.website;
     final bool hasWebsite = website != null && website.trim().isNotEmpty;
+    final bool hasCoordinates = _currentOrganization!.latitude != null && _currentOrganization!.longitude != null;
 
     return ListView(
       controller: controller,
@@ -333,12 +398,13 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
         ),
         const SizedBox(height: 12),
         
+
         _buildContactRow(
           icon: Symbols.call_rounded,
           iconColor: AppColors.iconGreen,
           title: "Telefon",
-          subtitle: widget.organization.phone.formatPhoneNumber(),
-          onTap: () => _launchURL("tel:${widget.organization.phone}"),
+          subtitle: _currentOrganization!.phone.formatPhoneNumber(),
+          onTap: () => _launchURL("tel:${_currentOrganization!.phone}"),
         ),
 
         if (hasWebsite)
@@ -350,13 +416,18 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
           onTap: () => _launchURL(website),
         ),
 
+        if (hasCoordinates)
         _buildContactRow(
           icon: Symbols.map_rounded,
           iconColor: AppColors.iconOrange,
           title: "Yol Tarifi Al",
-          subtitle: widget.organization.address.capitalize(),
+          subtitle: _currentOrganization!.address.capitalize(),
           onTap: () {
-            // MapLauncher kodun buraya gelecek
+            MapLauncher.openMap(
+              context, 
+              _currentOrganization!.latitude, 
+              _currentOrganization!.longitude,
+            );
           },
         ),
       ],

@@ -10,6 +10,7 @@ import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/activity/data/repositories/activity_repository.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
+import 'package:karaburun/features/place/data/repositories/place_repository.dart';
 import '../../data/models/place_model.dart';
 import '../../data/models/place_activity_distance_model.dart';
 import '../../data/repositories/place_activity_distance_repository.dart';
@@ -18,61 +19,105 @@ import '../../data/repositories/place_beach_distance_repository.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class PlaceDetail extends StatefulWidget {
-  final Place place;
-  const PlaceDetail({super.key, required this.place});
+  final Place? place;
+  final int? placeId;
+
+  const PlaceDetail({
+    super.key,
+    this.place,
+    this.placeId
+  });
 
   @override
   PlaceDetailState createState() => PlaceDetailState();
 }
 
 class PlaceDetailState extends State<PlaceDetail> {
+  final PlaceRepository _placeRepository = PlaceRepository();
   final PlaceActivityDistanceRepository _activityDistanceRepo = PlaceActivityDistanceRepository();
   final PlaceBeachDistanceRepository _beachDistanceRepo = PlaceBeachDistanceRepository();  
   final ActivityRepository _activityRepo = ActivityRepository();
   final BeachRepository _beachRepo = BeachRepository();
 
+  Place? _currentPlace;
   List<PlaceActivityDistanceModel> _nearActivities = [];
   List<PlaceBeachDistanceModel> _nearBeaches = [];
   List<Activity> _activityList = [];
   List<Beach> _beachList = [];
 
   bool _isLoading = true;
+  bool _hasError  = false;
 
   @override
   void initState() {
     super.initState();
+    _currentPlace = widget.place;
     _loadAllData();
   }
 
   void _loadAllData() async {
-    final results = await Future.wait([
-      _fetchNearestActivities(),
-      _fetchNearestBeaches(),
-      _fetchActivities(),
-      _fetchBeaches()
-    ]);
+    try {
+      if (_currentPlace == null && widget.placeId != null) {
+        final fetchedPlace = await _placeRepository.fetchSinglePlace(widget.placeId!);
 
-    setState(() {
-      _nearActivities = results[0] as List<PlaceActivityDistanceModel>;
-      _nearBeaches    = results[1] as List<PlaceBeachDistanceModel>;
-      _activityList   = results[2] as List<Activity>;
-      _beachList      = results[3] as List<Beach>;
+        if (fetchedPlace != null) {
+          if (mounted) {
+            setState(() {
+              _currentPlace = fetchedPlace;
+            });
+          }
+        } else {
+          _setError();
+          return;
+        }
+      }
 
-      //loading
-      _isLoading = false;
-    });
+      if (_currentPlace != null) {
+        final results = await Future.wait([
+          _fetchNearestActivities(),
+          _fetchNearestBeaches(),
+          _fetchActivities(),
+          _fetchBeaches()
+        ]);
+
+        setState(() {
+          _nearActivities = results[0] as List<PlaceActivityDistanceModel>;
+          _nearBeaches    = results[1] as List<PlaceBeachDistanceModel>;
+          _activityList   = results[2] as List<Activity>;
+          _beachList      = results[3] as List<Beach>;
+          _isLoading      = false;
+        });
+      } else {
+        _setError();
+      }
+    } catch (e) {
+      debugPrint("Place detail page fetch error: $e");
+      _setError();
+    }
+  }
+
+  void _setError() {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+    }
   }
 
   Future<List<PlaceActivityDistanceModel>> _fetchNearestActivities() async {
-    return await _activityDistanceRepo.fetchNearestActivities(placeId: widget.place.id);
+    return await _activityDistanceRepo.fetchNearestActivities(
+      placeId: _currentPlace!.id,
+      onlyUpcoming: true
+    );
   }
 
   Future<List<PlaceBeachDistanceModel>> _fetchNearestBeaches() async {
-    return await _beachDistanceRepo.fetchNearestBeaches(placeId: widget.place.id);  
+    return await _beachDistanceRepo.fetchNearestBeaches(placeId: _currentPlace!.id);  
   }
 
   Future<List<Activity>> _fetchActivities() async {
-    return await _activityRepo.fetchActivity();
+    return await _activityRepo.fetchActivity(onlyUpcoming: true);
   }
 
   Future<List<Beach>> _fetchBeaches() async {
@@ -81,13 +126,37 @@ class PlaceDetailState extends State<PlaceDetail> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading && _currentPlace == null) {
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.textOrange,
+          ),
+        ),
+      );
+    }
+
+    if (_hasError || _currentPlace == null) {
+      return Center(
+        child: Text(
+          "Turistik bölge detayları yüklenemedi!",
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7), 
+            fontSize: 16,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      );
+    }
+
     final String fileUrl = ApiRoutes.fileUrl;
 
-    final coverUrl = widget.place.cover != null
-        ? "$fileUrl${widget.place.cover!['url']}"
+    final coverUrl = _currentPlace!.cover != null
+        ? "$fileUrl${_currentPlace!.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.place.gallery?.map((path) {
+    final List<String> gallery = _currentPlace!.gallery?.map((path) {
       return "$fileUrl$path";
     }).toList() ?? [];
 
@@ -160,7 +229,7 @@ class PlaceDetailState extends State<PlaceDetail> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.place.name.capitalizeAll(),
+                          _currentPlace!.name.capitalizeAll(),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

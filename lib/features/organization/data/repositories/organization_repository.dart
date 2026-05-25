@@ -4,8 +4,8 @@ import '../services/organization_service.dart';
 class OrganizationRepository {
   final OrganizationService _service = OrganizationService();
 
-  Future<OrganizationModel> singleOrganization({required int orgId}) {
-    return _service.getSingle(orgId: orgId);
+  Future<OrganizationModel?> singleOrganization(int orgId) {
+    return _service.getSingle(orgId);
   }
 
   Future<List<OrganizationModel>> fetchOrganizations({ 

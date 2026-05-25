@@ -8,6 +8,7 @@ import 'package:karaburun/core/widgets/distance_card_list.dart';
 import 'package:karaburun/core/widgets/gallery_grid.dart';
 import 'package:karaburun/features/activity/data/models/activity_model.dart';
 import 'package:karaburun/features/activity/data/repositories/activity_repository.dart';
+import 'package:karaburun/features/beach/data/repositories/beach_repository.dart';
 import 'package:karaburun/features/place/data/models/place_model.dart';
 import 'package:karaburun/features/place/data/repositories/place_repository.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -18,61 +19,106 @@ import '../../data/models/beach_place_distance_model.dart';
 import '../../data/repositories/beach_place_distance_repository.dart';
 
 class BeachDetail extends StatefulWidget {
-  final Beach beach;
-  const BeachDetail({super.key, required this.beach});
+  final Beach? beach;
+  final int? beachId;
+
+  const BeachDetail({
+    super.key,
+    this.beach,
+    this.beachId
+  });
 
   @override
   BeachDetailState createState() => BeachDetailState();
 }
 
 class BeachDetailState extends State<BeachDetail> {
+  final BeachRepository _beachRepository = BeachRepository();
   final BeachActivityDistanceRepository _activityDistanceRepo = BeachActivityDistanceRepository();
   final BeachPlaceDistanceRepository _placeDistanceRepo = BeachPlaceDistanceRepository();  
   final ActivityRepository _activityRepo = ActivityRepository();
   final PlaceRepository _placeRepo = PlaceRepository();
 
+  Beach? _currentBeach;
   List<BeachActivityDistanceModel> _nearActivities = [];
   List<BeachPlaceDistanceModel> _nearPlaces = [];
   List<Activity> _activityList = [];
   List<Place> _placeList = [];
 
   bool _isLoading = true;
+  bool _hasError  = false;
 
   @override
   void initState() {
     super.initState();
+    _currentBeach = widget.beach;
     _loadAllData();
   }
 
   void _loadAllData() async {
-    final results = await Future.wait([
-      _fetchNearestActivities(),
-      _fetchNearestPlaces(),
-      _fetchActivities(),
-      _fetchPlaces()
-    ]);
+    try {
+      if (_currentBeach == null && widget.beachId != null) {
+        final fetchedBeach = await _beachRepository.fetchSingleBeach(widget.beachId!);
 
-    setState(() {
-      _nearActivities = results[0] as List<BeachActivityDistanceModel>;
-      _nearPlaces = results[1] as List<BeachPlaceDistanceModel>;
-      _activityList = results[2] as List<Activity>;
-      _placeList = results[3] as List<Place>;
+        if (fetchedBeach != null) {
+          if (mounted) {
+            setState(() {
+              _currentBeach = fetchedBeach;
+            });
+          }
+        } else {
+          _setError();
+          return;
+        }
+      }
 
-      // loading
-      _isLoading = false;
-    });
+      if (_currentBeach != null) {
+
+        final results = await Future.wait([
+          _fetchNearestActivities(),
+          _fetchNearestPlaces(),
+          _fetchActivities(),
+          _fetchPlaces()
+        ]);
+
+        setState(() {
+          _nearActivities = results[0] as List<BeachActivityDistanceModel>;
+          _nearPlaces = results[1] as List<BeachPlaceDistanceModel>;
+          _activityList = results[2] as List<Activity>;
+          _placeList = results[3] as List<Place>;
+          _isLoading = false;
+        });
+      } else {
+        _setError();
+      }
+    } catch (e) {
+      debugPrint("Beach Deatil Page Fetch Error: $e");
+      _setError();
+    }
+  }
+
+  void _setError() {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+    }
   }
 
   Future<List<BeachActivityDistanceModel>> _fetchNearestActivities() async {
-    return await _activityDistanceRepo.fetchNearestActivities(beachId: widget.beach.id);
+    return await _activityDistanceRepo.fetchNearestActivities(
+      beachId: _currentBeach!.id,
+      onlyUpcoming: true
+    );
   }
 
   Future<List<BeachPlaceDistanceModel>> _fetchNearestPlaces() async {
-    return await _placeDistanceRepo.fetchNearestPlaces(beachId: widget.beach.id);
+    return await _placeDistanceRepo.fetchNearestPlaces(beachId: _currentBeach!.id);
   }
 
   Future<List<Activity>> _fetchActivities() async {
-    return await _activityRepo.fetchActivity();
+    return await _activityRepo.fetchActivity(onlyUpcoming: true);
   }
 
   Future<List<Place>> _fetchPlaces() async {
@@ -81,13 +127,37 @@ class BeachDetailState extends State<BeachDetail> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading && _currentBeach == null) {
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.textOrange,
+          ),
+        ),
+      );
+    }
+
+    if (_hasError || _currentBeach == null) {
+      return Center(
+        child: Text(
+          "Plaj detayları yüklenemedi!",
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.7), 
+            fontSize: 16,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      );
+    }
+
     final String fileUrl = ApiRoutes.fileUrl;
 
-    final coverUrl = widget.beach.cover != null
-        ? "$fileUrl${widget.beach.cover!['url']}"
+    final coverUrl = _currentBeach!.cover != null
+        ? "$fileUrl${_currentBeach!.cover!['url']}"
         : null;
 
-    final List<String> gallery = widget.beach.gallery?.map((path) {
+    final List<String> gallery = _currentBeach!.gallery?.map((path) {
       return "$fileUrl$path";
     }).toList() ?? [];
 
@@ -153,7 +223,7 @@ class BeachDetailState extends State<BeachDetail> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          widget.beach.name.capitalizeAll(),
+                          _currentBeach!.name.capitalizeAll(),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

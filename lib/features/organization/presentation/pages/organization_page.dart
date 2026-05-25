@@ -163,7 +163,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
         favoriteIds: _savedOrgIds,
         onFavoriteToggle: toggleFavorite,
         onTap: (item) {
-            context.push('/organization/detail', extra: item);
+            context.push('/organization/detail/${item.id}', extra: item);
         },
       ),
     );

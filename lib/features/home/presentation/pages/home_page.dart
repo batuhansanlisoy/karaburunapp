@@ -110,7 +110,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadHighligtedOrganizations() async {
     try {
-      final data = await _organizationRepository.fetchOrganizations(highlight: true, isActive: true);
+      final data = await _organizationRepository.fetchOrganizations(
+        highlight: true,
+        isActive: true,
+        subCategoryInfo: true
+      );
 
       if (mounted) {
         setState(() {
@@ -239,7 +243,7 @@ class _HomePageState extends State<HomePage> {
             ),
             if (!_eventLoading && _upcomingEvents.isNotEmpty)
               SizedBox(
-                height: 160, // Banner yüksekliğine göre ayarla
+                height: 190, // Banner yüksekliğine göre ayarla
                 child: PageView.builder(
                   controller: _eventPageController,
                   itemCount: _upcomingEvents.length,
@@ -251,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                       isLoading: false,
                       categoryName: _getEventCategoryName(event.categoryId),
                       villageName: _getEventVillageName(event.villageId),
-                      onTap: () => context.push('/activity/detail', extra: event),
+                      onTap: () => context.push('/activity/detail/${event.id}', extra: event),
                     );
                   },
                 ),
@@ -313,7 +317,7 @@ class _HomePageState extends State<HomePage> {
             villages: _allVillages,
             isLoading: _highlightedBeachLoading,
             onBeachTap: (beach) {
-              context.push('/beach/detail', extra: beach);
+              context.push('/beach/detail/${beach.id}', extra: beach);
             },
           )
         ],
@@ -395,7 +399,7 @@ class _HomePageState extends State<HomePage> {
           return FeaturedOrganizationCard(
             item: item,
             villages: _allVillages,
-            onTap: () => context.push('/organization/detail', extra: item)
+            onTap: () => context.push('/organization/detail/${item.id}', extra: item)
           ); 
         }).toList()));
   }

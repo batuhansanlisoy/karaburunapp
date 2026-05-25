@@ -33,6 +33,7 @@ class ActivityService {
     int? villageId,
     int? categoryId,
     List<int>? ids,
+    bool? onlyUpcoming
   }) async {
     final Map<String, String> queryParams = {};
 
@@ -46,6 +47,10 @@ class ActivityService {
 
     if (ids != null && ids.isNotEmpty) {
       queryParams["ids"] = ids.join(',');
+    }
+
+    if (onlyUpcoming != null) {
+      queryParams["onlyUpcoming"] = onlyUpcoming.toString();
     }
 
     final url = Uri.parse("${ApiRoutes.activity}/list")

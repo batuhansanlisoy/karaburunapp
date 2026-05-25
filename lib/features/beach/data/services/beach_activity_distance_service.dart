@@ -5,8 +5,20 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/features/beach/data/models/beach_activity_distance_model.dart';
 
 class BeachActivityDistanceService {
-  Future<List<BeachActivityDistanceModel>> getNearestActivities({ required int beachId}) async {
-    final url = Uri.parse("${ApiRoutes.beach}/$beachId/nearest-activity");
+  Future<List<BeachActivityDistanceModel>> getNearestActivities({
+    required int beachId,
+    bool? onlyUpcoming
+  }) async {
+
+    final Map<String, String> queryParameters = {};
+
+    if (onlyUpcoming != null) {
+      queryParameters['onlyUpcoming'] = onlyUpcoming.toString();
+    }
+  
+    final url = Uri.parse("${ApiRoutes.beach}/$beachId/nearest-activity").replace(
+      queryParameters: queryParameters.isNotEmpty ? queryParameters : null
+    );
 
     try {
       final response = await http.get(

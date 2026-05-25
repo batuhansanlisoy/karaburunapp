@@ -47,11 +47,25 @@ final appRouter = GoRouter(
           },
           routes: [
             GoRoute(
-              path: 'detail',
+              path: 'detail/:id',
               builder: (context, state) {
-                final org = state.extra as OrganizationModel;
-                return OrganizationDetail(organization: org);
-              },
+                if (state.extra != null && state.extra is OrganizationModel) {
+                  return OrganizationDetail(organization: state.extra as OrganizationModel);
+                }
+
+                final idParam = state.pathParameters['id'];
+                final organizationId = int.tryParse(idParam ?? '');
+
+                if (organizationId != null) {
+                  return OrganizationDetail(organizationId: organizationId);
+                }
+
+                return const Center(
+                  child: Text(
+                    "İşletme bulunamadı!"
+                  )
+                );
+              }
             ),
           ],
         ),
@@ -76,10 +90,24 @@ final appRouter = GoRouter(
           builder: (context, state) => const PlacePage(),
           routes: [
             GoRoute(
-              path: 'detail',
+              path: 'detail/:id',
               builder: (context, state) {
-                final place = state.extra as Place;
-                return PlaceDetail(place: place);
+                if (state.extra != null && state.extra is Place) {
+                  return PlaceDetail(place: state.extra as Place);
+                }
+
+                final idParam = state.pathParameters['id'];
+                final placeId = int.tryParse(idParam ?? '');
+
+                if (placeId != null) {
+                  return PlaceDetail(placeId: placeId);
+                }
+
+                return const Center(
+                  child: Text(
+                    "Veri bulunamadı!"
+                  )
+                );
               },
             ),
           ],
@@ -89,10 +117,24 @@ final appRouter = GoRouter(
           builder: (context, state) => const ActivityPage(),
           routes: [
             GoRoute(
-              path: 'detail',
+              path: 'detail/:id',
               builder: (context, state) {
-                final activity = state.extra as Activity; 
-                return ActivityDetailPage(activity: activity);
+                if (state.extra != null && state.error is Activity) {
+                  return ActivityDetailPage(activity: state.extra as Activity);
+                }
+
+                final idParam = state.pathParameters['id'];
+                final activityId = int.tryParse(idParam ?? '');
+
+                if (activityId != null) {
+                  return ActivityDetailPage(activityId: activityId);
+                }
+
+                return const Center(
+                  child: Text(
+                    "Etkinlik bilgisi bulunamadı!"
+                  )
+                );
               },
             ),
           ],
@@ -102,10 +144,24 @@ final appRouter = GoRouter(
           builder: (context, state) => const BeachPage(),
           routes: [
             GoRoute(
-              path: 'detail',
+              path: 'detail/:id',
               builder: (context, state) {
-                final beach = state.extra as Beach;
-                return BeachDetail(beach: beach);
+                if (state.extra !=null && state.extra is Beach) {
+                  return BeachDetail(beach: state.extra as Beach);
+                }
+
+                final idParam = state.pathParameters['id'];
+                final beachId = int.tryParse(idParam ?? '');
+
+                if (beachId != null) {
+                  return BeachDetail(beachId: beachId);
+                }
+
+                return const Center(
+                  child: Text(
+                    "Plaj bilgisi bulunamadı!"
+                  )
+                );
               }
             )
           ]

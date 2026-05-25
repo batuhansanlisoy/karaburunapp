@@ -29,11 +29,18 @@ class UpcomingEventBanner extends StatelessWidget {
     }
 
     if (event == null) return const SizedBox.shrink();
+    final String beginStr = "${event!.begin.day} ${_monthName(event!.begin.month)}";
+    final String endStr = "${event!.end.day} ${_monthName(event!.end.month)}";
 
-    // Verileri hazırlayalım ve baş harflerini büyütelim
-    final String eventName = event!.name.capitalize();
+    // ---- DEĞİŞİKLİK 1: RichText için tarih ve sabit metinleri ayırdık ----
+    final bool isSingleDay = event!.begin == event!.end;
+    final String dateRangeText = isSingleDay ? beginStr : "$beginStr - $endStr";
+    final String suffixText = isSingleDay ? " tarihinde" : " tarihleri arasında";
+
+    final String eventName = event!.name.capitalizeAll();
     final String category = (categoryName ?? "Etkinlik").capitalize();
-    final String location = (villageName ?? "Karaburun Merkez").capitalizeAll();
+    final String formattedVillage = (villageName ?? "Karaburun Merkez").capitalizeAll();
+    final String address = event!.address.capitalize();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 20),
@@ -41,12 +48,12 @@ class UpcomingEventBanner extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
         child: Container(
-          height: 120, // Biraz yükselttik tasarım rahatlasın diye
+          height: 160,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 const Color.fromARGB(255, 92, 100, 102),
-                const Color(0xFF000000).withValues(alpha: 0.85),
+                const Color.fromARGB(255, 26, 64, 100).withValues(alpha: 0.85),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -62,39 +69,70 @@ class UpcomingEventBanner extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Sağ üst köşeye şık bir kategori etiketi
+              // Sağ Üst Köşe: Köy İsmi ve Kategori Etiketleri Yan Yana
               Positioned(
                 top: 12,
                 right: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 0.5),
-                  ),
-                  child: Text(
-                    category,
-                    style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.5),
+                      ),
+                      child: Text(
+                        formattedVillage,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 0.5),
+                      ),
+                      child: Text(
+                        category,
+                        style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Sol taraf: Takvim İkonu Grubu
-                    _buildDateIcon(event!.begin.day.toString(), _monthName(event!.begin.month).substring(0, 5)),
+                    // Sol taraf: Sadece Takvim İkonu Grubu
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 28), 
+                        _buildDateIcon(event!.begin.day.toString(), _monthName(event!.begin.month).substring(0, 5)),
+                      ],
+                    ),
                     
                     const SizedBox(width: 16),
                     
                     // Orta: Bilgiler
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
+                          const SizedBox(height: 28), 
+                          
+                          // 1. Satır: Etkinlik Adı
                           Text(
                             eventName,
                             style: const TextStyle(
@@ -106,34 +144,56 @@ class UpcomingEventBanner extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              const Icon(
-                                size: 14,
-                                fill: 1,
-                                weight: 700,
-                                color: Colors.orange,
-                                Symbols.location_on_rounded
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  location,
-                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
+                          
+                          // 2. Satır: Açık Adres
+                          Text(
+                            address,
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          
+                          // ---- DEĞİŞİKLİK 2: Tek Satırda İki Farklı Renk (RichText) ----
+                          RichText(
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            text: TextSpan(
+                              style: const TextStyle(fontSize: 12), // Genel font boyutu
+                              children: [
+                                // Vurgulu Turuncu Tarih Kısmı
+                                TextSpan(
+                                  text: dateRangeText,
+                                  style: TextStyle(
+                                    color: Colors.orange.withValues(alpha: 0.85),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                // Soft Beyaz Metin Kısmı ("tarihinde" veya "tarihleri arasında")
+                                TextSpan(
+                                  text: suffixText,
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.65),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                     
                     // Sağ: Ok işareti
-                    Icon(
-                      Symbols.chevron_forward_rounded,
-                      color: Colors.white.withValues(alpha: 0.3),
-                      size: 22
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 18), 
+                        child: Icon(
+                          Symbols.chevron_forward_rounded,
+                          color: Colors.white.withValues(alpha: 0.3),
+                          size: 22
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -149,7 +209,7 @@ class UpcomingEventBanner extends StatelessWidget {
   Widget _buildDateIcon(String day, String month) {
     return Container(
       width: 65,
-      height: 65,
+      height: 75,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),

@@ -6,7 +6,7 @@ import 'package:karaburun/features/organization/data/models/organization_model.d
 
 class OrganizationService {
 
-  Future<OrganizationModel> getSingle({required int orgId}) async {
+  Future<OrganizationModel> getSingle(int orgId) async {
     final url = Uri.parse("${ApiRoutes.organization}/$orgId/single");
 
     try {

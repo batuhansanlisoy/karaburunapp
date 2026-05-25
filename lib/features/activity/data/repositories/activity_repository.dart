@@ -12,11 +12,13 @@ class ActivityRepository {
         int? villageId,
         int? categoryId,
         List<int>? ids,
+        bool? onlyUpcoming,
     }) {
         return _service.getActivity(
             villageId: villageId,
             categoryId: categoryId,
             ids: ids,
+            onlyUpcoming: onlyUpcoming
         );
     }
 }

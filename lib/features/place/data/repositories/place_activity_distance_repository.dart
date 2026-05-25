@@ -6,9 +6,11 @@ class PlaceActivityDistanceRepository {
 
     Future<List<PlaceActivityDistanceModel>> fetchNearestActivities({
       required int placeId,
+      bool? onlyUpcoming
     }) {
         return _service.getNearestActivities(
-            placeId: placeId
+            placeId: placeId,
+            onlyUpcoming: onlyUpcoming
         );
     }
 }

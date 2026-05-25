@@ -211,12 +211,12 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
             item: item,
             type: type,
             onTap: () {
-              if (type == "org") context.push("/organization/detail", extra: item);
-              if (type == "beach") context.push("/beach/detail", extra: item);
-              if (type == "activity") context.push("/activity/detail", extra: item);
-              if (type == "place") context.push("/place/detail", extra: item);
+              if (type == "org") context.push("/organization/detail/${item.id}", extra: item);
+              if (type == "beach") context.push("/beach/detail/${item.id}", extra: item);
+              if (type == "activity") context.push("/activity/detail/${item.id}", extra: item);
+              if (type == "place") context.push("/place/detail/${item.id}", extra: item);
             },
-            onLongPress: () => _showDeleteConfirmDialog(item, type), // UZUN BASINCA ONAY ÇIKAR
+            onLongPress: () => _showDeleteConfirmDialog(item, type),
           );
         },
       ),
@@ -238,7 +238,7 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
 
     return GestureDetector(
       onTap: onTap,
-      onLongPress: onLongPress, // UZUN BASMA TETİKLEYİCİSİ
+      onLongPress: onLongPress,
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: double.infinity,
