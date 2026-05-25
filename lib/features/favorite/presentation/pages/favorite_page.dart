@@ -62,7 +62,7 @@ class _FavoritePageState extends State<FavoritePage> with SingleTickerProviderSt
       final placeIds = await SavedManager.getSavedIds(SavedManager.placeKey);
 
       final results = await Future.wait([
-        orgIds.isNotEmpty ? _orgRepo.fetchOrganizations(ids: orgIds) : Future.value(<OrganizationModel>[]),
+        orgIds.isNotEmpty ? _orgRepo.fetchOrganizations(ids: orgIds, isActive: true) : Future.value(<OrganizationModel>[]),
         beachIds.isNotEmpty ? _beachRepo.fetchBeachs(ids: beachIds) : Future.value(<Beach>[]),
         activityIds.isNotEmpty ? _activityRepo.fetchActivity(ids: activityIds) : Future.value(<Activity>[]),
         placeIds.isNotEmpty ? _placeRepo.fetchPlaces(ids: placeIds) : Future.value(<Place>[]),

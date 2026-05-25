@@ -42,8 +42,8 @@ class _LocalProducerPageState extends State<LocalProducerPage> {
     };
 
     list = selectedVillageId == null
-      ? await repo.fetchLocalProducer()
-      : await repo.fetchLocalProducer(villageId: selectedVillageId);
+      ? await repo.fetchLocalProducer(isActive: true)
+      : await repo.fetchLocalProducer(villageId: selectedVillageId, isActive: true);
     
     filteredList = List.from(list);
 

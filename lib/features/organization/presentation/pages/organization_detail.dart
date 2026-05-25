@@ -147,7 +147,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
             // Üst Kapak Görseli
             if (coverUrl != null)
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.40,
+                height: MediaQuery.of(context).size.height,
                 width: double.infinity,
                 child: CachedNetworkImage(
                   imageUrl: coverUrl,
@@ -167,8 +167,8 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
               ),
             // Karartma Layer
             Container(
-              height: MediaQuery.of(context).size.height * 0.40,
-              color: Colors.black.withValues(alpha: 0.3),
+              height: MediaQuery.of(context).size.height,
+              color: Colors.black.withValues(alpha: 0.1),
             ),
 
             // Geri Butonu
@@ -190,7 +190,7 @@ class _OrganizationDetailState extends State<OrganizationDetail> {
 
             // İçerik Paneli
             DraggableScrollableSheet(
-              initialChildSize: 0.65,
+              initialChildSize: 0.4,
               minChildSize: 0.3,
               maxChildSize: 1.0,
               builder: (context, scrollController) {

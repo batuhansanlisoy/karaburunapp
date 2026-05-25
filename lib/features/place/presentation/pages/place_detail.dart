@@ -168,7 +168,7 @@ class PlaceDetailState extends State<PlaceDetail> {
           children: [
             if (coverUrl != null)
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height,
                 width: double.infinity,
                 child: CachedNetworkImage(
                   imageUrl: coverUrl,
@@ -187,8 +187,8 @@ class PlaceDetailState extends State<PlaceDetail> {
                 ),
               ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.35,
-              color: AppColors.bgDark.withValues(alpha: 0.45),
+              height: MediaQuery.of(context).size.height,
+              color: AppColors.bgDark.withValues(alpha: 0.1),
             ),
             SafeArea(
               child: Padding(
@@ -206,8 +206,8 @@ class PlaceDetailState extends State<PlaceDetail> {
               ),
             ),
             DraggableScrollableSheet(
-              initialChildSize: 0.65,
-              minChildSize: 0.65,
+              initialChildSize: 0.4,
+              minChildSize: 0.3,
               maxChildSize: 1,
               builder: (context, scrollController) {
                 return Container(

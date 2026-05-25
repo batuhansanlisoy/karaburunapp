@@ -50,7 +50,7 @@ class _OrganizationPageState extends State<OrganizationPage> {
 
     try {
       final results = await Future.wait([
-        repo.fetchOrganizations(categoryId: widget.categoryId, subCategoryInfo: true),
+        repo.fetchOrganizations(categoryId: widget.categoryId, subCategoryInfo: true, isActive: true),
         itemRepo.fetchOrganizationCategoryItem(),
         villageRepo.fetchVillages(),
         categoryRepo.fetchOrganizationCategory(),
