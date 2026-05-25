@@ -32,6 +32,8 @@ class HighligtedLocalProducerCard extends StatelessWidget {
     final imageUrl = item.cover?['url'] ?? "";
     final String fullUrl = "${ApiRoutes.fileUrl}$imageUrl"; // URL dışarı alındı
     final String? fontFamily = Theme.of(context).textTheme.bodyLarge?.fontFamily;
+    final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final int targetCacheHeight = (500 * pixelRatio).round();
 
     String villageName = "Karaburun";
     if (villages.isNotEmpty) {
@@ -49,9 +51,8 @@ class HighligtedLocalProducerCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 300,
-        height: 280, 
+        height: 500, 
         margin: const EdgeInsets.only(right: 12),
-        // Arka plan resmini Stack içine aldık, ClipRRect ile köşeleri koruyoruz
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
@@ -62,7 +63,7 @@ class HighligtedLocalProducerCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: fullUrl,
                         fit: BoxFit.cover,
-                        memCacheHeight: 550, // RAM tasarrufu için kısıt
+                        memCacheHeight: targetCacheHeight,
                         placeholder: (context, url) => Container(
                           color: AppColors.cardBg,
                           child: const Center(
@@ -75,6 +76,37 @@ class HighligtedLocalProducerCard extends StatelessWidget {
                         ),
                       )
                     : Image.asset("assets/images/no_img.png", fit: BoxFit.cover),
+              ),
+
+              // --- KÖY ETİKETİ ---
+              Positioned(
+                top: 12,
+                right: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6), 
+                    borderRadius: BorderRadius.circular(20),   
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        villageName.capitalizeAll(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: fontFamily,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               // --- İÇERİK KATMANI ---
@@ -91,47 +123,27 @@ class HighligtedLocalProducerCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 🔥 HİZALAMA DÜZELTİLDİ: Sadece dikeyde ortalandı (center) ve gereksiz Column/Row sarmalları uçuruldu
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center, 
                           children: [
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          item.name.capitalizeAll(),
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 12.5,
-                                            fontFamily: fontFamily,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        "• ${villageName.capitalizeAll()}",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: fontFamily,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              child: Text(
+                                item.name.capitalizeAll(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 12.5,
+                                  fontFamily: fontFamily,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             
-                            if (item.phone.isNotEmpty) 
+                            if (item.phone.isNotEmpty) ...[
+                              const SizedBox(width: 8), // İsim çok uzarsa butonla arasında kalacak güvenli boşluk
                               GestureDetector(
                                 onTap: () => _makePhoneCall(item.phone),
                                 child: Container(
@@ -149,6 +161,7 @@ class HighligtedLocalProducerCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            ],
                           ],
                         ),
 

@@ -4,9 +4,9 @@ import 'package:karaburun/core/navigation/api_routes.dart';
 import 'package:karaburun/core/theme/app_colors.dart';
 import 'package:karaburun/features/beach/data/models/beach_model.dart';
 import 'package:karaburun/features/village/data/models/village_model.dart';
-import 'package:karaburun/core/helpers/string_helpers.dart'; // capitalizeAll burada
+import 'package:karaburun/core/helpers/string_helpers.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:karaburun/core/helpers/map_launcher.dart'; // Map helper'ın
+import 'package:karaburun/core/helpers/map_launcher.dart';
 
 class BeachGrid extends StatelessWidget {
   final List<Beach> beaches;
@@ -19,7 +19,7 @@ class BeachGrid extends StatelessWidget {
     required this.beaches,
     required this.villages,
     required this.isLoading,
-    this.onBeachTap
+    this.onBeachTap,
   });
 
   @override
@@ -33,46 +33,62 @@ class BeachGrid extends StatelessWidget {
       );
     }
 
-    if (beaches.isEmpty) return const SizedBox.shrink();
+    if (beaches.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
-    double screenWidth = MediaQuery.of(context).size.width;
-    double gridHeight = 600; 
+    // SABİT GENİŞLİK
+    const double cardWidth = 200;
+
+    // 9:11 ORANI
+    const double aspectRatio = 9 / 15;
+
+    // Height otomatik hesap
+    final double cardHeight = cardWidth / aspectRatio;
 
     return SizedBox(
-      height: gridHeight, 
-      child: GridView.builder(
+      height: cardHeight,
+      child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.zero, 
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: (gridHeight / 2) / (screenWidth * 0.85), 
-        ),
+        padding: EdgeInsets.zero,
         itemCount: beaches.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final beach = beaches[index];
-          
-          final String? coverPath = beach.cover != null ? beach.cover!['url'] : null;
-          final String imageUrl = (coverPath != null && coverPath.isNotEmpty)
-            ? "${ApiRoutes.fileUrl}$coverPath"
-            : "assets/images/no_img.png";
+
+          final String? coverPath =
+              beach.cover != null ? beach.cover!['url'] : null;
+
+          final String imageUrl =
+              (coverPath != null && coverPath.isNotEmpty)
+                  ? "${ApiRoutes.fileUrl}$coverPath"
+                  : "assets/images/no_img.png";
 
           String vName = "Karaburun";
+
           if (villages.isNotEmpty) {
-            final match = villages.where((v) => v.id == beach.villageId);
-            if (match.isNotEmpty) vName = match.first.name;
+            final match = villages.where(
+              (v) => v.id == beach.villageId,
+            );
+
+            if (match.isNotEmpty) {
+              vName = match.first.name;
+            }
           }
 
-          return GestureDetector(
-            onTap: () => onBeachTap?.call(beach),
-            child: _BeachCard(
-              beach: beach,
-              imageUrl: imageUrl, 
-              beachName: beach.name, 
-              villageName: vName,
-              address: beach.address,
+          return SizedBox(
+            width: cardWidth,
+            height: cardHeight,
+            child: GestureDetector(
+              onTap: () => onBeachTap?.call(beach),
+              child: _BeachCard(
+                beach: beach,
+                imageUrl: imageUrl,
+                beachName: beach.name,
+                villageName: vName,
+                address: beach.address,
+              ),
             ),
           );
         },
@@ -82,7 +98,7 @@ class BeachGrid extends StatelessWidget {
 }
 
 class _BeachCard extends StatelessWidget {
-  final Beach beach; // Koordinatlar için lazım
+  final Beach beach;
   final String imageUrl;
   final String beachName;
   final String villageName;
@@ -90,8 +106,8 @@ class _BeachCard extends StatelessWidget {
 
   const _BeachCard({
     required this.beach,
-    required this.imageUrl, 
-    required this.beachName, 
+    required this.imageUrl,
+    required this.beachName,
     required this.villageName,
     this.address,
   });
@@ -99,7 +115,8 @@ class _BeachCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isAsset = imageUrl.startsWith('assets/');
-    final String? fontFamily = Theme.of(context).textTheme.bodyLarge?.fontFamily;
+    final String? fontFamily =
+        Theme.of(context).textTheme.bodyLarge?.fontFamily;
 
     return Container(
       decoration: BoxDecoration(
@@ -110,99 +127,123 @@ class _BeachCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
-            // 1. KATMAN: GÖRSEL
+            // FOTOĞRAF
             Positioned.fill(
-              child: isAsset 
-                ? Image.asset(imageUrl, fit: BoxFit.cover)
-                : CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: AppColors.bgDark,
-                      child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white24),
+              child: isAsset
+                  ? Image.asset(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        color: AppColors.bgDark,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white24,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Image.asset(
+                        'assets/images/no_img.png',
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    errorWidget: (context, url, error) => Image.asset(
-                      'assets/images/no_img.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
             ),
 
-            // 2. KATMAN: SİYAH BANT
+            // ALT SİYAH BANT
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.7),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                beachName.capitalizeAll(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 12.5,
-                                  fontFamily: fontFamily,
+                              Expanded(
+                                child: Text(
+                                  beachName.capitalizeAll(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 12.5,
+                                    fontFamily: fontFamily,
+                                  ),
+                                  maxLines: 1,
+                                  overflow:
+                                      TextOverflow.ellipsis,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
+
                               const SizedBox(width: 6),
-                              Text(
-                                "• ${villageName.capitalizeAll()}",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: fontFamily,
-                                ),
-                              ),
+
+                              // Text(
+                              //   "• ${villageName.capitalizeAll()}",
+                              //   style: TextStyle(
+                              //     color: Colors.white,
+                              //     fontSize: 10.5,
+                              //     fontWeight: FontWeight.w500,
+                              //     fontFamily: fontFamily,
+                              //   ),
+                              // ),
                             ],
                           ),
+
                           const SizedBox(height: 4),
+
                           Text(
-                            (address?.isNotEmpty ?? false) 
-                                ? address!.capitalize()
-                                : "Karaburun, İzmir",
+                            " ${villageName.capitalizeAll()}",
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.95),
-                              fontSize: 10,
+                              color: Colors.white,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w500,
                               fontFamily: fontFamily,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
 
-                    // --- KONUM BUTONU (YUVARLAK İÇİNDE) ---
+                    const SizedBox(width: 10),
+
+                    // MAP BUTONU
                     GestureDetector(
-                      onTap: () => MapLauncher.openMap(context, beach.latitude, beach.longitude),
+                      onTap: () => MapLauncher.openMap(
+                        context,
+                        beach.latitude,
+                        beach.longitude,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: Colors.white.withValues(
+                            alpha: 0.15,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Symbols.near_me_rounded,
-                          color: AppColors.iconOrange, 
+                          color: AppColors.iconOrange,
                           size: 18,
                           fill: 1,
                           weight: 600,

@@ -285,6 +285,16 @@ class _HomePageState extends State<HomePage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // öne çıkarılan işletmeler
+        if (!_highlightedOrganizationLoading && _highlightedOrganizations.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildSectionTitle("Öne Çıkan İşletmeler", onSeeAllTap: () => context.go('/organization')),
+          ),
+          const SizedBox(height: 8),
+          _buildHihglightedOrganization(),
+          const SizedBox(height: 30),
+        ],
         // öne çıkan işletmeler(organization)
         if (!_highlightedLocalProducerLoading && _highligtedLocalProducers.isNotEmpty) ...[
           Padding(
@@ -295,15 +305,6 @@ class _HomePageState extends State<HomePage> {
           _buildHihglightedLocalProducer(),
           const SizedBox(height: 30)
 
-        ],
-        if (!_highlightedOrganizationLoading && _highlightedOrganizations.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _buildSectionTitle("Öne Çıkan İşletmeler", onSeeAllTap: () => context.go('/organization')),
-          ),
-          const SizedBox(height: 8),
-          _buildHihglightedOrganization(),
-          const SizedBox(height: 30),
         ],
         // öne çıkarılan koylar(beach)
         if (!_highlightedBeachLoading && _highlightedBeachs.isNotEmpty) ...[

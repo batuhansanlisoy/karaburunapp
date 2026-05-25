@@ -286,18 +286,19 @@ class _AppCardState extends State<AppCard> {
   Widget _buildImageStack() {
     return Stack(
       children: [
-        widget.imageUrl != null
+        AspectRatio(
+          aspectRatio: 9 / 12,
+          child: widget.imageUrl != null
             ? CachedNetworkImage(
                 imageUrl: widget.imageUrl!,
                 width: double.infinity,
-                height: 280,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => _placeholder(),
                 errorWidget: (context, url, error) => _placeholder(),
                 fadeInDuration: const Duration(milliseconds: 200),
               )
             : _placeholder(),
-        
+        ),
         Positioned(
           top: 12,
           left: 12,
@@ -436,8 +437,7 @@ class _AppCardState extends State<AppCard> {
 
   Widget _placeholder() {
     return Container(
-      width: double.infinity, 
-      height: 280, // Placeholder boyutu da resimle eşitlendi
+      width: double.infinity,
       color: const Color(0xFFF1F5F9), 
       child: Icon(
         Symbols.image_rounded,
