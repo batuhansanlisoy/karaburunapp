@@ -3,6 +3,8 @@ class ExploreModel {
     final String itemType;
     final int itemId;
     final String title;
+    final String? explanation;
+    final String target;
     final String videoUrl;
     final int score;
     final bool isActive;
@@ -14,6 +16,8 @@ class ExploreModel {
         required this.itemType,
         required this.itemId,
         required this.title,
+        this.explanation,
+        required this.target,
         required this.videoUrl,
         required this.score,
         required this.isActive,
@@ -27,6 +31,8 @@ class ExploreModel {
           itemType: json['item_type'],
           itemId: json['item_id'],
           title: json['title'],
+          explanation: json['explanation'],
+          target: json['target'],
           videoUrl: json['video_url'],
           score: json['score'],
           isActive: json['is_active'] == 1 || json['is_active'] == true,
