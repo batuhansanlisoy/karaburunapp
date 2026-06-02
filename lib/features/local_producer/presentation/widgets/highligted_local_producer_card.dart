@@ -123,14 +123,13 @@ class HighligtedLocalProducerCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 🔥 HİZALAMA DÜZELTİLDİ: Sadece dikeyde ortalandı (center) ve gereksiz Column/Row sarmalları uçuruldu
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center, 
                           children: [
                             Expanded(
                               child: Text(
-                                item.name.capitalizeAll(),
+                                item.title.capitalizeAll(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w900,

@@ -48,7 +48,7 @@ class _ExplorePageState extends State<ExplorePage> {
             if (snapshot.hasError) {
               return Center(
                 child: Text(
-                  "Veriler yüklenirken bir hata oluştu moruk!\n${snapshot.error}",
+                  "Veriler yüklenirken bir hata oluştu!\n${snapshot.error}",
                   style: const TextStyle(color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
